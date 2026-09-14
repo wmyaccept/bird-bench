@@ -45,6 +45,21 @@ SELECT
 |---|---|---|
 | `Score` | `posts` / `comments` | 帖子分 vs 评论分 |
 | `Diagnosis` | `Patient` / `Examination` | 患者级诊断 vs 就诊级诊断 |
+| `BountyAmount` | **只在 `votes`** | `posts` 表根本没这列（写错直接 `no such column`） |
+
+### ⭐ evidence 点名的列，必须真的用它（实测 `dev idx 696`）
+
+题干：“Count the number of posts with a tag specified as 'careers'”
+，evidence：“tag specified as 'careers' refers to **TagName** = 'careers'”。
+
+| 写法 | 值 | 对错 |
+|---|---|---|
+| 顺着 evidence，在 `tags` 表上数：`COUNT(*) FROM tags WHERE TagName='careers'` | **1** | ✅ |
+| 自作主张用“等价”的字符串匹配：`COUNT(*) FROM posts WHERE Tags LIKE '%<careers>%'` | 22 | ❌ |
+
+**记这一点：evidence 把列名写出来，就是在告诉你金标用的是那张表的那个列。**
+不要因为“另有一种写法结果看起来更合理”就自由发挥 —— 哪怕新写法在语义上更像“帖子的数量”。
+同理，题干里的名词（tag / reputation / owner）也要先想它对应的是**哪张表的哪个列名**。
 | `position` | `results` / `driverStandings` / `qualifying` | 完赛名次 / 积分榜名次 / 排位赛名次 |
 | `status` | `event` / `budget` / `legalities` | 事件状态 / 预算行状态 / 合法性 |
 | `name` | 几乎每张表 | — |

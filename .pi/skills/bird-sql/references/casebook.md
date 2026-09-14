@@ -122,6 +122,47 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 | 16 | 1 行 1 列值不同 | naive / CAST / 按校名 JOIN（=2）都不对 |
 | 51 | 1 行 2 列值不同 | naive join / CAST join 两个不同的学校都不对 |
 
+## 第 7 轮：codebase_community 收尾（676–715，27 道）
+
+结果：**27 道 → 21 对 / 6 错**。
+
+> 本轮首次严格执行“做题时不许思考”（SKILL.md 硬规则 6）：
+> **不试跑、不穷举、一稿定音**。27 道只用了 3 次工具调用（读题 1 + 提交 1 + 重交 1）。
+
+### 6 道错题的根因（均已用 probe 验证）
+
+| idx | 题干要点 | 我写的 | 根因 → 已写回哪份手册 |
+|---|---|---|---|
+| 689 | last to edit 帖 183 的用户 | `posts.LastEditorUserId` JOIN → **0 行** | 该列 **47361 行是 NULL**；必须走 `postHistory` 按 `CreationDate` 倒序 → `playbooks.md` |
+| 696 | tag='careers' 的帖数 | `posts.Tags LIKE '%<careers>%'` = 22 | evidence 点名 `TagName` → 金标在 `tags` 表上数 = **1** → `naming-traps.md` |
+| 709 | score=0 的评论里 ViewCount<5 的**帖**数 | `COUNT(*)` = 4 | 题干主语是**实体** → `COUNT(DISTINCT posts.Id)` = **2** → `calibration.md` |
+| 686 | views above average 的帖数（“total number”） | `COUNT(*)`（1 行） | 金标 **7689 行**（直接列出帖子，**不聚合**）→ 见下 |
+| 679 | 最高分帖的 id 和 title | `(Id, Title)` | evidence 补了 `owner's name → DisplayName`，**该字段必须进 SELECT** → 见下 |
+| 693 | 最新用户的 posts 和 comments 数 | 2 列 | 金标 **1 列** → 见下 |
+
+另：`700` 因把 `BountyAmount` 写到 `posts` 表上而**执行失败被拒**（在 `votes` 表），
+重交即过 —— 这类“列名不存在”是硬错，不算 EX 错。已写回 `playbooks.md` / `naming-traps.md`。
+
+### 三条“金标反直觉”样本（**不**提炼成规则，只留档）
+
+1. **`idx 686`**：题干 “Identify the **total number of** posts with views above average”，
+   金标返回 **7689 行**（= `SELECT Id FROM posts WHERE ViewCount > (SELECT AVG(ViewCount) FROM posts)`），
+   **没有 COUNT**。我的 `COUNT(*)` 值也是 7689，但形状错（1 行 vs 7689 行）。
+   → 无法事前预判，不提炼。
+2. **`idx 679`**：题干 “give its **id and title's name**”，evidence 却写
+   “**owner's name** refers to DisplayName”。→ 提炼出的规则是“**evidence 补的字段必须进 SELECT**”，
+   但具体组合（Id+DisplayName 还是 Title+DisplayName）仍未知。
+3. **`idx 693`**：“the number of posts **and** comments” 金标只给 **1 列**；
+   而同批 `idx 698` 的 “How many comments **and** answers” 是 **2 列**（我做对了）。
+   区别不明确（前者两列同属一个用户，后者分属两张表）→ 样本不够，不提炼。
+
+### 本轮验证有效的 skill 条款（做题时能直接套）
+
+- `playbooks.md` A2 的极值骨架（`ORDER BY 指标 DESC LIMIT 1`）：`677/679/681/690` 一稿命中
+- `sqlite-and-data.md` 的 NULL 规则（上一轮 `663` 的经验）：`684/691/711` 年龄段题一次对
+- `calibration.md` 的百分比子查询写法：`684` 一次对
+- **“evidence 给的口径先照抄”**：`699/700/702/703/706/715` 全部命中
+
 ## 第 6 轮：codebase_community 收尾第一批（644–675，25 道）
 
 结果：**25 道 → 首次就对 20 道，修后 22 道**（`663`/`656` 修复，`646`/`649`/`667` 挂起）。

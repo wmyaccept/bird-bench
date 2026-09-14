@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 319,
-  "unanswered": 1215,
+  "answered": 346,
+  "unanswered": 1188,
   "total_questions": 1534,
-  "correct": 298,
-  "ex_percent": 93.42,
-  "ex_percent_full_set": 19.43,
+  "correct": 319,
+  "ex_percent": 92.2,
+  "ex_percent_full_set": 20.8,
   "results": [
     {
       "idx": 0,
@@ -1367,6 +1367,20 @@
       "detail": "ok"
     },
     {
+      "idx": 676,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 677,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 678,
       "db_id": "codebase_community",
       "difficulty": "simple",
@@ -1374,11 +1388,137 @@
       "detail": "ok"
     },
     {
+      "idx": 679,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 680,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 681,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 684,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 686,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 7689 行 1 列）"
+    },
+    {
       "idx": 687,
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 688,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 689,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 690,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 691,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 693,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 695,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 696,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 697,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 698,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 699,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 700,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 702,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 703,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 704,
@@ -1395,11 +1535,60 @@
       "detail": "ok"
     },
     {
+      "idx": 706,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 709,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 710,
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 711,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 712,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 713,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 714,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 715,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 717,

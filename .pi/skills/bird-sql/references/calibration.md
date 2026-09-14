@@ -88,6 +88,19 @@ SELECT CAST(SUM(CASE WHEN c.Currency='EUR' THEN 1 ELSE 0 END) AS FLOAT)*100 / CO
 **启示**：evidence 里出现 "DISTINCT" 这类字眼，通常说明金标里真有 `DISTINCT`；
 没出现时，**先试不去重的行数**。
 
+### 例外（实测，优先级高于上面那条）：题干的主语是**实体**、而 JOIN 会扇出时，用 `COUNT(DISTINCT 实体id)`
+
+`dev idx 709`：“In comments with 0 score, **how many of the posts** have view count lower than 5?”
+
+| 写法 | 值 | 对错 |
+|---|---|---|
+| `COUNT(*)`（comments JOIN posts 扇出） | 4 | ❌ |
+| `COUNT(DISTINCT posts.Id)` | **2** | ✅ |
+
+判断依据是**题干问的是“几个帖子”而不是“几行”** —— 一旦 `JOIN` 的对侧是一对多
+（一个帖多条评论），`COUNT(*)` 数的是“评论行”，不是帖。
+同类词：`how many of the posts / users / schools ...` ⇒ 先想实体去重。
+
 ## 五、`COUNT(DISTINCT 实体)` + 多余 JOIN 的坑
 
 见 [`gold-style.md`](gold-style.md) 第三节：那个 JOIN 不是用来取值的，是**隐式过滤**。
