@@ -122,6 +122,40 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 | 16 | 1 行 1 列值不同 | naive / CAST / 按校名 JOIN（=2）都不对 |
 | 51 | 1 行 2 列值不同 | naive join / CAST join 两个不同的学校都不对 |
 
+## 第 8 轮：card_games 第一批（342–363，13 道）——教训：“没严格照 skill 走”
+
+结果：**13 道 → 5 对 / 8 错**（本轮最低的一批）。
+
+### 根因分类（全部 probe 验证）
+
+| idx | 题干要点 | 我写的 | 根因 |
+|---|---|---|---|
+| **343** | 2015 帧且 EDHRec<100 的卡 | `cards.EDHRec` → 直接报错；重交 `edhrecRank` 后 654 行 | 行数对了但**集合不对**，疑似金标输出 `cards.id` 而非 `name`（playbooks 早就写了“which cards 常返回 id”，**我没照做**） |
+| **350** | card Annul（number 29）的替代语言 | `name='annul'`（全小写） → **0 行** | 实际值是 `'Annul'`，SQLite 的 `=` 大小写敏感 |
+| **361** | status=restricted 且有文本框 | `status='restricted'` | 实际值是 **`'Restricted'`**（636 行 vs 0 行）；正确值 = **634** |
+| **363** | status=restricted 且在 starter deck | 同上 | 同上；正确值 = **205** |
+| **354** | Aaron Boyd 画的卡的类型数 | `COUNT(DISTINCT cards.types)` = 2 | **`cards` 同时有 `type`（4 种）和 `types`（2 种）两列** —— 同名陷阱 |
+| **357** | card Duress 的 promo 类型 | 29 行（未去重） | 同名卡 29 个版本 → 金标要 `DISTINCT`（去重后 **4** 行 = 金标） |
+| **359** | Ancestor's Chosen 的原始类型 | 4 行 | DISTINCT 后 4 行（含 NULL），金标 **3 行** → 疑似排除 NULL |
+| **342** | 面朝转换费用最高的卡名 | `ORDER BY faceConvertedManaCost DESC LIMIT 1` | max = 7.0 有 **22 张并列** → 排序不稳定，撞错 |
+
+### 真正的教训（这一批最值钱的东西）
+
+1. **playbooks 里已经写过的规则，我没执行。** `343` 就是典型：
+   “which cards 的金标常返回 `cards.id`” 早就写在 B 部分的 card_games 段里，
+   我写 SQL 时直接输出了 `name`。⇒ **读 B 部分不能只读“连接图”，要把坑逐条当约束用。**
+2. **每换一个库，先 `SELECT DISTINCT` 看关键列的取值。**
+   本批 3 道（`350/361/363`）纯粹输在大小写上 —— 而 california_schools 那边
+   恰好相反（`'Directly funded'` 小写 f）。⇒ 已写进 playbooks 的 A 部分。
+3. **evidence 里的名字是“概念名”，不是列名**：EDHRec → `edhrecRank`。
+   写之前用 `pragma_table_info` 核对，成本 5 秒，能挡掉硬错。
+
+### 已写回
+
+- `playbooks.md` ▸ B 部分 card_games：新增 6 条实测坑（camelCase 列名 / 值首字母大写 /
+  同名卡多版本用 DISTINCT / 连接键 / 22 张并列 / “Name all cards” 也可能返回 id）
+- `playbooks.md` ▸ A 部分：新增“换库先 `SELECT DISTINCT` 看真值”的固定动作
+
 ## 第 7 轮：codebase_community 收尾（676–715，27 道）
 
 结果：**27 道 → 21 对 / 6 错**。

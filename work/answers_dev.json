@@ -344,5 +344,18 @@
   "713": "SELECT users.UpVotes FROM comments JOIN users ON comments.UserId=users.Id WHERE comments.Text='R is also lazy evaluated.'\t----- bird -----\tcodebase_community",
   "714": "SELECT comments.Text FROM comments JOIN users ON comments.UserId=users.Id WHERE users.DisplayName='Harvey Motulsky'\t----- bird -----\tcodebase_community",
   "715": "SELECT users.DisplayName FROM comments JOIN users ON comments.UserId=users.Id WHERE comments.Score BETWEEN 1 AND 5 AND users.DownVotes=0\t----- bird -----\tcodebase_community",
-  "700": "SELECT COUNT(*) FROM votes WHERE votes.BountyAmount>=30\t----- bird -----\tcodebase_community"
+  "700": "SELECT COUNT(*) FROM votes WHERE votes.BountyAmount>=30\t----- bird -----\tcodebase_community",
+  "342": "SELECT cards.name FROM cards ORDER BY cards.faceConvertedManaCost DESC LIMIT 1\t----- bird -----\tcard_games",
+  "348": "SELECT rulings.text FROM rulings JOIN cards ON rulings.uuid=cards.uuid WHERE cards.name='Sublime Epiphany' AND cards.number='74s'\t----- bird -----\tcard_games",
+  "350": "SELECT foreign_data.language FROM foreign_data JOIN cards ON foreign_data.uuid=cards.uuid WHERE cards.name='annul' AND cards.number='29'\t----- bird -----\tcard_games",
+  "351": "SELECT cards.name FROM foreign_data JOIN cards ON foreign_data.uuid=cards.uuid WHERE foreign_data.language='Japanese'\t----- bird -----\tcard_games",
+  "353": "SELECT sets.name, sets.totalSetSize FROM set_translations JOIN sets ON set_translations.setCode=sets.code WHERE set_translations.language='Italian'\t----- bird -----\tcard_games",
+  "354": "SELECT COUNT(DISTINCT cards.types) FROM cards WHERE cards.artist='Aaron Boyd'\t----- bird -----\tcard_games",
+  "355": "SELECT cards.keywords FROM cards WHERE cards.name='Angel of Mercy'\t----- bird -----\tcard_games",
+  "357": "SELECT cards.promoTypes FROM cards WHERE cards.name='Duress'\t----- bird -----\tcard_games",
+  "359": "SELECT cards.originalType FROM cards WHERE cards.name=\"Ancestor's Chosen\"\t----- bird -----\tcard_games",
+  "361": "SELECT COUNT(*) FROM legalities JOIN cards ON legalities.uuid=cards.uuid WHERE legalities.status='restricted' AND cards.isTextless=0\t----- bird -----\tcard_games",
+  "362": "SELECT rulings.text FROM rulings JOIN cards ON rulings.uuid=cards.uuid WHERE cards.name='Condemn'\t----- bird -----\tcard_games",
+  "363": "SELECT COUNT(*) FROM legalities JOIN cards ON legalities.uuid=cards.uuid WHERE legalities.status='restricted' AND cards.isStarter=1\t----- bird -----\tcard_games",
+  "343": "SELECT cards.name FROM cards WHERE cards.edhrecRank<100 AND cards.frameVersion='2015'\t----- bird -----\tcard_games"
 }

@@ -16,7 +16,17 @@
 ```
 
 **注意**：Dev 的题目**按数据库聚集**（一个库几十道连在一起）。所以进一个库时先把
-B 部分的"该库连接图"读一遍，后面几十题都能复用。
+B 部分的“该库连接图”读一遍，后面几十题都能复用。
+
+⚠️ **换库的第一件事：把关键列的取值 `SELECT DISTINCT` 看一眼。**
+每一库的“值风格”不同，凭印象写必错（实测两边都踩过）：
+
+| 库 | 坑 | 实测 |
+|---|---|---|
+| card_games | 首字母大写 | `status='restricted'` → **0 行**；`'Restricted'` → 636 |
+| california_schools | 小写 f | `'Directly funded'`（不是 `'Funded'`） |
+
+同理，**列名也要先核实**（evidence 里的概念名未必是列名，见 B 部分 card_games）。
 
 ---
 
@@ -346,13 +356,44 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
 
 ### card_games（6 表）
 ```
-cards ──uuid── legalities / rulings
+cards ──uuid── legalities / rulings / foreign_data
       ──setCode── sets ──code── set_translations
-foreign_data（多语言）
 ```
 - `cards` 有 **74 列**，好几个 `id`：`id`（整数主键）、`uuid`（外部 ID）、`multiverseId`。
-- "which cards" 的金标常返回 `cards.id`（`minidev idx 346`）。
+- “which cards” 的金标常返回 `cards.id`（`minidev idx 346`）。
 - `borderColor` 取值：black / borderless / gold / silver / white。
+
+**⚠️ 实测坑（dev 342–363 一批 13 道错 8 道，全部踩在下面这几条）**
+
+1. **列名是 camelCase，evidence 里的概念名不是列名**：
+
+   | evidence 里写的 | 真实列名 |
+   |---|---|
+   | EDHRec | **`edhrecRank`** |
+   | “卡片类型” | `cards.type`（粗）/ `cards.types`（细）—— **两个都有** |
+   | 文字框 | `isTextless`（0/1） |
+   | 先手包 | `isStarter`（0/1） |
+
+   ⇒ 写之前先用 `SELECT name FROM pragma_table_info('cards') WHERE name LIKE '%关键词%'` 核对（实测：
+   写 `cards.EDHRec` 直接 `no such column`）。
+2. ⚠️ **这一库的取值首字母大写，小写几乎全不匹配（大小写敏感）**：
+
+   | 你可能会写 | 实际值 | 行数对比 |
+   |---|---|---|
+   | `legalities.status = 'restricted'` | `'Restricted'` | **0 vs 636** |
+   | `cards.name = 'annul'` | `'Annul'` | **0 vs 正常** |
+
+   `status` 只有三个值：`Legal` / `Banned` / `Restricted`。
+   （与 california_schools 的 `'Directly funded'`（小写 f）正好相反 —— 所以**每换一个库都要先
+   `SELECT DISTINCT` 看一眼真值**，不要凭印象写。）
+3. **同名卡有多个版本（按 `uuid` 区分）**：`WHERE name='Duress'` → 29 行；`name='Annul'` → 多个 number。
+   输出**属性列**时通常要 `DISTINCT`（实测 `idx 357`：`DISTINCT promoTypes` = 4 = 金标行数）。
+4. 连接键：`legalities.uuid = cards.uuid`、`rulings.uuid = cards.uuid`、
+   `foreign_data.uuid = cards.uuid`、`set_translations.setCode = sets.code`。
+5. `cards.faceConvertedManaCost` 是 **real**（数值），最大值 7.0 **有 22 张并列** ——
+   这类题的 `ORDER BY ... DESC LIMIT 1` 撞对撞错靠运气（`idx 342` 就错了），不要指望。
+6. ⚠️ **“Name all cards X” 的金标也可能返回 `cards.id` 而不是 `name`**
+   （`idx 343` 行数对、集合不对的疑似原因 —— 它是“帧版本”题，654 行两边一样）。
 
 ### financial（8 表）
 ```
