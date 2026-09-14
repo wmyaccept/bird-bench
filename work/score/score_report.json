@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 458,
-  "unanswered": 1076,
+  "answered": 548,
+  "unanswered": 986,
   "total_questions": 1534,
-  "correct": 384,
-  "ex_percent": 83.84,
-  "ex_percent_full_set": 25.03,
+  "correct": 446,
+  "ex_percent": 81.39,
+  "ex_percent_full_set": 29.07,
   "results": [
     {
       "idx": 0,
@@ -2473,7 +2473,35 @@
       "detail": "ok"
     },
     {
+      "idx": 848,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 849,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 27 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 850,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 851,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 657 行 1 列 / 金标 18 行 1 列）"
+    },
+    {
+      "idx": 853,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2487,6 +2515,20 @@
       "detail": "ok"
     },
     {
+      "idx": 855,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 19 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 856,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 857,
       "db_id": "formula_1",
       "difficulty": "simple",
@@ -2494,7 +2536,21 @@
       "detail": "ok"
     },
     {
+      "idx": 858,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 859,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 860,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2522,7 +2578,35 @@
       "detail": "ok"
     },
     {
+      "idx": 864,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 867,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 868,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 870,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 871,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2536,7 +2620,119 @@
       "detail": "ok"
     },
     {
+      "idx": 873,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 874,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 875,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 876,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 878,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 882,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 883,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 885,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 886,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 887,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 888,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 3 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 889,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 890,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 891,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 24 行 2 列 / 金标 27 行 2 列）"
+    },
+    {
+      "idx": 893,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 3 行 3 列 / 金标 3 行 3 列）"
+    },
+    {
       "idx": 898,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 900,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2557,7 +2753,35 @@
       "detail": "ok"
     },
     {
+      "idx": 905,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 907,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 908,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 3 列 / 金标 1 行 4 列）"
+    },
+    {
       "idx": 910,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 911,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2571,7 +2795,112 @@
       "detail": "ok"
     },
     {
+      "idx": 913,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 914,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 915,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 916,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 917,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 918,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 919,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 920,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 921,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 51 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 922,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 923,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 924,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 925,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 926,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 927,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 929,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2585,7 +2914,35 @@
       "detail": "ok"
     },
     {
+      "idx": 932,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 935,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 936,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 937,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 941,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2599,7 +2956,28 @@
       "detail": "ok"
     },
     {
+      "idx": 946,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 947,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 948,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 949,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2620,11 +2998,67 @@
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
+      "idx": 952,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 24 行 1 列 / 金标 13 行 1 列）"
+    },
+    {
+      "idx": 953,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 956,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 11 行 2 列 / 金标 224 行 2 列）"
+    },
+    {
+      "idx": 957,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 959,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 961,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 964,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 965,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 966,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 967,
@@ -2634,7 +3068,42 @@
       "detail": "ok"
     },
     {
+      "idx": 968,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 969,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 971,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 974,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 5268 行 1 列）"
+    },
+    {
+      "idx": 975,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 976,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
@@ -2649,6 +3118,167 @@
     },
     {
       "idx": 978,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 979,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 982,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 983,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 984,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 985,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 986,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 987,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 991,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 993,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 4 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 996,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 997,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 998,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 999,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1000,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1004,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 3 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 1005,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1007,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1008,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1009,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 45 行 2 列 / 金标 45 行 1 列）"
+    },
+    {
+      "idx": 1010,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 11340 行 1 列）"
+    },
+    {
+      "idx": 1012,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1013,
+      "db_id": "formula_1",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1018,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": true,
