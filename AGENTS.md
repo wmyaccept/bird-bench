@@ -18,6 +18,7 @@ data/DEV/                          官方 Dev 集 1534 题（对齐排行榜 Dev
 work/answers.json                  minidev 的作答
 work/answers_dev.json              dev 的作答（**与 minidev 分开**，idx 体系不同）
 work/score/                        评测产物（pred 文件 + 逐题明细）
+SUBMISSION_PLAN.md                 打榜提交方案（待执行；含官方 guideline 全文）
 ```
 
 ## 两个数据集
