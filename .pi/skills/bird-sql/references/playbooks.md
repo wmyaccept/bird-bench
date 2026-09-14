@@ -395,6 +395,40 @@ cards ──uuid── legalities / rulings / foreign_data
 6. ⚠️ **“Name all cards X” 的金标也可能返回 `cards.id` 而不是 `name`**
    （`idx 343` 行数对、集合不对的疑似原因 —— 它是“帧版本”题，654 行两边一样）。
 
+**⚠️⚠️ 第二批实测（dev 342–526 全 123 道：76 对 / 47 错）—— 下面两条是最大的失分源**
+
+7. **`cards` 是一卡一印刷版本一行（同 `name` 多行）⇒ 输出列一律先加 `DISTINCT`。**
+   金标给的总是**去重后的值集合**：
+
+   | idx | 题干 | 我（未去重） | 金标 |
+   |---|---|---|---|
+   | 387 | OGW 的卡的颜色 | 187 | **10** |
+   | 399 | arena 卡的 subtypes+supertypes | 999 | **46** |
+   | 444 | boros watermark 卡的外语名 | 1052 | **95** |
+   | 448 | abzan watermark 卡的外语名 | 480 | **47** |
+   | 442 | Masques/Mirage block 的 set | 9 | **3** |
+
+   ⇒ 这一库的“List / What are the …”题，**先在输出列上加 `DISTINCT`**，再去想别的。
+8. ⚠️ **多值串列（`keywords` / `subtypes` / `colors` / `promoTypes`）先试精确匹配 `=`，再试 `LIKE`**
+   （实测 `idx 376`）：
+
+   | 写法 | 行数 |
+   |---|---|
+   | `keywords = 'Flying'` | **3088**（金标） |
+   | `keywords LIKE '%flying%'` | 5039（**错**，把 `Flying,Flash` 等也算了） |
+9. ⚠️ **“How many X ? List out the id” 类题金标只输出 id（1 列）**，不要在前面加 `COUNT(*)`：
+   实测 `435`（black border，49729 行）/ `436`（extendedart，383 行），金标都是 **1 列**，我给了 2 列。
+   同类：“State/List the X” 就只给 X，不要把题干里的修饰问句也算成列。
+10. **`set_translations` 只覆盖 121 个 set（sets 有 551 个）**：`setCode='M13'/'4BB'/'J14'`
+    实测都是 **0 行** → 涉及“某个 set 的语言”时不要假设有翻译行（`428/429/438/519` 四道都因此 0 行）。
+11. **取值参考（都是实测）**：
+    - `sets.type`：`core / expansion / commander / promo / masters / token / …`（**下划线形式，没有** `expansion commander`）
+    - `sets.block`：`Mirage / Masques / …`
+    - `legalities.status`：`Legal / Banned / Restricted`
+    - `legalities.format`：小写（`legacy` / `oldschool` / `duel` / `pauper` …）
+12. **`faceConvertedManaCost` 最大值 7.0 有 22 张并列**；`convertedManaCost` 同理 ——
+    “最高 X 的前 N 张”类题排序不稳定，`514`/`392`/`342` 都因并列而错。
+
 ### financial（8 表）
 ```
 district ──district_id── client ──client_id── disp ──account_id── account

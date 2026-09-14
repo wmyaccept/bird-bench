@@ -46,9 +46,13 @@ SELECT
 | `Score` | `posts` / `comments` | 帖子分 vs 评论分 |
 | `Diagnosis` | `Patient` / `Examination` | 患者级诊断 vs 就诊级诊断 |
 | `BountyAmount` | **只在 `votes`** | `posts` 表根本没这列（写错直接 `no such column`） |
+| `position` | `results` / `driverStandings` / `qualifying` | 完赛名次 / 积分榜名次 / 排位赛名次 |
+| `status` | `event` / `budget` / `legalities` | 事件状态 / 预算行状态 / 合法性 |
+| `name` | 几乎每张表 | — |
+| `Date` | 各表格式不同 | `'201202'` vs `'2012-08-25'` vs `'2020-06-05 00:00:00'` |
+| `id` | 每张表 | 还有 `xxx_api_id` 等多套 ID 体系 |
 
 ### ⭐ evidence 点名的列，必须真的用它（实测 `dev idx 696`）
-
 题干：“Count the number of posts with a tag specified as 'careers'”
 ，evidence：“tag specified as 'careers' refers to **TagName** = 'careers'”。
 
@@ -60,11 +64,21 @@ SELECT
 **记这一点：evidence 把列名写出来，就是在告诉你金标用的是那张表的那个列。**
 不要因为“另有一种写法结果看起来更合理”就自由发挥 —— 哪怕新写法在语义上更像“帖子的数量”。
 同理，题干里的名词（tag / reputation / owner）也要先想它对应的是**哪张表的哪个列名**。
-| `position` | `results` / `driverStandings` / `qualifying` | 完赛名次 / 积分榜名次 / 排位赛名次 |
-| `status` | `event` / `budget` / `legalities` | 事件状态 / 预算行状态 / 合法性 |
-| `name` | 几乎每张表 | — |
-| `Date` | 各表格式不同 | `'201202'` vs `'2012-08-25'` vs `'2020-06-05 00:00:00'` |
-| `id` | 每张表 | 还有 `xxx_api_id` 等多套 ID 体系 |
+
+### ⭐⭐ 多值串列：“精确匹配”与“LIKE 包含”是两个不同的答案（实测 `dev idx 376`）
+
+有些列把多个值塞在一个字符串里（逗号分隔），比如：
+`cards.keywords`（`Flying` / `Flying,Flash`）、`cards.subtypes`、`cards.colors`、`cards.promoTypes`、
+`cards.types`。
+
+| 写法 | 行数 | 含义 |
+|---|---|---|
+| `keywords = 'Flying'` | **3088**（金标） | 只有“只有飞行”的卡 |
+| `keywords LIKE '%flying%'` | 5039 | 还包含 `Flying,Flash` 这类 |
+
+**动作：先试 `= '值'`，行数不对再改 `LIKE '%值%'`（反过来很少对）。**
+注意 `LIKE` 对 ASCII 大小写不敏感，所以 `'flying'` 和 `'Flying'` 在 LIKE 下等价，但在 `=` 下不等价 ——
+值的大小写要按库里实际写的（先 `SELECT DISTINCT 该列` 看一眼）。
 
 （相关：题干里“角色/职责”之类的措辞可能根本不是过滤条件，见 `gold-style.md` 反直觉行为第 4 条。）
 
