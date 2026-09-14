@@ -1,0 +1,7 @@
+# 只有跑 BIRD 官方评测脚本（tools/official_eval/run_ex.py）才需要。
+# 默认的 `python tools/bird.py score` 不依赖任何第三方包。
+func-timeout>=4.3.5
+
+# 仅当你要用 mini_dev 仓库里的 MySQL / PostgreSQL 例子时才需要：
+# pymysql>=1.1.1
+# psycopg2-binary>=2.9.9

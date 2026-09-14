@@ -1,0 +1,10 @@
+# 数据集：约 4 GB，用 tools/setup_data.py 可再生，不要提交
+data/
+_download/
+
+# Python
+__pycache__/
+*.pyc
+
+# 官方评测脚本会写日志
+tools/official_eval/*.log
