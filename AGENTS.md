@@ -78,6 +78,8 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
   这是工具层的强制约束，不是建议。
 - 只能通过 `bird.py` 改 `work/answers.json`，不要手写这个文件（格式是官方的
   `SQL<TAB>----- bird -----<TAB>db_id`，很容易写错）。
+- **要推送时：固定先问一句，得到同意立刻推。** 流程定死：**改动完成 → 一句话问“要推吗”
+  → 用户同意 → 立即 `git push`**。不要先推演“该不该推”，也不要绕一圈最后还是问一句。
 - 不要修改 `data/` 下的任何内容。数据集是只读的。
 - 不要"顺手优化"`tools/official_eval/` 里的官方脚本——它是官方口径的凭据，
   只在必要处打了标注了 `[本地补丁]` 的改动。
