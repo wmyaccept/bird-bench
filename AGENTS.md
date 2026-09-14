@@ -68,6 +68,10 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 ## 硬性规则
 
+- **⭐ 做题时不许思考，思考只在复盘时。** 以 skill 为准，一次定稿就提交；
+  **不要左右为难、不要穷举候选、不要“再试一种看看”**。错了就错了，错了再总结
+  （错误的价值是写回 skill，不是当场救回来）。同一题想到第 2 种写法或卡住 ~1 分钟 →
+  立刻提交手上最好的一条，记进挂起清单，做下一题。详见 `.pi/skills/bird-sql/SKILL.md` 硬规则第 6 条。
 - **禁止**读 `data/MINIDEV/mini_dev_sqlite.json` 或 `mini_dev_sqlite_gold.sql` 去抄答案，
   **禁止**用 `bird_question --reveal`。抄答案就失去做题意义了。
 - 只写只读 SQL。`bird_query` 和 `bird_answer` 都只接受 `SELECT / WITH / EXPLAIN`，
