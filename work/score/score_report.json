@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 826,
-  "unanswered": 708,
+  "answered": 877,
+  "unanswered": 657,
   "total_questions": 1534,
-  "correct": 686,
-  "ex_percent": 83.05,
-  "ex_percent_full_set": 44.72,
+  "correct": 721,
+  "ex_percent": 82.21,
+  "ex_percent_full_set": 47.0,
   "results": [
     {
       "idx": 0,
@@ -4671,6 +4671,55 @@
       "detail": "ok"
     },
     {
+      "idx": 1020,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1021,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1022,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1024,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
+    },
+    {
+      "idx": 1027,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
+    },
+    {
+      "idx": 1033,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1034,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 1035,
       "db_id": "european_football_2",
       "difficulty": "simple",
@@ -4685,6 +4734,13 @@
       "detail": "ok"
     },
     {
+      "idx": 1043,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1044,
       "db_id": "european_football_2",
       "difficulty": "simple",
@@ -4692,7 +4748,140 @@
       "detail": "ok"
     },
     {
+      "idx": 1045,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1048,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1049,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1050,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1051,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1054,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1055,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1056,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1059,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1060,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1061,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1063,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 26 行 1 列）"
+    },
+    {
+      "idx": 1064,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 3184 行 1 列 / 金标 3202 行 2 列）"
+    },
+    {
+      "idx": 1065,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1066,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1069,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1070,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1072,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1074,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1077,
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
@@ -4713,7 +4902,77 @@
       "detail": "ok"
     },
     {
+      "idx": 1081,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1082,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1083,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1086,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 24 行 1 列）"
+    },
+    {
+      "idx": 1087,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1089,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1090,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1092,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1097,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1099,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1100,
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
@@ -4727,7 +4986,70 @@
       "detail": "ok"
     },
     {
+      "idx": 1117,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1118,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 8731 行 1 列 / 金标 8612 行 1 列）"
+    },
+    {
+      "idx": 1119,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 1122,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1123,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1126,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 10848 行 1 列 / 金标 1514 行 1 列）"
+    },
+    {
+      "idx": 1128,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1129,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1131,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1132,
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
@@ -4742,6 +5064,41 @@
     },
     {
       "idx": 1134,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1137,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1138,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1140,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 3 列 / 金标 9 行 3 列）"
+    },
+    {
+      "idx": 1142,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1143,
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
