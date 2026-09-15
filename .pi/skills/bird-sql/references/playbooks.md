@@ -282,6 +282,14 @@ superhero ──id── hero_power ──power_id── superpower
 ```
 - `superhero.full_name`：**NULL 和字符串 `'-'` 都表示"没有全名"**（122 / 125 行）。
 - "superpower" → `superpower.power_name`；"attribute value" → `hero_attribute.attribute_value`。
+- ⚠️ **`superpower.power_name` 首字母大写**（`idx 803` 实测：evidence 写 `'cryokinesis'`，
+  库里是 `'Cryokinesis'`，小写直接 0 行）。
+- ⚠️ **取最小/最大属性值时先查并列**：`idx 837`（“lowest attribute value”）用
+  `ORDER BY … ASC LIMIT 1` 得 1 行，金标是 **10 行** —— `MIN(attribute_value)=5` 有 10 个英雄并列。
+  ⇒ 按 A2 的备用写法：`WHERE attribute_value = (SELECT MIN(attribute_value) FROM hero_attribute)`。
+- 实测全量：**81 道 75 对 / 6 错（92.6%）**。未解的四道都是口径类：
+  `720`（“over 15 powers”：金标 71 行 vs 我 102 行，已确认 `hero_power` 无重复行 —— 仍未解释）、
+  `741`/`767`/`791`（极值/均值口径）。
 
 ### formula_1（13 表）
 ```

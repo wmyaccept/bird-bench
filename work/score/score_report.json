@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 699,
-  "unanswered": 835,
+  "answered": 767,
+  "unanswered": 767,
   "total_questions": 1534,
-  "correct": 575,
-  "ex_percent": 82.26,
-  "ex_percent_full_set": 37.48,
+  "correct": 637,
+  "ex_percent": 83.05,
+  "ex_percent_full_set": 41.53,
   "results": [
     {
       "idx": 0,
@@ -216,7 +216,7 @@
       "db_id": "california_schools",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+      "detail": "预测 SQL 执行失败: OperationalError: interrupted"
     },
     {
       "idx": 52,
@@ -2879,6 +2879,76 @@
       "detail": "ok"
     },
     {
+      "idx": 718,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 720,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 102 行 1 列 / 金标 71 行 1 列）"
+    },
+    {
+      "idx": 721,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 722,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 725,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 727,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 729,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 731,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 734,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 735,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 737,
       "db_id": "superhero",
       "difficulty": "simple",
@@ -2893,7 +2963,28 @@
       "detail": "ok"
     },
     {
+      "idx": 741,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 742,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 745,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 746,
       "db_id": "superhero",
       "difficulty": "simple",
       "correct": true,
@@ -2907,7 +2998,77 @@
       "detail": "ok"
     },
     {
+      "idx": 748,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 749,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 750,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 752,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 754,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 755,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 756,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 757,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 759,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 762,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 763,
       "db_id": "superhero",
       "difficulty": "simple",
       "correct": true,
@@ -2928,7 +3089,70 @@
       "detail": "ok"
     },
     {
+      "idx": 767,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 768,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 770,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 771,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 774,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 776,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 777,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 778,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 779,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 780,
       "db_id": "superhero",
       "difficulty": "simple",
       "correct": true,
@@ -2942,11 +3166,46 @@
       "detail": "ok"
     },
     {
+      "idx": 783,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 784,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 785,
       "db_id": "superhero",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 787,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 789,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 791,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 792,
@@ -2956,7 +3215,224 @@
       "detail": "ok"
     },
     {
+      "idx": 793,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 795,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 799,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 802,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 803,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 804,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 805,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 236 行 1 列 / 金标 107 行 1 列）"
+    },
+    {
       "idx": 806,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 807,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 808,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 809,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 810,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 811,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 812,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
+    },
+    {
+      "idx": 813,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 815,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 816,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 821,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 826,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 828,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 831,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 832,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 833,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 836,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 837,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 838,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 839,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 840,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 841,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 842,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 843,
+      "db_id": "superhero",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 844,
       "db_id": "superhero",
       "difficulty": "simple",
       "correct": true,
