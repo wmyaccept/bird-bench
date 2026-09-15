@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 767,
-  "unanswered": 767,
+  "answered": 826,
+  "unanswered": 708,
   "total_questions": 1534,
-  "correct": 637,
+  "correct": 686,
   "ex_percent": 83.05,
-  "ex_percent_full_set": 41.53,
+  "ex_percent_full_set": 44.72,
   "results": [
     {
       "idx": 0,
@@ -387,7 +387,112 @@
       "detail": "ok"
     },
     {
+      "idx": 90,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 91,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 92,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 96,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 97,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 101,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 102,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 103,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 104,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 105,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 106,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 107,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 108,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 109,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 110,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 4 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 111,
       "db_id": "financial",
       "difficulty": "simple",
       "correct": true,
@@ -401,7 +506,315 @@
       "detail": "ok"
     },
     {
+      "idx": 113,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 114,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 121,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 122,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 123,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 124,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 126,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 127,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 132,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 133,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 134,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 139,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 140,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 141,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 77 行 1 列 / 金标 77 行 1 列）"
+    },
+    {
+      "idx": 142,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 33 行 1 列 / 金标 32 行 1 列）"
+    },
+    {
+      "idx": 143,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 146,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 147,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 153,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 154,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 155,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 156,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 157,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 158,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 159,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 160,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 161,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 162,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 164,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 165,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 15140 行 10 列 / 金标 15140 行 1 列）"
+    },
+    {
+      "idx": 166,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 167,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 170,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 172,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 174,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 176,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 177,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 178,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 179,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 181,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 183,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 184,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 187,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 190,
+      "db_id": "financial",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 191,
       "db_id": "financial",
       "difficulty": "simple",
       "correct": true,

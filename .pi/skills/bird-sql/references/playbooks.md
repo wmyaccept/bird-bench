@@ -505,7 +505,13 @@ card ──disp_id── disp
 ```
 - 列名是 **捷克语缩写**：`A2`=区名、`A11`=平均工资、`A4`=人口；`trans.operation` 里
   `'VYBER'`=现金取款、`'VKLAD'`=存款；`trans.type` 里 `'PRIJEM'`=贷方、`'VYDAJ'`=借方。
-- `client.birth_date` 是 `'1976-01-29'`；`account.date` 是 `'930101'`（YYMMDD）。
+- `client.birth_date` 是 `'1976-01-29'`；account.date 是 `'930101'`（YYMMDD）。
+  ⚠️ **这条是 Mini-Dev 版的写法，Dev 版已经全部改成 `'YYYY-MM-DD'`**（实测 trans/loan/card/account 都是）。
+  ⇒ **动手前先跑一句 `SELECT date FROM trans LIMIT 1` 确认，不要照抄旧笔记。**
+- ⚠️ **“list all the transactions …” 金标只给 1 列**（`idx 165`：我 `SELECT *` 给了 10 列 15140 行，金标是 **1 列** 15140 行）。
+- ⚠️ **“how many X **and** Y” 可能是 1 行 2 列**（`idx 172`：owner/disponent 数，金标用
+  `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
+- 实测全量：**62 道 52 对 / 10 错（83.9%）**。
 
 ### toxicology（4 表）
 ```
