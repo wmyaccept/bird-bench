@@ -24,6 +24,8 @@
   不要 `DISTINCT`、也不要顺带把 X 的 id 选出来（`idx 29`）。
 - [ ] 条件里用到的列，**在正确的表上吗**？（见 `naming-traps.md`）
 - [ ] evidence 里的数字和题干矛盾吗？矛盾时以**题干**为准，但 evidence 里的列名仍是线索。
+- [ ] ⚠️ **`SUM/AVG/MAX/...` 旁边还有非聚合列吗？** 有就必须 `GROUP BY`（实测 `dev idx 1467`：
+  “total spent **and the event name**” 写成全表聚合 → 1 行，金标 7 行）。
 - [ ] 列数比题面概念多吗？多出来的那列先试**主键 id**，再试**窗口函数的名次列**（`gold-style.md`）。
 
 ## 反模式（不要做）

@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 548,
-  "unanswered": 986,
+  "answered": 628,
+  "unanswered": 906,
   "total_questions": 1534,
-  "correct": 446,
-  "ex_percent": 81.39,
-  "ex_percent_full_set": 29.07,
+  "correct": 517,
+  "ex_percent": 82.32,
+  "ex_percent_full_set": 33.7,
   "results": [
     {
       "idx": 0,
@@ -3439,6 +3439,48 @@
       "detail": "ok"
     },
     {
+      "idx": 1313,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1314,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1315,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1318,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1319,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1320,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1322,
       "db_id": "student_club",
       "difficulty": "moderate",
@@ -3453,6 +3495,41 @@
       "detail": "ok"
     },
     {
+      "idx": 1325,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1326,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1328,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1329,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1330,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1331,
       "db_id": "student_club",
       "difficulty": "simple",
@@ -3460,7 +3537,28 @@
       "detail": "ok"
     },
     {
+      "idx": 1333,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1334,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1336,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1337,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
@@ -3481,6 +3579,27 @@
       "detail": "ok"
     },
     {
+      "idx": 1341,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1342,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1343,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1344,
       "db_id": "student_club",
       "difficulty": "simple",
@@ -3488,7 +3607,35 @@
       "detail": "ok"
     },
     {
+      "idx": 1345,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1346,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1347,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1348,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1349,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
@@ -3516,6 +3663,27 @@
       "detail": "ok"
     },
     {
+      "idx": 1353,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1354,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1355,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1356,
       "db_id": "student_club",
       "difficulty": "simple",
@@ -3524,6 +3692,13 @@
     },
     {
       "idx": 1357,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1358,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
@@ -3544,6 +3719,41 @@
       "detail": "ok"
     },
     {
+      "idx": 1363,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1364,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1365,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1366,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 23 行 2 列 / 金标 23 行 1 列）"
+    },
+    {
+      "idx": 1367,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1368,
       "db_id": "student_club",
       "difficulty": "simple",
@@ -3551,7 +3761,42 @@
       "detail": "ok"
     },
     {
+      "idx": 1369,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1370,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 11 行 1 列 / 金标 11 行 2 列）"
+    },
+    {
       "idx": 1371,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1372,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1373,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1374,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
@@ -3572,7 +3817,21 @@
       "detail": "ok"
     },
     {
+      "idx": 1377,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1378,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1379,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
@@ -3589,6 +3848,34 @@
       "idx": 1381,
       "db_id": "student_club",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1383,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1384,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1385,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1386,
+      "db_id": "student_club",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
@@ -3614,7 +3901,21 @@
       "detail": "ok"
     },
     {
+      "idx": 1391,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 1392,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1393,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
@@ -3628,9 +3929,51 @@
       "detail": "ok"
     },
     {
+      "idx": 1396,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1397,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1398,
       "db_id": "student_club",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1402,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1406,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1407,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1408,
+      "db_id": "student_club",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
@@ -3656,7 +3999,224 @@
       "detail": "ok"
     },
     {
+      "idx": 1412,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1413,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1414,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1415,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1416,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1417,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1418,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1419,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1420,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1422,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1423,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1424,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1425,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1433,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 9438 行 1 列 / 金标 1424 行 1 列）"
+    },
+    {
+      "idx": 1434,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 17 行 1 列 / 金标 2 行 1 列）"
+    },
+    {
+      "idx": 1436,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 22 行 1 列 / 金标 17 行 1 列）"
+    },
+    {
+      "idx": 1438,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1442,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1443,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1444,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1445,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1446,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1447,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1450,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 33 行 2 列 / 金标 31 行 2 列）"
+    },
+    {
+      "idx": 1459,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1461,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1462,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1463,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1465,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1466,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1467,
+      "db_id": "student_club",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 2 列 / 金标 7 行 2 列）"
+    },
+    {
+      "idx": 1468,
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": true,
