@@ -389,6 +389,21 @@ Patient ──ID── Examination（就诊：Diagnosis / Symptoms / Thrombosis�
 - `Laboratory` 只覆盖 302 个患者（`Patient` 有 1238 个），大量列有 NULL。
 - 化验指标的正常范围在 `database_description` 里（如 `LDH < 500`、`IGG 900~2000`）。
 
+**⚠️⚠️ 全量实测（50 道：30 对 / 20 错，60%）——本库的最大坑是“三张表的 ID 并不真通”**
+
+| 表 | 行数 | 不同 ID | 能 JOIN 上 `Patient` 的行数 |
+|---|---|---|---|
+| `Laboratory` | 13908 | 302 | **13908（全通）** |
+| `Examination` | 806 | 763 | **只有 70**（!!） |
+
+⇒ **`Examination.ID` 与 `Patient.ID` 基本是两套编号**。
+涉及诊断/症状/血栓的题 **先用 `Examination` 单表把结果拿出来**，
+不要顺手 `JOIN Patient`（一 JOIN 就只剩 70 行，`1221` 直接 0 行）。
+
+⚠️ **本库错误率 40%，其中 17 道都是“形状对、值不同”** —— 说明存在系统性口径偏差
+（计数用 `COUNT(*)` 还是 `COUNT(DISTINCT ID)`、要不要 JOIN `Examination`）。
+⇒ 这种库不适合“逐题猜”，应该先做一次**专项口径实验**（把几种计数/JOIN 组合成一行摆出来对比）。
+
 ### codebase_community（8 表）
 ```
 users ──Id──┐

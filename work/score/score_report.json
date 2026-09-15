@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 877,
-  "unanswered": 657,
+  "answered": 920,
+  "unanswered": 614,
   "total_questions": 1534,
-  "correct": 721,
-  "ex_percent": 82.21,
-  "ex_percent_full_set": 47.0,
+  "correct": 745,
+  "ex_percent": 80.98,
+  "ex_percent_full_set": 48.57,
   "results": [
     {
       "idx": 0,
@@ -5133,6 +5133,13 @@
       "detail": "ok"
     },
     {
+      "idx": 1154,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1155,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
@@ -5147,11 +5154,81 @@
       "detail": "ok"
     },
     {
+      "idx": 1159,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1163,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1166,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 1172,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1176,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1177,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1178,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1184,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1188,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1196,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1197,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 1198,
@@ -5161,7 +5238,112 @@
       "detail": "ok"
     },
     {
+      "idx": 1199,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1203,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1204,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1206,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1210,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1214,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1216,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 15 行 1 列 / 金标 15 行 1 列）"
+    },
+    {
       "idx": 1220,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1221,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 0 行 0 列 / 金标 38 行 3 列）"
+    },
+    {
+      "idx": 1222,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1224,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 3 列 / 金标 1 行 4 列）"
+    },
+    {
+      "idx": 1226,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1228,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1230,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1237,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1249,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
@@ -5173,6 +5355,125 @@
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1253,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1260,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1261,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1268,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 3 行 1 列 / 金标 3 行 1 列）"
+    },
+    {
+      "idx": 1276,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1278,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1280,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1282,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 3 行 1 列 / 金标 3 行 1 列）"
+    },
+    {
+      "idx": 1283,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1286,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1288,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1290,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1299,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1301,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1303,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1306,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1310,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1312,
