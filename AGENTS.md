@@ -8,8 +8,15 @@
 ```
 .pi/extensions/bird-sql/index.ts   工具层：7 个 bird_* 工具（TypeScript）
 .pi/skills/bird-sql/
-  SKILL.md                         入口：硬规则 + 7 步流程 + 索引表
-  references/                      方法层：按需加载的 8 份手册（见 SKILL.md 的索引表）
+  SKILL.md                         入口：硬规则 + 7 步工作流（每步绑定"读哪个文件"）
+  references/
+    traps.md                       ★ 写 SQL 时按动作顺序逐条过（SELECT/JOIN/WHERE值/聚合）
+    checklist.md                   ★ 提交前固定 12 条必勾
+    shapes.md                      题型骨架 A1–A10
+    db/<db_id>.md                  ★ 11 个库各一个短档案（顶部"交题前必查 3 条"+ 连接图）
+    diagnosis.md / gold-style.md / scoring.md  出错反推 / 金标写法 / EX 判定
+    sqlite-and-data.md / naming-traps.md / calibration.md  细节展开（卡住再看）
+    casebook.md                    复盘账本（只记账，不放规则）
 tools/bird.py                      后端：唯一直接操作 SQLite 的地方
 tools/setup_data.py                数据准备：下载 + 选择性解压 + 嵌套 zip
  tools/official_eval/              BIRD 官方评测脚本（已打本地补丁）
@@ -20,6 +27,11 @@ work/answers_dev.json              dev 的作答（**与 minidev 分开**，idx 
 work/score/                        评测产物（pred 文件 + 逐题明细）
 SUBMISSION_PLAN.md                 打榜提交方案（待执行；含官方 guideline 全文）
 ```
+
+> **skill 的组织原则**（改的时候别破坏它）：
+> 按**做题的时间轴**组织，而不是按主题分类 —— 每题只读**当前库的 1 个短文件**（`db/<库>.md`），
+> 写 SQL 时对着 `traps.md` 的动作小节查，提交前逐条勾 `checklist.md`。
+> 复盘得到的新规则必须**毕业**到这三个地方之一，不能只留在 `casebook.md`。
 
 ## 两个数据集
 

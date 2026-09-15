@@ -4,71 +4,127 @@ description: 解 BIRD-SQL / Mini-Dev 的 Text-to-SQL 题目。当用户提到 BI
 license: CC BY-SA 4.0（BIRD 数据集遵循此协议）
 ---
 
-# 解 BIRD 题目的工作流
+# 解 BIRD 题的工作流
 
-BIRD 的评测指标是 **EX**：预测 SQL 的结果集与金标 SQL 的结果集**完全相同**才算对。
-本 skill 是入口和索引，**细节都在 `references/` 下按需加载**。
+EX = 预测 SQL 的结果集与金标结果集**完全相同**才算对。
 
-## 硬规则（每次都要遵守）
+⚠️ **本文件是流程主干。按步骤走，每一步都写明了"读哪个文件"—— 不要跳步，也不要凭记忆。**
+（"明明写过却漏了"这件事，是因为旧版把规则堆成索引表；现在每一步都绑死了要读的文件。）
 
-1. **不许偷看金标。** 不读 `data/MINIDEV/mini_dev_sqlite_gold.sql`、不读题目 JSON 的 `SQL` 字段、
-   不用 `bird_question --reveal`。**唯一例外**：一批题做完后的复盘，见
-   [`references/casebook.md`](references/casebook.md)。
-2. **只写只读 SQL。** `bird_query` / `bird_answer` 只接受 `SELECT / WITH / EXPLAIN`，这是工具层的强制约束。
-3. **用 `idx` 当题号，不要用 `question_id`。** 500 题里没有一个 `question_id` 等于它的下标。
-4. **`bird_answer` 和 `bird_score` 不要放在同一批并发调用里** —— 会读到写入前的旧答案，
-   让你看到过期的失败结果。（本项目真踩过。）
-5. **改答案只能通过 `bird_answer`**，不要手写 `work/answers.json`。
-6. **⭐ 分两个阶段：做题时不许思考，思考只在复盘时。**（优先级最高，用户明确要求）
-   - **执行阶段**：读题 → 照 skill（`playbooks.md` 的骨架 / 当前库的连接图）**一次定稿** → 提交。
-   - **复盘阶段**（一批做完 / 用户说“总结”）：才允许推理 —— 看 `bird_score` 的 detail、
-     找根因、写回 `references/`。
-   - **错了就错了**：错题的价值在喂给 skill，不在当场救回来。**不重交**（除非 skill 里有明确依据）。
-   - **硬刹车**：同一题想到**第 2 种候选写法**、或卡住 **~1 分钟**还没定 →
-     立刻提交手上最好的一条，记进挂起清单，做下一题。**绝不“再试一种看看”。**
-   - **唯一允许的“试两次”**：skill 已经写明“先试 A、不行改 B”的情形（如 CSV 的
-     naive join → `CAST` join）。那是机械执行，不是现场权衡。
-   - 理由：套路已经沉淀到 `references/` 里了，现场推演的边际收益极低；
-     而反复权衡会吃掉大部分时间，还会把错误归因搞乱。**错误由复盘来纠正，不靠事前推演。**
+---
 
-## 一条题目的标准流程
+## 硬规则（每题都适用）
 
-按顺序走，不要跳步：
+1. **不许偷看金标**：不读 `mini_dev_sqlite_gold.sql`、不读题目 JSON 的 `SQL` 字段、不用 `--reveal`。
+   **唯一例外**：一批做完后的复盘（见第 7 步）。
+2. **只写只读 SQL**：`SELECT / WITH / EXPLAIN`，工具层强制。
+3. **用 `idx` 当题号**，不要用 `question_id`。
+4. **`bird_answer` 和 `bird_score` 不要放在同一批并发调用里**（会读到写入前的旧答案）。
+5. **改答案只能通过 `bird_answer`**，不手写 `work/answers.json`。
+6. ⭐ **做题时不许思考，思考只在复盘时**：照 skill 一次定稿就提交；同一题想到第 2 种写法、
+   或卡住 ~1 分钟 → 立刻交手上最好的一条、记入挂起清单、做下一题。
+   **绝不"再试一种看看"。** 唯一允许的"试两次"是 skill **已写明**"先试 A 不行改 B"的情形。
 
-1. **`bird_list`** —— 挑题，拿到 `idx`（是题号，不是 `question_id`）。新手先做 `difficulty: "simple"`。
-2. **`bird_question <idx>`** —— 读题干 + **evidence**（evidence 常直接给出口径）。
-3. **认题型、套骨架** —— 先看 [`references/playbooks.md`](references/playbooks.md) 的 A 部分；
-   **进入一个新库时，先读 B 部分的"该库连接图"**，后面几十题都能复用。
-4. **`bird_schema <db_id> table=<关键表>`** —— 列类型、主键、去重样例值 + 人工标注的字段含义。
-5. **`bird_query <db_id> "SELECT ..."`** —— 只读试跑，反复用到确信。
-6. **`bird_answer <idx> "<最终SQL>"`** —— 提交；跑不通会被拒绝并回报错误。
-7. **`bird_score`** —— 看 EX 和错题 detail（解读方法见 `diagnosis.md`）。
+---
 
-> 效率要点：**同库连做**，一批 10–20 题一次提交、一次评分；只在 `bird_score` 报错时才回头推理。
-> 不要一题一探、一题一评。
+## 工作流（7 步）
 
-## 索引：什么时候读哪个文件
+### 第 0 步｜**换新库时先做结构体检**（3 分钟，一次性）
 
-| 你的处境 | 读这个 |
+```sql
+-- 每个库跑一遍，把结果写进 db/<db_id>.md 顶部的"体检单"
+SELECT m.name, (SELECT COUNT(*) FROM pragma_table_info(m.name)) AS cols
+FROM sqlite_master m WHERE m.type='table';
+-- 关键：主键重复度 + 两两 JOIN 的命中率
+SELECT COUNT(*) AS rows_all, COUNT(DISTINCT 主键) AS distinct_pk FROM 表;
+SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最容易被跳过
+```
+
+📖 **读**：`db/<db_id>.md`（**只读当前库那一个文件**，不要翻别的库）
+📤 **产出**：这张库的体检单（尤其 JOIN 命中率——`thrombosis_prediction` 就是靠它发现
+`Examination` 806 行里只有 70 行能连上 `Patient`）
+
+### 第 1 步｜**读题**
+
+`bird_question <idx>` → 题干 + **evidence**。
+📤 **产出**：① 题型 ② evidence 给的口径/阈值/列名（**逐条划出来，后面要对着实现**）
+
+### 第 2 步｜**认题型、套骨架**
+
+📖 **读**：`shapes.md` 的 A 部分（A1–A10）
+📤 **产出**：这道题属于哪个骨架（A1 单属性 / A2 极值 / A4 计数 / A5 列表 / A6 比率 …）
+
+### 第 3 步｜**查当前库的"交题前必查 3 条"**
+
+📖 **读**：`db/<db_id>.md` 顶部的 **⚠️ 交题前必查**
+📤 **产出**：这次写 SQL 要特别防的 3 条（例：`card_games` = ① DISTINCT ② 值首字母大写 ③ `=` vs `LIKE`）
+
+> **这一步是防止"写了没看到"的关键**：库级坑不在长文档里翻，而是每次只读**当前库的 1 个短文件**。
+
+### 第 4 步｜**写 SQL（对着陷阱表逐条过）**
+
+📖 **读**：`traps.md` —— 它不是按主题、而是**按你正在写的部分**组织的：
+写 `SELECT` 看 ①、写 `JOIN` 看 ②、写 `WHERE 值` 看 ③、写聚合看 ④。
+📤 **产出**：SQL
+
+### 第 5 步｜**提交前自检**
+
+📖 **读**：`checklist.md` —— **逐条勾**，不许跳。
+📤 **产出**：提交 or 改（勾不过就改，一次改完直接交，不要反复）
+
+### 第 6 步｜**提交**
+
+`bird_answer <idx> "<SQL>"`（跑不通会被拒绝并回报错误；**列名写错属硬错，直接按真实列名重交**）
+
+### 第 7 步｜**批末复盘**（每批 10–20 题，或一个库做完）
+
+`bird_score` 看 EX + 错题 detail → 📖 读 `diagnosis.md` 按 detail 反推错因。
+**然后必须把结论写进"能被读到的地方"**（这是唯一让你下次不犯同样错的办法）：
+
+| 结论类型 | 写到哪 |
 |---|---|
-| **准备做一批题** ← 开始前先看这个 | [`playbooks.md`](references/playbooks.md)（题型骨架 + 各库连接图） |
-| "这样算对了吗？列顺序、DISTINCT 到底有没有影响？" | [`scoring.md`](references/scoring.md) |
-| "准备提交了，查一遍" | [`checklist.md`](references/checklist.md) |
-| **"`bird_score` 说我错了，为什么？"** | [`diagnosis.md`](references/diagnosis.md) |
-| "我知道行数/列数对不上，但不知道改成什么" | [`diagnosis.md`](references/diagnosis.md) 的"行列反推手册" |
-| "金标返回的形状很奇怪，不合常理" | [`gold-style.md`](references/gold-style.md) |
-| "该用哪张表的哪一列？" | [`naming-traps.md`](references/naming-traps.md) |
-| "形状对了但值算不对" | [`calibration.md`](references/calibration.md) |
-| "SQLite 里这个函数怎么写？这列有脏数据吗？" | [`sqlite-and-data.md`](references/sqlite-and-data.md) |
-| "这题之前错过吗？复盘记录在哪？" | [`casebook.md`](references/casebook.md) |
+| 某个库特有的坑 | `db/<库>.md` 顶部的"交题前必查"（**替换掉三条里最不重要的**，保持只有 3 条） |
+| 通用陷阱（跨库） | `traps.md` 的对应动作小节 |
+| 提交前能拦住的 | `checklist.md`（加一条或改写一条） |
+| 只是"发生过什么" | `casebook.md`（**只记账，不放规则**） |
+
+---
+
+## 出错之后
+
+| 处境 | 读什么 |
+|---|---|
+| "`bird_score` 说我错了，为什么？" | `diagnosis.md`（含"行列反推手册"） |
+| "形状对但值不对，改了还是不对" | `diagnosis.md` 的止损规则 → 通常该去做**口径实验**（见下） |
+| "金标返回的形状很奇怪" | `gold-style.md` |
+| "SQLite 里这个函数怎么写 / 这列有脏数据吗" | `sqlite-and-data.md` |
+| "该用哪张表的哪一列" | `naming-traps.md` |
+| "形状对了但值算不对" | `calibration.md` |
+| "这样算对了吗？列顺序、DISTINCT 有影响吗" | `scoring.md` |
+| "这题之前错过吗" | `casebook.md` |
+
+⚠️ **止损规则**：同一题试过 2 种写法、或 probe 过 2 轮还没定 → **挂起**，继续下一题。
+⚠️ **口径实验**：当**同一批里 ≥30% 的错题都是"形状对、值不同"**时，别再逐题猜 ——
+写一条 SQL 把候选口径（`COUNT(*)` / `COUNT(DISTINCT)` / 不同 JOIN）**并排输出一次**，
+一轮看清（`thrombosis_prediction` 就是这么定位到 ID 体系问题的）。
+
+---
 
 ## 维护约定（改这个 skill 时）
 
-- **新增经验先判断"什么时候会用到它"**，按上面的索引归到对应文件，不要都往 SKILL.md 塞
-  （SKILL.md 会常驻上下文，其他文件按需加载）。
-- 每条经验都要带**实测题号 + 具体数字**（如 "`idx 347`：金标 67 行 = 37+30"），否则以后没法验证。
-- 归纳规则前过一遍收录标准：**这条规则能让我写出更接近金标的 SQL 吗？**
-  只能教你复现一个 bug 的规则不收（例：`idx 222`）。
-- 规则是要改的：`NULL` 排序那条就被 `idx 211` 推翻过一次，现在的写法是"准备两套写法都试"。
-  **发现了反例就立刻改，不要留着自相矛盾的条款。**
-- 改完用 `bird_score` 在**没做过的题**上验证，别只在错题上验证（错题已经"见过答案"了）。
+1. **SKILL.md 只放流程**。新增知识一律按第 7 步的表归位，**不要往这里塞细节**。
+2. **`db/<库>.md` 的"必查"永远只有 3 条**：新坑进来，就要把旧的那条最没用的挤出去
+   （否则又会变成"翻不到"的长文档）。
+3. 每条规则都要带**实测题号 + 数字**（如"387: 187→10"），否则以后无法验证。
+4. 归纳规则前过一遍：**这条能让我写出更接近金标的 SQL 吗？** 只能复现一个 bug 的不收。
+5. **发现了反例就立刻改，不留自相矛盾的条款**（`NULL 排序`、`european_football_2 的 LIMIT 1`
+   都曾经写反过 —— 各被 2–3 道题同时证伪）。
+6. 改完在**没做过的题**上验证，别只在错题上验证（错题已经"见过答案"了）。
+
+### 如果下次又漏了规则，按这 3 条查
+
+1. **漏的规则在哪个文件？** 如果它在 `casebook.md` 里 —— 那是记账本，**做题时本来就不会读**，
+   说明它**没毕业**，立刻搬到 `db/<库>.md`、`traps.md` 或 `checklist.md`。
+2. **它是不是"陈述句"？**（"本库输出要 DISTINCT"）→ 改成**祈使句 + 检查点**
+   （"⚠️ 交题前必查：输出列加 DISTINCT 了吗？"）。
+3. **它是不是藏在长文件中间？** → 拆短，或提到该文件顶部。
