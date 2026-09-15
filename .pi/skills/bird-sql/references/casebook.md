@@ -122,6 +122,45 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 | 16 | 1 行 1 列值不同 | naive / CAST / 按校名 JOIN（=2）都不对 |
 | 51 | 1 行 2 列值不同 | naive join / CAST join 两个不同的学校都不对 |
 
+## 第 17 轮：debit_card_specializing 全量（55 道）—— **925 道 simple 全部完成**
+
+结果：**44 对 / 11 错（80%）**。错题里 7 道是“1 行 1 列值不同”，仍是口径类；
+`1491`（“哪个国家的 value-for-money 加油站更多”金标 1 行 2 列）、`1503`（金标多一列）是列数问题。
+
+### ═════ 总体成绩（2026-09-14）═════
+
+| 难度 | 已答 | 正确 | 已答 EX | 全量 EX |
+|---|---|---|---|---|
+| **simple** | **925 / 925** | **744** | **80.43%** | **80.43%** |
+| moderate | 24 / 464 | 21 | 87.50% | 4.53% |
+| challenging | 0 / 145 | 0 | — | 0% |
+| **合计** | **949 / 1534** | **765** | **80.61%** | **49.87%** |
+
+**分库（simple 口径）排名**：
+
+| 库 | simple EX | | 库 | simple EX |
+|---|---|---|---|---|
+| california_schools | **94.4%** | | financial | 83.9% |
+| superhero | **92.6%** | | toxicology | 82.9% |
+| student_club | **91.1%** | | debit_card_specializing | 79.1% |
+| codebase_community | 88.1% | | formula_1 | 75.2% |
+| | | | european_football_2 | 73.8% |
+| | | | card_games | **62.4%** |
+| | | | thrombosis_prediction | **60.0%** |
+
+### 差距在哪里（结论）
+
+做得好的是“**表少 + 主干连接清楚**”的库（california_schools 3 表、superhero 10 表但星型、
+student_club 8 表四条主干）。做得差的是两类：
+
+1. **宽表 + 一实体多行**（`card_games` 74 列/一卡多版本、`european_football_2` 一球员多快照、
+   `formula_1` 一行一次参赛）—— 卡在 **DISTINCT / 输出去重** 的判断上。
+2. **ID 体系或口径混乱**（`thrombosis_prediction` 的 `Examination.ID ≠ Patient.ID`；
+   `financial` 的支行 vs 居住区）—— 卡在**关联口径**上。
+
+⇒ 下次再打新库，应该**先花 3 分钟做一次“结构体检”**：
+各表行数 / 主键重复度 / 两两 JOIN 命中率。这比逐题猜便宜得多（第 16 轮的教训已验证）。
+
 ## 第 16 轮：thrombosis_prediction 全量（50 道）——定位到“ID 体系不通”
 
 结果：**30 对 / 20 错（60%）**，目前最差。

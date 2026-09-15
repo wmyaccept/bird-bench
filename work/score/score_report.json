@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 1534 (SQLite)",
   "dataset_key": "dev",
-  "answered": 920,
-  "unanswered": 614,
+  "answered": 949,
+  "unanswered": 585,
   "total_questions": 1534,
-  "correct": 745,
-  "ex_percent": 80.98,
-  "ex_percent_full_set": 48.57,
+  "correct": 765,
+  "ex_percent": 80.61,
+  "ex_percent_full_set": 49.87,
   "results": [
     {
       "idx": 0,
@@ -6267,6 +6267,13 @@
       "detail": "ok"
     },
     {
+      "idx": 1470,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 1471,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
@@ -6284,6 +6291,20 @@
       "idx": 1473,
       "db_id": "debit_card_specializing",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1477,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1478,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
@@ -6316,7 +6337,28 @@
       "detail": "ok"
     },
     {
+      "idx": 1485,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1486,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1488,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1489,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
       "correct": true,
@@ -6330,6 +6372,20 @@
       "detail": "ok"
     },
     {
+      "idx": 1491,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 1492,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1493,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
@@ -6337,7 +6393,42 @@
       "detail": "ok"
     },
     {
+      "idx": 1494,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1495,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1496,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1497,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1498,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1499,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
       "correct": true,
@@ -6354,6 +6445,27 @@
       "idx": 1501,
       "db_id": "debit_card_specializing",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1502,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1503,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 7 行 1 列 / 金标 7 行 2 列）"
+    },
+    {
+      "idx": 1504,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
@@ -6379,9 +6491,44 @@
       "detail": "ok"
     },
     {
+      "idx": 1508,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1509,
       "db_id": "debit_card_specializing",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1510,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1511,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1512,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1513,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
@@ -6400,9 +6547,44 @@
       "detail": "ok"
     },
     {
+      "idx": 1517,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1518,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1519,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 1521,
       "db_id": "debit_card_specializing",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1522,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1523,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
@@ -6421,6 +6603,13 @@
       "detail": "ok"
     },
     {
+      "idx": 1527,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 1528,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
@@ -6435,11 +6624,25 @@
       "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
+      "idx": 1530,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
+    },
+    {
       "idx": 1531,
       "db_id": "debit_card_specializing",
       "difficulty": "moderate",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 3 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 1532,
+      "db_id": "debit_card_specializing",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1533,
