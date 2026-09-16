@@ -180,3 +180,84 @@ SELECT 名字 FROM t WHERE 名字 IN ('A','B') ORDER BY 指标 DESC LIMIT 1;
 - 别忘了 `LIMIT` 之前先确认排序键和并列情况。
 
 ---
+
+## A11. 多维度 Profile —— 题干出现 "comprehensive profile / overall statistics / segmented by"
+
+> ★ **这是新版 dev2025 新增的主力题型**（旧版 simple 被改写后大量变成它，多为 challenging）。
+> 实测 5 道（financial 92/96/97/103/104）：**行数/粒度大多对，但金标列数是我猜的 2–3 倍**。
+
+**先定粒度（这部分容易对）：**
+
+| 题干信号 | 粒度 |
+|---|---|
+| "overall statistics" | **聚合成 1 行**（我给了 21 行 → 金标 **1 行**） |
+| "segmented by / breakdown by X, Y, Z" | `GROUP BY X, Y, Z`（我 `GROUP BY` 对了 → 行数刚好 30/14） |
+| "ranked by … within …" | `ROW_NUMBER/RANK() OVER (PARTITION BY …)`，但**行数不变** |
+
+**再定列数（这部分是失分主因）：金标会把每个维度「展开」成多个字段。**
+
+实测的金标列数 —— 都远超“一个维度一个值”的直觉：
+
+| idx | 题干里的维度 | 我给的列 | **金标列数** |
+|---|---|---|---|
+| 96 | 3 个分段 + financial profile | 6 | **11** |
+| 97 | loan + transaction + card + usage | 7 | **18** |
+| 103 | personal + banking + loan + district | 11 | **14** |
+| 104 | 7 个具体概念 | 7 | **14** |
+
+⇒ **动作：题干里每出现一个维度，就把该维度在这张表里能拿到的字段都列上**。
+例如：
+- "loan statistics" → `loan_count` + `total_amount` + `avg_amount` + `status`（不是只给一个 count）
+- "transaction activity" → `trans_count` + `total_volume` + `income` + `expense` + `first_date` + `last_date`
+- "credit card information" → `card_count` + `card_type` + `issued`
+- "personal information" → `client_id` + `gender` + `birth_date`（+ 算出来的 age）
+
+**辅助特征**：
+- 条件多且互相嵌套（"average salary between 6,000 and 10,000, ranking in the top 3 **within their region**, having at least 5 female clients"）
+  → 用 CTE 分层：先筛 → 再窗口函数排名 → 再过滤。
+- evidence 常直接定义**分类规则**（"Young borrower means age < 30 with at least one loan"）
+  → 分类列用 `CASE WHEN`，名字题里怎么写就怎么写（`'Young borrower'` / `'Mature borrower'`）。
+- ⚠️ 这类题**列数几乎无法精确猜中**，先把粒度做对、再把字段尽量展开，剩下的靠复盘积累。
+
+### 📊 实测校准（两批 11 道，dev2025）
+
+**① 粒度（行数）是能练对的：**
+
+| 题干信号 | 实测 |
+|---|---|
+| “overall/comprehensive **statistics**” | **聚合成 1 行**（92: 我 21 行→金标 1 行；111: 我 6 行→金标 1 行） |
+| “**segmented/breakdown** by X,Y,Z” | `GROUP BY` 后行数刚好对（96: 30=30） |
+| “for **each**/all accounts …” | 行级，我 55 行 = 金标 55 行 ✓（121） |
+
+**② 列数：分两种题干形态，差异极大（第三版，实测 16 道）**
+
+| 题干形态 | 列数规律 | 实测 |
+|---|---|---|
+| **“including A, B, C, and D”**（列举**具体概念**） | **精确 = 列举个数**，多给反而错 | 134: 题干列了 6 个（name/region/population/crimes/pct increase/accounts）→ 金标 **正好 6 列**（我给了 8 → 错） |
+| **“including client demographics, transaction activity, …”**（**维度词组**） | 每个维度展开 **3-5 列** | 127: 4 个维度 → 金标 **21 列**（我只给了 14） |
+
+⇒ **动作：先数字符串里的概念个数。**
+- 能数出**具体名词**（name / region / count / ratio / status）→ **一个名词一列，不要自行添加 id**。
+- 数不出（demographics / activity / details / profile 这种“词袋”）→ 把该维度在表里能拿的字段**尽可能铺开**。
+
+其它实测差数：122 (18→15)、124 (13→**17**)、126 (8→**9**)、105 (11→15)、112 (9→14)。
+
+**③ 粒度（第四版，已验证稳）**：16 道里行数全对的占多数，再确认一遍信号：
+
+| 题干信号 | 粒度 |
+|---|---|
+| “overall/comprehensive **statistics**” | **聚合成 1 行**（92、111） |
+| “for loan ID X / for the client who …”（单实体） | **1 行** |
+| “**segmented/breakdown** by X,Y,Z” | `GROUP BY X,Y,Z`（96: 30 行 ✓） |
+| “for accounts with … / for all …” | 行级（124: 122 行 ✓；127: 4167 行 ✓；121: 55 行 ✓） |
+| “**top N … in each district**” | `ROW_NUMBER() OVER (PARTITION BY district_id ORDER BY amount DESC)` 后取 `<= N`（124 ✓） |
+
+**④ 实操中的坑：**
+- 相关子查询写多了会**超时**（121 第一次 `interrupted`）→ 改成 **CTE 预聚合 + LEFT JOIN**：
+  ```sql
+  WITH ta AS (SELECT account_id, COUNT(*) n, SUM(...) inc FROM trans GROUP BY account_id)
+  SELECT ... FROM base b LEFT JOIN ta ON ta.account_id=b.account_id
+  ```
+- 分类列的名字**照抄 evidence**（`'High Activity'`/`'Loan Customer'`/`'Active Customer'`/`'Regular Customer'`）。
+
+---

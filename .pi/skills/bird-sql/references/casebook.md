@@ -140,6 +140,44 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 | 16 | 1 行 1 列值不同 | naive / CAST / 按校名 JOIN（=2）都不对 |
 | 51 | 1 行 2 列值不同 | naive join / CAST join 两个不同的学校都不对 |
 
+## 第 19 轮：重做 dev2025 被改写的题（第一批 16 道，financial）
+
+### 这批题是什么形态（**新版的主力题型**）
+
+旧版 simple 被升级成 challenging 后，题干从“单属性问答”变成**多维度 Profile**：
+
+> “For loan ID 4990, provide a **comprehensive profile** including the borrower's demographics,
+> loan details **with status description**, district economic indicators, and **how this loan ranks**
+> among other loans in the same district.”
+
+特征：多条件嵌套筛选、evidence 直接定义**分类规则**、窗口函数排序、**输出 10–21 列**。
+
+### 16 道的反馈（全部错在“列数”，但每一道都提供了校准数据）
+
+| 阶段 | 我 | 金标 | 学到的 |
+|---|---|---|---|
+| 第一批 5 道 | 3/6/7/11/7 列 | **11/11/18/14/14** | 金标列数是直觉的 2–3 倍 |
+| 第二批 6 道 | 11/14/7/9/11/15 | **15/17/14/14/13/16** | 粒度先对；121 只差 1 列 |
+| 第三批 5 道 | 18/13/8/14/8 | **15/17/9/21/6** | **行数全对了**；列数出现两个方向 |
+
+### 最有价值的四条规律（已写进 `shapes.md` 的 A11）
+
+1. **粒度（行数）是能练对的** —— 第三批 12=12、122=122、4167=4167 全部命中。
+   信号：`overall statistics`→1 行、`segmented by`→GROUP BY、`for accounts with`→行级、
+   `top N in each district`→`ROW_NUMBER() OVER (PARTITION BY …)`。
+2. ⭐ **列数要分两种题干形态**：
+   - “including **A, B, C and D**”（列举具体概念）→ **精确等于个数**（`134` 列了 6 个 → 金标**正好 6**，
+     我多给 2 列就错）
+   - “including **demographics, activity, details**”（维度词袋）→ 每维度展开 3–5 列（`127` 金标 **21 列**）
+3. **相关子查询写太多会超时**（121/122 各失败一次）→ 改成 CTE 预聚合 + `LEFT JOIN`。
+4. 窗口函数不能嵌在标量子查询里（122 报 `misuse of window function`）→ 提到 CTE。
+
+### 诚实评估
+
+**这类题（challenging Profile）的 EX 极难**：列的组合空间很大，而 EX 要求列数与内容全中。
+16 道全错在列数，但**每道都让 A11 骨架更精确了一点** —— 这正是本轮的目的：
+把一个原本完全没骨架的题型，变成“粒度可稳、列数可估”的题型。
+
 ## 第 18 轮：换新版 dev split（2025-11-06）复核
 
 官方 2025-11-13 发布了 `birdsql/bird_sql_dev_20251106`（"cleaner split"）。已接入 `--dataset dev2025`。
