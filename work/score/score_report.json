@@ -1,548 +1,611 @@
 {
   "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
   "dataset_key": "dev2025",
-  "answered": 77,
-  "unanswered": 562,
+  "answered": 86,
+  "unanswered": 526,
   "total_questions": 1534,
-  "correct": 42,
-  "ex_percent": 54.55,
-  "ex_percent_full_set": 2.74,
+  "correct": 63,
+  "ex_percent": 73.26,
+  "ex_percent_full_set": 4.11,
   "results": [
     {
-      "idx": 0,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
+      "idx": 1149,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
       "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 1,
-      "db_id": "california_schools",
+      "idx": 1150,
+      "db_id": "thrombosis_prediction",
       "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1151,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1152,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1153,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1154,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1155,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1156,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1157,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1158,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1159,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1160,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1162,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1163,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1164,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1165,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1166,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1167,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1170,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1172,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1174,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1175,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1176,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1177,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1178,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1179,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 1180,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1181,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1182,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1184,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1186,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 32 行 1 列 / 金标 5 行 1 列）"
+    },
+    {
+      "idx": 1187,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1188,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1193,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1195,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1196,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1197,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 1198,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1199,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1200,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1201,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1203,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1204,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1205,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1206,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1207,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1208,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1209,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1210,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1211,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 68 行 2 列 / 金标 65 行 2 列）"
+    },
+    {
+      "idx": 1212,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1213,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1214,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1215,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1216,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 15 行 1 列 / 金标 15 行 1 列）"
+    },
+    {
+      "idx": 1217,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1218,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1219,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1220,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1221,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 0 行 0 列 / 金标 38 行 3 列）"
+    },
+    {
+      "idx": 1222,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1224,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 3 列 / 金标 1 行 4 列）"
+    },
+    {
+      "idx": 1225,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 2 列 / 金标 10 行 2 列）"
+    },
+    {
+      "idx": 1226,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1228,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1230,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1237,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1249,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1251,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1253,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1260,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1261,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1268,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 3 行 1 列 / 金标 3 行 1 列）"
     },
     {
-      "idx": 2,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 5 行 1 列 / 金标 5 行 14 列）"
-    },
-    {
-      "idx": 3,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
-    },
-    {
-      "idx": 4,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 5,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 4 行 13 列）"
-    },
-    {
-      "idx": 6,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 15 列）"
-    },
-    {
-      "idx": 7,
-      "db_id": "california_schools",
+      "idx": 1276,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 8,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 10 行 16 列）"
-    },
-    {
-      "idx": 9,
-      "db_id": "california_schools",
+      "idx": 1278,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 10,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 15 列）"
-    },
-    {
-      "idx": 11,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 7806 行 1 列 / 金标 4954 行 12 列）"
-    },
-    {
-      "idx": 13,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 9 列）"
-    },
-    {
-      "idx": 14,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 15,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 16,
-      "db_id": "california_schools",
+      "idx": 1280,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 17,
-      "db_id": "california_schools",
+      "idx": 1282,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同、首列也对得上，但整行元组不同（预测 50 行 3 列 / 金标 50 行 3 列，多出 50 组 / 少 50 组）—— 大概率是列顺序或多选了列"
+      "detail": "行数相同但取值不同（预测 3 行 1 列 / 金标 3 行 1 列）"
     },
     {
-      "idx": 18,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
-    },
-    {
-      "idx": 19,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 12 列）"
-    },
-    {
-      "idx": 20,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
-    },
-    {
-      "idx": 21,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
-    },
-    {
-      "idx": 22,
-      "db_id": "california_schools",
+      "idx": 1283,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 23,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 24,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 999 行 1 列 / 金标 1068 行 1 列）"
-    },
-    {
-      "idx": 25,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 60 行 2 列 / 金标 6 行 2 列）"
-    },
-    {
-      "idx": 26,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 6 行 5 列 / 金标 6 行 5 列）"
-    },
-    {
-      "idx": 27,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 29,
-      "db_id": "california_schools",
+      "idx": 1286,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 30,
-      "db_id": "california_schools",
+      "idx": 1288,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 33,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 3 行 2 列 / 金标 2 行 2 列）"
-    },
-    {
-      "idx": 34,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 35,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 37,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 38,
-      "db_id": "california_schools",
+      "idx": 1290,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 39,
-      "db_id": "california_schools",
+      "idx": 1299,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 40,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
+      "idx": 1301,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1303,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1306,
+      "db_id": "thrombosis_prediction",
+      "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 41,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 42,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 43,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 44,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 46,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 47,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 48,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 49,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "列数不同（预测 879 行 2 列 / 金标 858 行 3 列）"
-    },
-    {
-      "idx": 50,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 51,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "预测 SQL 执行失败: OperationalError: interrupted"
-    },
-    {
-      "idx": 52,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 53,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 32 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 54,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 56,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 57,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 58,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 59,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 60,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 2 行 1 列 / 金标 2 行 15 列）"
-    },
-    {
-      "idx": 61,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 3 行 17 列）"
-    },
-    {
-      "idx": 63,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 64,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 65,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 66,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 7 行 17 列）"
-    },
-    {
-      "idx": 67,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 68,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 3 行 1 列）"
-    },
-    {
-      "idx": 69,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 12 列）"
-    },
-    {
-      "idx": 70,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 71,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 72,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 73,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 74,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 75,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 76,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 78,
-      "db_id": "california_schools",
-      "difficulty": "challenging",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 12 列）"
-    },
-    {
-      "idx": 80,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 81,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 3 列 / 金标 1 行 3 列）"
-    },
-    {
-      "idx": 82,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 84,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 85,
-      "db_id": "california_schools",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 86,
-      "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 88,
-      "db_id": "california_schools",
+      "idx": 1310,
+      "db_id": "thrombosis_prediction",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"

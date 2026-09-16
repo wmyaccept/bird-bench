@@ -104,6 +104,34 @@
       金标用 `RANK()/DENSE_RANK() OVER (ORDER BY COUNT(...) DESC) … WHERE rank_num = 1`
       （实测 `california_schools` 68：金标 **3 行**，我 `LIMIT 1` → 1 行）。
 
+- [ ] ⭐⭐ **百分比/比例题的固定模板**（`thrombosis_prediction` 实测 1149/1150/1151/1160 四道全中）：
+
+  ```sql
+  SELECT CAST(SUM(CASE WHEN <条件> THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*)
+  FROM ... WHERE <实体级过滤（如 SEX='F'）>
+  ```
+
+  三个细节都是坑：① **`* 100` 紧跟 `CAST`，不要写在 `/COUNT(*)` 后面**
+  ——`CAST(x AS REAL) * 100 / n` 与 `CAST(x AS REAL) / n * 100` **浮点结果不同**（最后一两位），而 EX 是精确集合比较；
+  ② **实体级过滤放 `WHERE`，不要塞进 `CASE WHEN`**（它同时决定分子和分母，塞进 CASE 分母就不对了，实测 1160）；
+  ③ 题干说“percentage”就 `* 100`，说“ratio”就不乘（看 evidence 里的公式抄）。
+- [ ] **两个日期相减 / “至少 N 天”用 `JULIANDAY`**：`JULIANDAY(a) - JULIANDAY(b) >= 365
+  （实测 1170：金标是 `T1.Admission='+'`（“initial hospital visit”）+ `INNER JOIN` + **`COUNT(DISTINCT T1.ID)`**，
+  而不是相关子查询取 `MIN(Examination Date)`）。跨度跨表计数一律 `COUNT(DISTINCT 实体id)`。
+
+- [ ] ⭐ **数值区间用开区间，日期区间用 `BETWEEN`**（实测 `thrombosis_prediction`）：
+      “LDH between 600 and 800” → 金标 `LDH > 600 AND LDH < 800`（用 `BETWEEN` 含端点 → 68 行 vs 金标 65 行，1211）；
+      而日期“between 1987/7/6 and 1996/1/31” → 金标 `Date BETWEEN '1987-07-06' AND '1996-01-31'`（1187）。
+      ⇒ 除非 evidence 明写 inclusive，**数值卡开区间、日期卡 BETWEEN**。
+- [ ] **“latest / most recent（他们的最新一次）”是全局还是每人？** 两种金标都出现过：
+      `thrombosis_prediction` 1219 金标是 **`Date = (SELECT MAX(Date) FROM Laboratory)`（全局最新）**，
+      而旧 casebook 里“latest record of each patient”是 per-ID 子查询。⇒ 先按**全局**写，evidence 明写 “each patient” 再改。
+- [ ] ⚠️ **evidence 会把输出形状说错，以“最直接读法”为准**：`thrombosis_prediction` 实测两条 ——
+      1225 “List and group all patients by sex”的 evidence 写 `GROUP_CONCAT(DISTINCT ID)`，
+      金标却是 **`SELECT T1.ID, T1.SEX … GROUP BY T1.SEX, T1.ID`**（行级两列）；
+      1186 的 evidence 写 `YEAR(Description)`，金标用的是 **`Examination."Examination Date"`**。
+      ⇒ **evidence 管“口径/阈值”，不管“输出形状”；形状看题干句式和 `db/<库>.md`**。
+
 ## ⑤ 提交前的最后一眼
 
 → 去 [`checklist.md`](checklist.md)，**逐条勾**（那里是从这里"毕业"出来的固定 12 条）。

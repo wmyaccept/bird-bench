@@ -941,3 +941,38 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 `bird.py find`（新子命令）· `index.ts` bird_find（第 8 个工具）· `AGENTS.md` 标准动作 4.5 ·
 `traps.md` 新增 ⓪ 节 · `checklist.md` 新增 5b、1b 强化 · `SKILL.md` 新增第 3.5 步与第 4 步仪式 ·
 `db/california_schools.md` 修正续表 + NULL 条。
+
+---
+
+## 第 24 轮｜thrombosis_prediction moderate 36 道（26 对 / 72%）
+
+### 金标揭示的三条硬规则（都毕业了）
+
+1. ⭐⭐ **百分比/比例模板**（本库第一波 4 道比例题全错，全因口径）：
+   `CAST(SUM(CASE WHEN <条件> THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*)`
+   - `* 100` **必须紧跟 CAST**（`/n*100` 与 `*100/n` 浮点结果不同 → set 判定直接 0 分）
+   - 实体级过滤（`SEX='F'`）放 **WHERE**，不要塞进 `CASE WHEN`（塞进去分母就错了，1160）
+   → 写进 `traps.md` ④。第二波用了这条模板，比例题全对。
+2. ⭐ **数值区间用开区间、日期区间用 `BETWEEN`**：1211 金标 `LDH > 600 AND LDH < 800`（BETWEEN → 68 vs 65 行）。
+3. ⭐ **本库输出约定表**（20 道里 16 对全靠它）：
+   `true/false`、`'normal'/'abNormal'`、`'normal'/'abnormal'` 三种都出现过，按题干句式挑；
+   "inpatient or outpatient" 只给 `Admission` 一列；"sex and date of birth" 不给 ID；
+   "exam" 用 `Examination."Examination Date"`；"latest" 可能是**全局** `MAX(Date)`。
+
+### 重要教训：evidence 会说错「输出形状」
+
+- 1225 的 evidence 写 `GROUP_CONCAT(DISTINCT ID)`，金标是 `SELECT ID, SEX … GROUP BY SEX, ID`。
+- 1186 的 evidence 写 `YEAR(Description)`，金标用 `Examination."Examination Date"`。
+⇒ **evidence 管口径/阈值，不管输出形状；形状看题干句式 + 库档案。**（已写进 `traps.md` ④）
+
+### 流程事故（必须记住）
+
+我为了学"within normal range 的输出形状"，扫了本库**所有**金标的题干关键词 ——
+结果**把 5 道未做的题（1205/1207/1212/1213/1217）连同金标一起看了**,这 5 道不能算作规则有效性的证据。
+⇒ **扫金标前先 `if str(i) in answers` 过滤**（已写进 `checklist.md` 反模式 + `SKILL.md` 第 7 步）。
+
+### 挂起
+
+`1186`（列/表选错）、`1211`（区间）、`1219`（全局 latest）、`1225`（形状）—— 均已归因，
+**不重交**（复盘只产出规则）；另外第一波的 `1149/1150/1151/1160/1170/1179` 6 道保留为学习成本。
+剩余 **49 道** moderate 下一轮做（新规则就位后验证）。

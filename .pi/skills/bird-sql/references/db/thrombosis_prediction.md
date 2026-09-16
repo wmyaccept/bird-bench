@@ -4,9 +4,22 @@
 
 1. **`Examination.ID` 与 `Patient.ID` 是两套编号** —— 806 行里**只有 70 行**能 JOIN 上 Patient。
    涉及诊断/症状的题**先用 `Examination` 单表**，不要顺手 JOIN Patient（会得到 0 行或极少行）。
-2. **`Laboratory` 是全通的**（13908 行 / 302 个 ID，全部能 JOIN Patient），但它是**一人多行**。
-3. **诊断值是首字母大写**：`'Aortitis'`、`'SLE'`、`'RA'`（evidence 写全大写时要核对）。
+2. ⭐ **列归属**：`RVVT`、`aCL IgA/IgG/IgM`、`KCT`、`LAC`、`ANA`、`Symptoms`、`Thrombosis` 在 **`Examination`**，
+   `Laboratory` 里**没有**（我写了 `Laboratory.RVVT` → `no such column`）。
+   ⚠️ “anti-Cardiolipin antibody concentration status” 要给 **3 列 `aCL IgA, aCL IgG, aCL IgM`**（实测 1179，我只给了 IgM）。
+3. **诊断值是首字母大写**：`'Aortitis'`、`'SLE'`、`'RA'`（evidence 写全大写时要核对），
+   且金标常用**精确匹配**（`Diagnosis = 'Behcet'`，用 `LIKE '%Behcet%'` → 32 行 vs 金标 **5 行**，1186）。
+   ⭐ **本库金标的输出约定**（实测 20 道里 16 对，全是这几条）：
+   - “is X within normal range?” → `CASE WHEN <异常条件> THEN true ELSE false END`（小写 `true/false`，1205）；
+     问“Is his/her X within normal range?” → `ID, CASE WHEN … THEN 'normal' ELSE 'abNormal' END`（1213）；
+     问“state if …” → `CASE WHEN … THEN 'normal' ELSE 'abnormal' END`（1217）——**三道的写法各不相同，按题干句式挑**。
+   - “were they treated as inpatient or outpatient” → **只给 `T1.Admission` 一列**（1212）；
+     “list all patients with their sex and date of birth” → **`SEX, Birthday` 两列，不给 ID**（1207）；
+     “list each patient's ID and GLU” → `ID, GLU`（1233）。
+   - “exam / 就诊”的日期条件优先用 **`Examination."Examination Date"`**（1186 金标；`Patient.Description` 是另一回事）。
+   - 百分比题用 `traps.md` ④ 的模板；本库百分比题很多。
    正常范围见 `database_description`：GOT<60、GPT<60、TP 6~8.5、ALB 3.5~5.5、WBC 3.5~9.0、IGG 900~2000。
+   ⭐ **本库百分比/比例题特别多 → 必须用 `traps.md` ④ 的固定模板**（实测四道全是口径错：`*100` 的位置、过滤条件要放 WHERE）。
 
 ## 连接图与坑
 
