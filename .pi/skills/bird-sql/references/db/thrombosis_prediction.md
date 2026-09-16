@@ -51,3 +51,58 @@ Patient ──ID── Examination（就诊：Diagnosis / Symptoms / Thrombosis�
 比较前要 `CAST(REPLACE(REPLACE(CAST(col AS TEXT),'<',''),'>','') AS REAL)`，
 否则 `'<5'` 会被 CAST 成 0，把不该命中的行算进来。
 另：**“latest record of each patient” 要 `Date=(SELECT MAX(Date) FROM Laboratory WHERE ID=...)`**。
+
+---
+
+## 补充（第 24 轮实测 40 道 moderate）
+
+- ⭐ **`U-PRO`（尿蛋白）比较必须 `CAST(... AS REAL)`**：原值带 `<`/`>` 前缀，直接 `> 0 AND < 30` → 24 行；
+  金标 `CAST("U-PRO" AS REAL) > 0 AND CAST(...) < 30` → 19 行（1250）。
+- ⭐ **“data first recorded in YYYY” = `Patient."First Date"`**（不是 `Description`；1233 金标）。
+  而 “exam / 就诊检查的日期” = `Examination."Examination Date"`（1186）。**`Description` 不是日期列的正解。**
+- ⭐ **“how many patients” → `COUNT(T1.ID)`**（Patient JOIN Laboratory，患者数 ≠ 实验行数；1245/1252）。
+- 区间默认**闭区间**（1252 IGG `BETWEEN 900 AND 2000`；1248 FG `<=150 OR >=450`），1211 LDH 是开区间例外。
+- 年份比较一律用**字符串**（`>= '1990'`），写整数会因类型序恒真（1254）。
+- 计数题的金标结构几乎都是三表：`Patient T1 INNER JOIN Laboratory T2 ON T1.ID=T2.ID [INNER JOIN Examination T3 ON T3.ID=T2.ID]`。
+
+### ⭐ 抗体列（aCL/RVVT/KCT/LAC/ANA/RNP/SM/SC170/SSA/SSB/CENTROMEA/DNA）的读写约定
+
+- **真实取值只有 `'negative'` 和 `'0'` 两种“正常”写法**（外加 NULL 与数字字符串）——实测：
+  `RNP: NULL,'0','1','256','negative','16','64'`、`CENTROMEA: NULL,'0','negative'`。
+- 所以：**normal → `X IN ('negative','0')`**（1265/1267/1273 金标）；
+  ⚠️ **abnormal → 照抄 evidence 的原文 `X NOT IN ('-','+-')`，不要翻译成 `NOT IN ('negative','0')`**！
+  库里根本**没有** `'-'`/`'+-'` 这两个值 → `NOT IN ('-','+-')` 实际等于“几乎全部行”，
+  而翻译成 `NOT IN ('negative','0')` 会剔掉正常行 → 结果不同（1266 金标实测）。
+- **诊断值一律 `=` 精确匹配**：`Diagnosis = 'APS'` 不是 `LIKE '%APS%'`（1264：LIKE 多出组合诊断行）。
+- ⭐ **“diagnosed with X” 一律用 `Patient.Diagnosis`**，哪怕题干写 “in the examination”（1273 金标用的是 `T1.Diagnosis`＝Patient）。
+
+### ⚠️ 金标自身有 OR/AND 缺括号的 bug（实测 3 次：1248 / 1265 / 1219）
+
+- 形态：条件写成 `T2.RNP = 'negative' OR T2.RNP = '0' AND T1.Admission = '+'`
+  —— 没括号 ⇒ 实际语义是 `'negative' OR ('0' AND Admission='+')`，我写成带括号的 `IN (…) AND …` → 计数不同。
+- 同样形态：1248 `FG <= 150 OR FG >= 450 AND Birthday > '1980-01-01'`、1219 的 `(F AND a) OR (M AND b AND c)`。
+- ⇒ **遇到“两值之一 AND 另一条件”的结构，按金标的无括号写法写**（得分优先；语义上确实是金标错）。
+
+### 计数题的金标结构（⭐ 第 25 轮修正：上一版结论写反了！）
+
+**实测 6 道（1287/1289/1298/1304 支持，1267/1308 例外），绝大多数长这样：**
+
+```sql
+SELECT COUNT(DISTINCT T1.ID) FROM Patient T1
+  INNER JOIN Laboratory T2 ON T1.ID = T2.ID
+  [INNER JOIN Examination T3 ON T1.ID = T3.ID]
+WHERE <T1 上的条件> AND <T2/T3 上的条件>
+```
+
+- ⭐⭐ **`Patient` 永远是 T1，`Examination` 永远是 T3** —— 即使条件在
+  Thrombosis / Symptoms / ANA Pattern / KCT / RVVT / aCL 上（1287/1289/1298/1304 四道金标全是这形状）。
+- ⭐ **“how many patients” 默认 `COUNT(DISTINCT T1.ID)`**（患者数），
+  只有金标根本不用 Patient 表时才 `COUNT(T1.ID)` 无 DISTINCT（1267/1308 是这种例外）。
+- ⚠️ **换 T1 会改变候选集，直接改变答案**：`Examination.ID` 只有 **70** 个能连上 Laboratory/Patient，
+  而 `Laboratory` 有 302 个 —— 所以“最高 TG 的患者的 Diagnosis”（1300）这类极值题，
+  用 `Examination T1 JOIN Laboratory T2` 和 `Patient T1 JOIN Laboratory T2` **取到的不是同一批行**。
+- **`Diagnosis` 用哪张表的**：Patient 参与 → `Patient.Diagnosis`（1273）；
+  Patient 不参与（Examination+Laboratory 的极值/属性题）→ `Examination.Diagnosis`（1300 金标）。
+
+- ⭐ **诊断名一律 `=` 精确**（1264 `='APS'`、1289 `='SJS'` 金标；用 `LIKE '%X%'` 会吃进组合诊断行）；
+  唯一例外是 `SLE` 有时写 `LIKE '%SLE%'`（1279）——两种在无组合行时结果相同。

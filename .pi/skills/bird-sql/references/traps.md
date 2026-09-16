@@ -114,15 +114,24 @@
   三个细节都是坑：① **`* 100` 紧跟 `CAST`，不要写在 `/COUNT(*)` 后面**
   ——`CAST(x AS REAL) * 100 / n` 与 `CAST(x AS REAL) / n * 100` **浮点结果不同**（最后一两位），而 EX 是精确集合比较；
   ② **实体级过滤放 `WHERE`，不要塞进 `CASE WHEN`**（它同时决定分子和分母，塞进 CASE 分母就不对了，实测 1160）；
-  ③ 题干说“percentage”就 `* 100`，说“ratio”就不乘（看 evidence 里的公式抄）。
+  ③ 题干说“percentage”就 `* 100`，说“ratio”就不乘；
+  ④ ⚠️ **不要信 evidence 里的乘数**：1279 的 evidence 写 `MULTIPLY(…, 1.0)`，金标却是 `* 100.0` ——
+     题干说 percentage 就一律 `* 100`（写成 `* 100.0` 或 `* 100 /` 均可）。
 - [ ] **两个日期相减 / “至少 N 天”用 `JULIANDAY`**：`JULIANDAY(a) - JULIANDAY(b) >= 365
   （实测 1170：金标是 `T1.Admission='+'`（“initial hospital visit”）+ `INNER JOIN` + **`COUNT(DISTINCT T1.ID)`**，
   而不是相关子查询取 `MIN(Examination Date)`）。跨度跨表计数一律 `COUNT(DISTINCT 实体id)`。
 
-- [ ] ⭐ **数值区间用开区间，日期区间用 `BETWEEN`**（实测 `thrombosis_prediction`）：
-      “LDH between 600 and 800” → 金标 `LDH > 600 AND LDH < 800`（用 `BETWEEN` 含端点 → 68 行 vs 金标 65 行，1211）；
-      而日期“between 1987/7/6 and 1996/1/31” → 金标 `Date BETWEEN '1987-07-06' AND '1996-01-31'`（1187）。
-      ⇒ 除非 evidence 明写 inclusive，**数值卡开区间、日期卡 BETWEEN**。
+- [ ] ⭐⭐ **`STRFTIME`/`LIKE` 的结果是字符串，年份比较必须用字符串字面量**：
+      `STRFTIME('%Y',x) >= 1990`（整数）在 SQLite 里**恒为真**（两个无 affinity 的操作数按存储类排序：数字 < 文本），
+      必须写 `>= '1990'`。实测 1254：写成 `>= 1990` → 年份过滤完全失效 → 计数错（金标 `>= '1990'`）。
+- [ ] ⭐ **“how many patients” 的计数单位是 `COUNT(T1.ID)`**（`Patient JOIN Laboratory` = **有记录的患者数**），
+      不是 `COUNT(*)`（那是实验记录**行数**）。实测 1245 金标 `COUNT(T1.ID)`。
+      evidence 写 `DIVIDE(COUNT(ID)…)` 或 “should compute the number of distinct ones” 时才用 `COUNT(DISTINCT …)`。
+- [ ] **数值区间默认按“闭区间”写**：normal → `BETWEEN a AND b`（实测 1252 IGG 900~2000）；
+      abnormal → `<= a OR >= b`（实测 1248 FG 150/450）；日期 → `BETWEEN`（实测 1187）。
+      **例外**：1211 LDH 金标用 `> 600 AND < 800`。⇒ 别为端点反复试，默认闭区间。
+- [ ] **题干的“反义词”优先于 evidence**：`inactivated partial prothrombin time` = APTT **异常**（`APTT >= 45`），
+      而 evidence 给的是 normal 阈值 `< 45` —— 照抄方向就错（实测 1245）。
 - [ ] **“latest / most recent（他们的最新一次）”是全局还是每人？** 两种金标都出现过：
       `thrombosis_prediction` 1219 金标是 **`Date = (SELECT MAX(Date) FROM Laboratory)`（全局最新）**，
       而旧 casebook 里“latest record of each patient”是 per-ID 子查询。⇒ 先按**全局**写，evidence 明写 “each patient” 再改。
