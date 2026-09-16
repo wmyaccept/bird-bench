@@ -252,7 +252,14 @@ SELECT 名字 FROM t WHERE 名字 IN ('A','B') ORDER BY 指标 DESC LIMIT 1;
 | “for accounts with … / for all …” | 行级（124: 122 行 ✓；127: 4167 行 ✓；121: 55 行 ✓） |
 | “**top N … in each district**” | `ROW_NUMBER() OVER (PARTITION BY district_id ORDER BY amount DESC)` 后取 `<= N`（124 ✓） |
 
-**④ 实操中的坑：**
+**⑤ EX 判定是 `set(预测) == set(金标)`（官方 + 本地同口径）—— 列数必须精确相等。**
+
+⇒ **不存在“多给几列保险”这回事**：多给、少给、换顺序都是 0 分。
+⇒ 所以 A11 的动作顺序是：**先把粒度做对（已能稳），再押列集合**；
+   列集合押不中就一个字都不差。列数 > 10 的词袋型题目**本质上不可猜**，
+   别在同一题上反复试 —— 把力气花在**列举型**（能数出个数的那种）。
+
+**⑥ 实操中的坑：**
 - 相关子查询写多了会**超时**（121 第一次 `interrupted`）→ 改成 **CTE 预聚合 + LEFT JOIN**：
   ```sql
   WITH ta AS (SELECT account_id, COUNT(*) n, SUM(...) inc FROM trans GROUP BY account_id)

@@ -4,9 +4,9 @@
   "answered": 949,
   "unanswered": 585,
   "total_questions": 1534,
-  "correct": 697,
-  "ex_percent": 73.45,
-  "ex_percent_full_set": 45.44,
+  "correct": 698,
+  "ex_percent": 73.55,
+  "ex_percent_full_set": 45.5,
   "results": [
     {
       "idx": 0,
@@ -538,7 +538,7 @@
       "db_id": "financial",
       "difficulty": "challenging",
       "correct": false,
-      "detail": "列数不同（预测 82 行 3 列 / 金标 31 行 12 列）"
+      "detail": "列数不同（预测 31 行 16 列 / 金标 31 行 12 列）"
     },
     {
       "idx": 124,
@@ -587,21 +587,21 @@
       "db_id": "financial",
       "difficulty": "challenging",
       "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 2 行 12 列）"
+      "detail": "列数不同（预测 2 行 8 列 / 金标 2 行 12 列）"
     },
     {
       "idx": 140,
       "db_id": "financial",
       "difficulty": "challenging",
       "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 9 列）"
+      "detail": "行数相同、首列也对得上，但整行元组不同（预测 1 行 9 列 / 金标 1 行 9 列，多出 1 组 / 少 1 组）—— 大概率是列顺序或多选了列"
     },
     {
       "idx": 141,
       "db_id": "financial",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 77 行 1 列 / 金标 77 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 142,
@@ -615,14 +615,14 @@
       "db_id": "financial",
       "difficulty": "challenging",
       "correct": false,
-      "detail": "列数不同（预测 88 行 1 列 / 金标 88 行 19 列）"
+      "detail": "列数不同（预测 88 行 15 列 / 金标 88 行 19 列）"
     },
     {
       "idx": 146,
       "db_id": "financial",
       "difficulty": "challenging",
       "correct": false,
-      "detail": "列数不同（预测 85 行 1 列 / 金标 85 行 17 列）"
+      "detail": "列数不同（预测 85 行 14 列 / 金标 85 行 17 列）"
     },
     {
       "idx": 147,
