@@ -850,3 +850,36 @@ financial 25 / california_schools 23（本轮做完）/ debit_card 5。
 ⭐ **观察：moderate 的错题里“形状完全正确、只有值不同”的比例很高（5/12）**——
 这类是“极值题选中了另一行”，**没有可以从形状反推的信号**，只能靠猜口径，
 属于天然的挂起项。⇒ moderate 不要把时间花在这种题上。
+
+---
+
+## 第 22 轮｜⭐ 挂起清单集中复盘（california_schools 12 道 → 12/12 归因）
+
+做法：把挂起题**一次性**拉出来，和金标 SQL 并排看（复盘例外）→ **按类**归因，不按题。
+
+| 错因类 | 题 | 金标 vs 我的写法 |
+|---|---|---|
+| **概念→列映射错**（最大头，6 道） | 1, 25, 26, 65, 85 | 「continuation school / type of educational option」→ **`frpm."Educational Option Type"`**（我用 `School Type` / `schools.EdOpsName`）；「in Riverside」→ `frpm."District Name" LIKE 'Riverside%'`（我用 `County`）；「locally funded charter」→ `schools.Charter=1 + schools.FundingType`（我用 frpm 那套）；「district code」→ **`frpm."District Code"`**（我用 `schools.DOC`）；「high school」→ `"School Type" = 'High Schools (Public)'` **精确值** + `FRPM Count (Ages 5-17)` |
+| **列序错** | 81, 33 | 81：列集合全对，只有顺序反了（题干顺序 `City, Low Grade, School`）；33：金标是 `Website, School Name` |
+| **NULL 未排除** | 40, 43 | 金标 `WHERE AvgScrRead IS NOT NULL … ORDER BY … LIMIT 1`；**这条规则 traps.md 早就写了** —— 教训是"写了不勾 = 白写" |
+| **“if there are any” 误读** | 33 | 「websites … if there are any」= 要 `Website IS NOT NULL`（3 行 → 2 行） |
+| **JOIN 绕弯路** | 24 | 金标 `satscores.cds = frpm.CDSCode` 直连；我绕了 `schools` → 999 vs 金标 1068 |
+| **并列未保留** | 68 | 金标 `DENSE_RANK() … = 1` → **3 行**；我 `LIMIT 1` → 1 行 |
+| **学区行未排除** | 49 | `School IS NOT NULL`（金标 858 行 vs 我 879 行）+ 3 列（County 在最前） |
+
+### 结论（回答"为什么会挂起"）
+
+1. **没有一道是"运气"**：12 道全部落进上面 7 类，**同类的可以只用一条规则覆盖**（概念→列映射一类就吃 6 道）。
+2. 挂起的**真实成因是"规则没进强制清单"**：`40/43` 的 NULL 规则 `traps.md` ④ 早就写了、
+   `49` 的学区行旧版必查里也有 —— 但都被我"重建必查 3 条"时挤掉/漏勾。
+   ⇒ **毕业 ≠ 写进文件，还要进 `checklist.md`**（提交前真的会过一遍的那 12 条）。
+3. **集中复盘是目前单次收益最高的动作**：一次看 12 条金标，产出 7 条规则，
+   其中 3 条是跨库通则（列序、NULL、并列）→ 下个库立刻用得上。
+
+### 本轮毕业（写回的地方）
+
+- `checklist.md`：新增 **1b 列序 = 题干顺序**、**4b “if there are any” → IS NOT NULL**、
+  **11b 并列第一用 RANK/DENSE_RANK**；**11** 把 NULL 规则提到显眼处（不再埋在括号里）。
+- `traps.md`：① 加列序；③ 加 “if there are any”；④ NULL 规则改写（两种金标写法）+ 并列第一。
+- `SKILL.md` 第 7 步：新增 **「挂起清单集中复盘」固定动作**（含"绝不许把金标拼回 answers.json"）。
+- `db/california_schools.md`：必查 1 改成**概念→列映射表**（10 行，逐条带实测题号）。

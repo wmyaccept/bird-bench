@@ -10,6 +10,11 @@
       金标多给（`toxicology` 264「labels for A, B and C」→ **2 列**，多一个实体 id）、
       金标拼接（`financial` 1000「full location」→ 1 列）。
       ⇒ **拿不准时，题干里每个名词都给一列。**
+- [ ] **1b. 列顺序 = 题干提到的顺序？**（**光列数对还不够，`set()` 判定会因列序不同判 0**）
+      实测 `california_schools` 81：列集合完全一样，只因我按 `School, City, Low Grade` 排、
+      金标按题干顺序 `City, Low Grade, School` 排，就成了 ❌。
+      ⇒ **写 `SELECT` 时按题干从左到右出现的顺序列字段**（“In which city… what is its lowest grade… Indicate the school name”
+      → City, Low Grade, School）。
 - [ ] **2. 行数量级对吗？** 心里估一下：问"哪个/谁"→ 通常 1 行；"列出 X"→ 几十行；
       "多少 X"→ 1 行 1 列。**对不上量级就是口径或 JOIN 错了**，别硬交。
 - [ ] **3. 要不要 `DISTINCT`？** ← 看 `db/<当前库>.md` 的"必查"。
@@ -20,6 +25,9 @@
 
 - [ ] **4. 结果是空的吗？** 空 = JOIN 条件错 / 值匹配失败 / 大小写不对 / 格式不对。
       **先 `SELECT DISTINCT 该列` 看真值**（`card_games` 小写 `'restricted'` = **0 行**，真值 636 行）。
+- [ ] **4b. 题干有 “if there are any / if any” 吗？** ⇒ 那是让你**排除该列为 NULL 的实体**：
+      金标会写 `AND 该列 IS NOT NULL`（实测 `california_schools` 33：「websites … **if there are any**」
+      → 金标 `Website IS NOT NULL`，3 行 → 2 行）。
 - [ ] **5. `WHERE` 里的每个值都核对过库内真写法吗？** 每个库风格都不同：
       `card_games`/`thrombosis_prediction` **首字母大写**；`california_schools` **小写 f**。
       **evidence 给的值不一定是库里的写法。**
@@ -39,7 +47,10 @@
 - [ ] **11. 取极值时查并列了吗？** `superhero` 837（`MIN=5` 有 **10 个**并列）、
       `financial` 101（**315 个** account 并列）。
       行数不对 → 换 `WHERE col = (SELECT MIN/MAX(col) ...)`。
-      ⚠️ **NULL 在 `ORDER BY ASC` 排最前**，取"最小/最早"别用 `LIMIT 1`（`codebase_community` 663）。
+      ⚠️ **NULL 在 `ORDER BY ASC` 排最前** ⇒ 取“最小/最早”**光 `LIMIT 1` 会选到 NULL 行**：
+      加 `WHERE 该列 IS NOT NULL`（实测 `california_schools` **40 / 43** 两道都是这个原因，规则本来就在，没勾就是白写）。
+- [ ] **11b. 题干问 “which X has the most …” 但金标行数 >1？** ⇒ 是**并列第一**，
+      金标用 `RANK()/DENSE_RANK() ... WHERE rank_num = 1`（实测 `california_schools` 68：金标 **3 行**、我 `LIMIT 1` 1 行）。
 
 ## D. 最后一眼
 

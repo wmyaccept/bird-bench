@@ -20,6 +20,10 @@
       明写 `first_name, last_name`（2 列）→ **evidence 写了就按 evidence。**
 - [ ] **`COUNT(*)` 还是 `COUNT(DISTINCT 实体id)`？** 题干主语是**实体**且 JOIN 会扇出时用后者：
       `codebase_community` 709「how many of the **posts**」→ `COUNT(DISTINCT posts.Id)`=**2**（`COUNT(*)`=4 错）。
+- [ ] ⭐ **列的顺序 = 题干提到的顺序**（`set()` 判定 ⇒ **列序不同也是 0 分**）：
+      实测 `california_schools` 81：列集合一模一样，我写 `School, City, Low Grade`、
+      金标按题干顺序 `City, Low Grade, School` → ❌。
+      ⇒ 写 `SELECT` 前先把题干里的概念**从左到右标个 1,2,3**，照序输出。
 
 ## ② 写 `FROM` / `JOIN` 时
 
@@ -41,6 +45,10 @@
       验证手法：金标行数 == **只按主表条件筛出的行数**（`27` 金标 8574 = 纯 `schools` 行数）→ 就是 LEFT JOIN。
 
 ## ③ 写 `WHERE` 的**值之前**（最容易翻车）
+
+- [ ] ⭐ **题干有 “if there are any / if any” 吗？** ⇒ 不是“结果可能为空”，而是**要你把该列为 NULL 的实体排除**：
+      金标写 `AND 该列 IS NOT NULL`（实测 `california_schools` 33：「websites … **if there are any**」
+      → 金标 `Website IS NOT NULL`，3 行 → 2 行）。
 
 - [ ] ⚠️ **先把该列 `SELECT DISTINCT` 看一眼真值** —— 每个库的大小写风格都不同：
 
@@ -72,8 +80,13 @@
 - [ ] **取极值时先查并列！** `superhero` 837（`MIN=5` 有 **10 个**并列）、
       `financial` 101（`1995-01-01` 有 **315 个** account）。
       ⇒ 行数不对时换 A2 的备用写法：`WHERE col = (SELECT MIN/MAX(col) ...)`。
-- [ ] ⚠️ **NULL 在 `ORDER BY ASC` 时排最前** ⇒ 取"最小/最年轻/最早"**别用 `LIMIT 1`**，
-      用 `WHERE col = (SELECT MIN(col) ...)`（`codebase_community` 663 实测）。
+- [ ] ⚠️ **NULL 在 `ORDER BY ASC` 时排最前** ⇒ 取“最小/最年轻/最早”**光 `LIMIT 1` 会选到 NULL 行**：
+      两种写法金标都用过 —— 在 `ORDER BY … ASC LIMIT 1` 前面加 `WHERE 该列 IS NOT NULL`，
+      或直接用 `WHERE col = (SELECT MIN(col) ...)`。
+      实测 `california_schools` **40 / 43** 两道都栽在这（规则早就在，提交前没勾而已）。
+- [ ] ⭐ **“which X has the most/most number of …” 但金标行数 >1？** ⇒ 是**并列第一**：
+      金标用 `RANK()/DENSE_RANK() OVER (ORDER BY COUNT(...) DESC) … WHERE rank_num = 1`
+      （实测 `california_schools` 68：金标 **3 行**，我 `LIMIT 1` → 1 行）。
 
 ## ⑤ 提交前的最后一眼
 

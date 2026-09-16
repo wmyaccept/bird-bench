@@ -2,18 +2,30 @@
 
 ## ⚠️ 交题前必查（本库最容易翻车的 3 条）
 
-1. ⭐ **概念→列**（moderate 高频，猜错就是 0 分）：
-   `schools.DOC`（**52**=Elementary School District / **54**=Unified）、`SOC`（**11**=Youth Authority/CEA）、
-   `EILCode`（**'HS'**=高中）、`EdOpsCode`（**'SSS'**=State Special School / **'SPECON'**=Special Education Consortia）、
-   `NCESDist`（NCES 区号）、`Latitude`/`Longitude`、`StatusType='Closed'`、
-   管理员 = `AdmFName1/2/3` + `AdmLName1/2/3` + `AdmEmail1/2/3`；
-   `frpm."School Type"`（`'Continuation Schools'`）、`frpm."NSLP Provision Status"`
-   （`'Lunch Provision 2'` / `'Breakfast Provision 2'` / `'CEP'` / `'Provision 1/2/3'` / `'Multiple Provision Types'`）。
-2. ⭐ **`JOIN` 选谁**：`列学校 + SAT 分数` 类用 **`LEFT JOIN satscores`**（实测 `27`：金标 8574 行 = 纯 `schools` 行数）；
-   CDS 前导 0 → **先 naive `ss.cds=s.CDSCode`**，空集/可疑再改 `CAST(s.CDSCode AS INTEGER)=ss.cds`。
-3. ⭐ **县 vs 市**：题干 “schools in X”（X 是县名）→ 用 **`County`**，不是 `City`
-   （实测 `26`：`City='Monterey'` → **0 行**；`County='Monterey'` → 6 行）；`County` 值**不带 'County'**。
-   “free or reduced-priced meals”→ `Free Meal Count (...)`（`FRPM Count` 是另一列）。
+1. ⭐ **概念→列**（moderate 的命门，猜错直接 0 分；下表是复盘挂起题后改对的）：
+
+   | 题干说法 | 真正该用的列 |
+   |---|---|
+   | “type of educational option” / “continuation school” | **`frpm."Educational Option Type"`**（值 `'Continuation School'`）⚠️ 不是 `schools.EdOpsName`，也不是 `frpm."School Type"` |
+   | “high school” + 一起吃 | `frpm."School Type" = 'High Schools (Public)'`（用**精确值**；`LIKE '%High School%'` 会混进别的类） |
+   | “district code” | **`frpm."District Code"`** ⚠️ 不是 `schools.DOC` |
+   | 学校名（与 frpm 联查时） | `frpm."School Name"`（金标常直接用 frpm 的，不绕 schools） |
+   | “in Riverside”这类地名 | **两种都试**：`schools.County` vs `frpm."District Name" LIKE 'Riverside%'`（`25` 金标是后者） |
+   | “charter”+“locally funded” | `schools.Charter = 1` + **`schools.FundingType = 'Locally funded'`**（`65` 金标）；
+   | 而 “directly funded” | `frpm."Charter Funding Type" = 'Directly funded'`（`4` 金标）⇒ **哪张表的列值字面像题干就用哪张** |
+   | “free or reduced-priced meals”(15-17) | `FRPM Count (Ages 5-17)`（`26` 金标；`Free Meal Count (Ages 5-17)` 是另一列，两列都出现过） |
+   | `DOC`=52 小学区 / 54 联合区 · `SOC`=11 CEA · `EILCode`='HS' · `EdOpsCode`='SSS'/'SPECON' · `NCESDist` · `Latitude`/`Longitude` · `StatusType='Closed'` | 均在 `schools` |
+   | 管理员 | `AdmFName1/2/3` + `AdmLName1/2/3` + `AdmEmail1/2/3`（`85` 金标用 `AdmFName1/2/3` 的 OR） |
+   | `frpm."NSLP Provision Status"` | `'Lunch Provision 2'` / `'Breakfast Provision 2'`（**两个都在，别取错**）/ `'CEP'` / `'Provision 1/2/3'` |
+
+2. ⭐ **`JOIN` 怎么连**：`frpm` 与 `satscores` **直接连** `frpm.CDSCode = satscores.cds`（金标 `24/25` 都这样；
+   **绕 `schools` 反而会多过滤掉行** → 我 999 行 vs 金标 1068 行）；
+   “列学校 + 可选属性（分数/电话/网址）” → **`LEFT JOIN`**（`27`：金标 8574 行 = 纯 `schools` 行数）；
+   CDS 前导 0 → **先 naive**，空集/可疑再 `CAST(CDSCode AS INTEGER)=cds`。
+3. ⭐ **行数差一点时先查“学区行”和地名口径**：`schools` 里混着学区行（`School`/`School Name` 为 NULL），
+   题干要“学校”时必须 `School IS NOT NULL`（`49`：金标 858 行、我 879 行）；
+   题干地名先在 `schools.County` / `frpm."District Name"` / `City` 之间各试一次（`26` 金标 `County='Monterey'`）；
+   `County` 值**不带 'County'**，`"Educational Option Type"` / `"School Type"` 用**精确值**。
 
 ## 连接图与坑
 
