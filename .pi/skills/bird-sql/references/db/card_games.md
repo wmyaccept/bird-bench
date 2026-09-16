@@ -85,6 +85,18 @@ cards ──uuid── legalities / rulings / foreign_data
 12. **`faceConvertedManaCost` 最大值 7.0 有 22 张并列**；`convertedManaCost` 同理 ——
     “最高 X 的前 N 张”类题排序不稳定，`514`/`392`/`342` 都因并列而错。
 
+## 值域陷阱（实测，写 WHERE 之前必看）
+
+- **`language` 在两张表都有，且是两个粒度**（题面只说 "in Chinese Simplified" 时最容易选错）：
+  - `foreign_data.language`：**卡级**外文印刷 —— 229186 行 / 16 种语言；`Chinese Simplified` 20106 行。
+  - `set_translations.language`：**套牌级**翻译 —— 1210 行 / 10 种语言；`Chinese Simplified` 121 行。
+  - 实测 idx 352「percentage of the cards available in Chinese Simplified」：row-level 口径五个候选
+    （8.77 / 59.04 / 35.38 / 10.0 / 43.35）**金标一个都没命中** ⇒ 本题挂起，归因"口径不可判"。
+- **`cards.side` 只有 1367 行非空**（多面卡才有）⇒ "cards without multiple faces" = `side IS NULL`（345 ✅）。
+- **`cards.artist` 真人真名要按库内写法**：题面写 "Stephen Daniel"，库内是 `'Stephen Daniele'`（347 ✅）。
+- **`id` 是整数、`uuid` 是字符串**：题干 "card id" → `cards.id`（整数）；JOIN 一律用 `uuid`。
+- 实测 idx 349「名称+画师+是否 promo」：列序换过一次仍不对 ⇒ 挂起，归因"值/列语义不可判"（1 行 3 列）。
+
 ## 惯例卡片（实测统计，n=138 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
 
 - 计数形态：col 21 / DISTINCT 4 / `COUNT(*)` 6 / 无 107　⇒ 本库以 `COUNT(列)` 为主（col 21 / DISTINCT 4 / star 6）⇒ 计数写 `COUNT(主表.主键列)`

@@ -1,5 +1,16 @@
 # SQLite 方言、脏数据、大 schema
 
+<!-- push step=4 -->
+## ⚡ 决策速查（方言与脏数据）
+- 条件求和 `SUM(CASE WHEN … THEN 1 ELSE 0 END)`（**SQLite 没有 `IF()`**）；转浮点 `CAST(x AS REAL)`；
+  子串 `SUBSTR(s,1,4)`（没有 `LEFT`）；拼接 `||`（没有 `CONCAT`）；除零 `NULLIF(b,0)`。
+- ⭐ `STRFTIME` / `LIKE` 的结果是**字符串** ⇒ 年份比较必须用字符串字面量 `>= '1990'`
+  （写成整数 `>= 1990` 在 SQLite **恒为真**，过滤直接失效）。
+- **动手前先 `SELECT DISTINCT 该列 LIMIT 10`**：看大小写、"首字母大写"、`<`/`>` 前缀、空串这类脏值。
+- **evidence 只用于口径/阈值，不用于输出形状**；题干的反义词优先于 evidence
+  （如 "inactivated partial prothrombin time" = APTT **异常**，不是正常）。
+<!-- /push -->
+
 ## 一、SQLite 方言（Mini-Dev 的 SQLite 版和 MySQL/PostgreSQL 版不同）
 
 | 需求 | SQLite 写法 | 不要用 |

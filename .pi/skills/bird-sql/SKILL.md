@@ -21,9 +21,12 @@ EX = 预测 SQL 的结果集与金标结果集**完全相同**才算对。
 3. **用 `idx` 当题号**，不要用 `question_id`。
 4. **`bird_answer` 和 `bird_score` 不要放在同一批并发调用里**（会读到写入前的旧答案）。
 5. **改答案只能通过 `bird_answer`**，不手写 `work/answers.json`。
-6. ⭐ **做题时不许思考，思考只在复盘时**：照 skill 一次定稿就提交；同一题想到第 2 种写法、
-   或卡住 ~1 分钟 → 立刻交手上最好的一条、记入挂起清单、做下一题。
-   **绝不"再试一种看看"。** 唯一允许的"试两次"是 skill **已写明**"先试 A 不行改 B"的情形。
+6. ⭐ **“不许思考”= 不许漫游，不是不许走流程**：流程本身必须一次走完（第 0 → 6 步），
+   每一步的**产物必须写出来**（惯例卡片、概念裁决表、形状声明）。
+   被禁止的是：同一题试第 2 种写法、穷举候选、“再试一种看看”、改完又改。
+   **按流程执行不是思考，是执行；漫游式试错才是思考。**
+   同一题卡住 ~1 分钟 → 立刻交手上最好的一条、记入挂起清单、做下一题。
+   唯一允许的“试两次”是 skill **已写明**“先试 A 不行改 B”的情形（如 CDS naive→CAST、探针 2 轮内）。
 
 ---
 
@@ -47,9 +50,16 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 ### 第 0.5 步｜⭐⭐ **惯例体检：把“猜惯例”换成“查惯例”**（换库时一次性，30 秒）
 
 ```bash
-python tools/bird.py --dataset dev2025 conventions --db <db_id>      # 已提交题的金标统计
-python tools/bird.py --dataset dev2025 cols <db_id> "type|option"    # 列名反查
+python tools/bird.py --dataset dev2025 brief <db_id>          # ★ 知识库推送到决策点（换库跑一次，~100 行）
+python tools/bird.py --dataset dev2025 brief --step 4          # 只推“写 SQL / 口径”这一步的片段
+python tools/bird.py --dataset dev2025 conventions --db <db_id>  # 已提交题的金标统计
+python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反查
 ```
+
+⭐ **知识库不再靠“我主动去读”**：`references/*.md` 里带 `<!-- push step=N -->` 标记的片段
+会被 `brief` 按步骤推出来（step=1 读题形状、2 骨架、3.5 概念定位、4 写 SQL/口径、5 判定、7 复盘）。
+文档是**唯一数据源**：改文件 = 改推送内容，不会出现两份说法。
+另外，`db/<库>.md` 的「必查」与「惯例卡片」会在 **`answer` 成功的瞬间自动回放**（即使我没主动读）。
 
 `conventions` **只统计已提交题**的金标（绝不碰未做的题），给的是**这个库自己**的写法分布：
 计数形态、主表（`FROM` 第一张表是谁）、`SELECT DISTINCT` 比例、`*100`、JOIN 数。
@@ -134,9 +144,23 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 📖 **读**：`checklist.md` —— **逐条勾**，不许跳。
 📤 **产出**：提交 or 改（勾不过就改，一次改完直接交，不要反复）
 
-### 第 6 步｜**提交**
+### 第 6 步｜**提交（两道机器闸门，过不去交不上）**
 
-`bird_answer <idx> "<SQL>"`（跑不通会被拒绝并回报错误；**列名写错属硬错，直接按真实列名重交**）
+```bash
+# ① 探针留痕：任何 run / find / cols / schema 带 --for <idx>，就为这题记下“我真的查过”
+python tools/bird.py --dataset dev2025 run <db> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for <idx>
+# ② SQL 最前面写形状声明（预测的结果集形状）
+python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ..."
+```
+
+| 闸门 | 规则 | 不过会怎样 |
+|---|---|---|
+| **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（**只有工具真跑过才写得进去**，人无法凭空声明） | `answer` 拒绝记录并告诉你该跑哪条 |
+| **闸门 2 形状预演** | SQL 里必须有 `/* shape: 行数x列数 */`，且必须与实测一致 | 拒绝记录（不符时告诉你差几行几列） |
+
+确属一目了然的题可以用 `--force` 跳过，但会记进 probe_log、`audit` 会统计 ——
+**强制率本身就是要盯的指标**（高了说明流程没真走）。
+（注释开头的 SQL 已被 `guard_sql` 放行；导出提交时可剥掉。前面写错列名属硬错，直接按真列名重交。）
 
 ### 第 7 步｜**批末复盘**（每批 10–20 题，或一个库做完）
 
@@ -204,7 +228,10 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 4. 归纳规则前过一遍：**这条能让我写出更接近金标的 SQL 吗？** 只能复现一个 bug 的不收。
 5. **发现了反例就立刻改，不留自相矛盾的条款**（`NULL 排序`、`european_football_2 的 LIMIT 1`
    都曾经写反过 —— 各被 2–3 道题同时证伪）。
-6. 改完在**没做过的题**上验证，别只在错题上验证（错题已经"见过答案"了）。
+6. 改完在**没做过的题**上验证，别只在错题上验证（错题已经“见过答案”了）。
+7. ⭐ **知识必须能被“推到决策点”**：新规则写进正文没人读 = 等于没写。写在 `references/*.md` 里的，
+   就要用 `<!-- push step=N -->…<!-- /push -->` 包住（`brief` 会推它），或写进 `db/<库>.md` 的惯例卡片。
+8. 宁可包住**现成小节**（零漂移），也不另写一份摘要（两份说法早晚不一致）。
 
 ### 如果下次又漏了规则，按这 3 条查
 

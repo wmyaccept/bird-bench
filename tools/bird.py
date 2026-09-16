@@ -166,11 +166,30 @@ def connect_readonly(path: Path, timeout: float = 30.0):
     return con
 
 
+def _strip_lead_comments(sql: str) -> str:
+    """去掉开头的空白与注释（让我可以在 SQL 最前面写 `/* shape: 3x1 */` 形状声明）。"""
+    s = sql.lstrip()
+    while True:
+        if s.startswith("/*"):
+            end = s.find("*/", 2)
+            if end < 0:
+                break
+            s = s[end + 2 :].lstrip()
+        elif s.startswith("--"):
+            nl = s.find("\n")
+            if nl < 0:
+                break
+            s = s[nl + 1 :].lstrip()
+        else:
+            break
+    return s
+
+
 def guard_sql(sql: str) -> str:
     statements = [s for s in sql.split(";") if s.strip()]
     if len(statements) > 1:
         fail("只允许单条语句（检测到分号分隔的多条语句）")
-    if not READ_ONLY_RE.match(sql):
+    if not READ_ONLY_RE.match(_strip_lead_comments(sql)):
         fail("只允许 SELECT / WITH / EXPLAIN 开头的只读查询")
     return sql.strip().rstrip(";").strip()
 
@@ -628,6 +647,7 @@ def cmd_audit(args):
     per_db: dict[str, list[int]] = {}
     buckets: dict[str, list[int]] = {}
     wrong = []
+    ids: list[int] = []
     for i, q in enumerate(questions):
         key = str(i)
         if key not in answers:
@@ -639,6 +659,7 @@ def cmd_audit(args):
         mine = answers[key].split("\t")[0]
         ok, detail = compare_ex(db_path(q["db_id"]), mine, gold[i])
         n += 1
+        ids.append(i)
         correct += bool(ok)
         stat = per_db.setdefault(q["db_id"], [0, 0])
         stat[0] += 1
@@ -665,7 +686,26 @@ def cmd_audit(args):
     for db, (tot, ok) in sorted(per_db.items(), key=lambda kv: kv[1][1] / kv[1][0]):
         print(f"  {db:<26} {ok:>3}/{tot:<3} {ok / tot * 100:5.1f}%")
     print()
-    print(f"错题 {len(wrong)} 道，失败类型分布：")
+    answered_sql = {i: answers[str(i)].split("\t")[0] for i in ids}
+    probes_log = load_probes()
+    no_probe = [i for i in ids if not probes_log.get(i)]
+    concept_cov = [i for i in ids if any(is_concept_probe(p) for p in probes_log.get(i, []))]
+    forced = [i for i in ids if any(p.get("kind") == "force" for p in probes_log.get(i, []))]
+    shaped = [i for i in ids if parse_shape(answered_sql[i])]
+    print(
+        f"合规：探针覆盖 {len(ids) - len(no_probe)}/{len(ids)}"
+        f" ｜ 概念探针 {len(concept_cov)}/{len(ids)}"
+        f" ｜ --force {len(forced)}"
+        f" ｜ 写了形状声明 {len(shaped)}/{len(ids)}"
+    )
+    if no_probe:
+        print(f"  无探针 idx：{no_probe[:20]}{' …' if len(no_probe) > 20 else ''}")
+    if not shaped:
+        print("  （形状声明为 0 属正常 —— 这批答案早于闸门；闸门启用后新提交的都会有。）")
+    print()
+    print(f"错题 {len(wrong)} 道，失败类型分布：", end="")
+    print()
+    print("-" * 8)
     for kind in sorted(buckets):
         print(f"  {kind:<16} {len(buckets[kind]):>3}   {buckets[kind][:20]}")
     print()
@@ -791,6 +831,154 @@ def answers_lock(timeout: float = 60.0):
             pass
 
 
+PROBE_LOG = WORK_DIR / "probe_log.jsonl"
+CONCEPT_KINDS = {"cols", "find"}
+SHAPE_RE = re.compile(r"shape\s*:\s*(\d+|\?)\s*[x×*]\s*(\d+)", re.I)
+PROBE_ONLY = {"answer", "score", "answers", "reset", "info", "list"}
+
+
+def parse_shape(sql: str):
+    """从 SQL 里取形状声明 `/* shape: 行数x列数 */`（闸门 2 的依据）。
+
+    行数写 `?` 表示“不知道几行”（列表题常见）—— 那就只校验列数，但会提醒实测行数。
+    能预判行数的题（计数题、极值题、单实体题）**必须写数字**，否则行数类错误拦不住。
+    """
+    m = SHAPE_RE.search(sql)
+    if not m:
+        return None
+    rows = None if m.group(1) == "?" else int(m.group(1))
+    return (rows, int(m.group(2)))
+
+
+def _probe_ids(args) -> list[int]:
+    raw = getattr(args, "for_idx", None)
+    if not raw:
+        return []
+    return [int(x) for x in re.split(r"[,\s]+", str(raw)) if x.strip().isdigit()]
+
+
+def _probe_record(idx: int, db_id: str, kind: str, detail: str):
+    import datetime
+
+    WORK_DIR.mkdir(parents=True, exist_ok=True)
+    with PROBE_LOG.open("a", encoding="utf-8") as fh:
+        fh.write(
+            json.dumps(
+                {
+                    "idx": idx,
+                    "db": db_id,
+                    "kind": kind,
+                    "detail": str(detail)[:200],
+                    "ts": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                },
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
+
+
+def log_probe(args):
+    """把“我真的跑过查询”这件事记进 work/probe_log.jsonl。
+
+    关键：只有**工具真的执行了**才会写日志 —— 不能凭空声称“我查过了”。
+    `bird_answer` 的闸门 1 就是读这个日志。
+    """
+    idxs = _probe_ids(args)
+    if not idxs:
+        return
+    kind = getattr(args, "command", "?") or "?"
+    detail = (
+        getattr(args, "pattern", None)
+        or getattr(args, "word", None)
+        or getattr(args, "sql", "")
+        or getattr(args, "table", "")
+        or ""
+    )
+    db_id = getattr(args, "db_id", None) or getattr(args, "db", None) or ""
+    for i in idxs:
+        _probe_record(i, str(db_id), str(kind), str(detail))
+    print(f"🔎 已记探针：{kind} → idx {idxs}（db={db_id}）")
+
+
+def load_probes() -> dict[int, list[dict]]:
+    out: dict[int, list[dict]] = {}
+    if not PROBE_LOG.exists():
+        return out
+    for line in PROBE_LOG.read_text(encoding="utf-8", errors="replace").splitlines():
+        try:
+            rec = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(rec.get("idx"), int):
+            out.setdefault(rec["idx"], []).append(rec)
+    return out
+
+
+def is_concept_probe(p: dict) -> bool:
+    """算不算“概念探针”（列名/取值真的被查过）？"""
+    if p.get("kind") in CONCEPT_KINDS:
+        return True
+    return p.get("kind") == "run" and "DISTINCT" in (p.get("detail") or "").upper()
+
+
+REFS = ROOT / ".pi" / "skills" / "bird-sql" / "references"
+PUSH_RE = re.compile(r"<!--\s*push\s+step=([0-9.]+)\s*-->(.*?)<!--\s*/push\s*-->", re.S)
+
+
+def push_blocks(step: str | None = None):
+    """从 reference 知识库里抽出带 `<!-- push step=N -->` 标记的片段。
+
+    文档是**唯一数据源**：改文件 = 改推送内容，不会出现“文档与工具两份说法”。
+    """
+    blocks = []
+    if not REFS.exists():
+        return blocks
+    for f in sorted(REFS.glob("*.md")):
+        for m in PUSH_RE.finditer(f.read_text(encoding="utf-8", errors="replace")):
+            if step and m.group(1) != str(step):
+                continue
+            body = m.group(2).strip()
+            if body:
+                blocks.append((m.group(1), f.name, body))
+    return blocks
+
+
+def brief_for_db(db_id: str):
+    """当前库档案里的『交题前必查』与『惯例卡片』。"""
+    card = REFS / "db" / f"{db_id}.md"
+    if not card.exists():
+        return None, None
+    text = card.read_text(encoding="utf-8", errors="replace")
+    must = None
+    m = re.search(r"##\s*[^\n]*交题前必查[^\n]*\n(.*?)(?=\n##\s|\Z)", text, re.S)
+    if m:
+        must = m.group(1).strip()
+    i = text.find("## 惯例卡片")
+    return must, (text[i:].strip() if i >= 0 else None)
+
+
+def cmd_brief(args):
+    """决策点推送：把知识库真正递到我眼前，而不是指望我“主动去读”。"""
+    step = None if args.step in (None, "all") else str(args.step)
+    if args.db_id:
+        must, card = brief_for_db(args.db_id)
+        print(f"╔══ 库档案 {args.db_id} ══")
+        if must:
+            print("## ⚠️ 交题前必查")
+            print(must)
+        if card:
+            print()
+            print(card)
+        print()
+    blocks = push_blocks(step)
+    print(f"╔══ 知识库推送（step={step or 'all'}，共 {len(blocks)} 段）══")
+    for s, name, body in blocks:
+        print(f"\n──[step {s}] {name} ──")
+        print(body)
+    if not blocks:
+        print("（没有带 push 标记的片段 —— 去 references/*.md 里用 <!-- push step=N --> 包住要推送的内容）")
+
+
 def cmd_answer(args):
     questions = load_questions()
     if not 0 <= args.idx < len(questions):
@@ -798,15 +986,64 @@ def cmd_answer(args):
     db_id = questions[args.idx]["db_id"]
     sql = guard_sql(args.sql)
 
+    probes = load_probes()
+    mine = probes.get(args.idx, [])
+
+    # ══ 闸门 1：探针覆盖 —— “我查过了”必须有工具日志作证 ══
+    if not mine and not args.force:
+        fail(
+            f"拒绝记录（闸门 1：探针覆盖）：第 {args.idx} 题没有任何探针记录。\n"
+            f"  先跑一次真实查询并带上 --for {args.idx}，例如：\n"
+            f'    run  {db_id} "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for {args.idx}\n'
+            f'    cols {db_id} "概念正则" --for {args.idx}\n'
+            f'    find {db_id} 关键词 --for {args.idx}\n'
+            "  确实一目了然、不需要任何探测的题，加 --force（会在 probe_log 留痕，audit 会统计）。"
+        )
+
+    # ══ 闸门 2：形状预演 —— 行列数必须写进 SQL 注释，并被实测验证 ══
+    expected = parse_shape(sql)
+    if expected is None and not args.force:
+        fail(
+            "拒绝记录（闸门 2：形状预演）：SQL 里没有形状声明。\n"
+            "  请在 SQL 最前面写上预测的结果集形状注释：\n"
+            "    /* shape: 行数x列数 */  SELECT ...    （例：预测 3 行 1 列 → /* shape: 3x1 */；\n"
+            "     列表题不知道几行时写 /* shape: ?x2 */ —— 那就只校验列数，但会提醒你实测行数）\n"
+            "  这是防『列数 / 列序 / 行数』类错误的硬闸门：声明与实测不符会被拒绝。"
+        )
+
     if not args.no_check:
         try:
             columns, rows, truncated, _ = run_sql(db_id, sql, max_rows=args.max_rows)
         except sqlite3.Error as exc:
             fail(f"SQL 在 {db_id} 上执行失败，未记录：{exc}")
         print(f"执行通过：{len(rows)}{'+' if truncated else ''} 行，{len(columns)} 列")
+        if expected and (expected[0], expected[1]) != (len(rows), len(columns)):
+            if expected[0] is None:
+                if expected[1] != len(columns):
+                    if not args.force:
+                        fail(
+                            f"拒绝记录（闸门 2）：列数不符 —— 声明 {expected[1]} 列，实测 {len(columns)} 列。"
+                        )
+                else:
+                    print(f"📐 形状：声明 ? 行（未预判）× {expected[1]} 列，实测 {len(rows)} 行 —— 列数对上了；行数请自己对着题面再核一眼。")
+            else:
+                msg = (
+                    f"形状预演不符：声明 {expected[0]} 行 × {expected[1]} 列，"
+                    f"实测 {len(rows)} 行 × {len(columns)} 列。"
+                )
+                if not args.force:
+                    fail(
+                        f"拒绝记录（闸门 2）：{msg}\n"
+                        "  先弄清差在哪里（题干漏列/多列？条件过严过松？主表选错？），改好再交。"
+                    )
+                print(f"⚠️ {msg} 已用 --force 放行")
         print()
         print(fmt_rows(columns, rows))
         print()
+
+    if args.force:
+        _probe_record(args.idx, db_id, "force", f"expected={expected} kinds={[p.get('kind') for p in mine]}")
+        print("⚠️ 本条用了 --force，已记进 probe_log（audit 会统计）")
 
     with answers_lock():
         answers = load_answers()
@@ -814,6 +1051,23 @@ def cmd_answer(args):
         save_answers(answers)
         total = len(answers)
     print(f"已记录第 {args.idx} 题（{db_id}），当前完成 {total} 题 -> {ANSWERS_FILE}")
+
+    # ══ 知识推送的最后一环：交题瞬间回放本库惯例与必查 ══
+    must, card = brief_for_db(db_id)
+    if card:
+        lines = [ln for ln in card.splitlines() if ln.startswith("- ")][:2]
+        if lines:
+            print("📌 惯例回放：" + " ｜ ".join(ln[2:].strip() for ln in lines))
+    if must:
+        first = [ln.strip() for ln in must.splitlines() if ln.strip().startswith("- ")]
+        if first:
+            print("📌 必查第一条：" + first[0][2:].strip()[:120])
+    db_probes = [p for ps in probes.values() for p in ps if p.get("db") == db_id]
+    if not any(is_concept_probe(p) for p in db_probes):
+        print(
+            f"⚠️ {db_id} 还没有任何概念探针（{'/'.join(sorted(CONCEPT_KINDS))} 或带 DISTINCT 的 run）：\n"
+            "   列名靠猜是本项目最大失分源 —— 交完这批请补一次 `cols <db> 正则` / `find <db> 词`。"
+        )
 
 
 def cmd_answers(args):
@@ -1079,6 +1333,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("word")
     p.add_argument("--samples", type=int, default=3, help="每个命中列显示几个真值")
     p.add_argument("--timeout", type=float, default=60.0)
+    p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）")
     p.set_defaults(func=cmd_find)
 
     p = sub.add_parser("cols", help="列名反查：这个概念（列名）出现在哪些表的哪些列（含非空/去重行数）")
@@ -1086,6 +1341,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("pattern", help="列名正则，例如 'type|kind|option'")
     p.add_argument("--samples", type=int, default=3)
     p.add_argument("--timeout", type=float, default=30.0)
+    p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）")
     p.set_defaults(func=cmd_cols)
 
     p = sub.add_parser("conventions", help="用已提交题的金标统计本库写作惯例（换库第 0.5 步）")
@@ -1098,6 +1354,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--db")
     p.add_argument("--list", type=int, default=3, help="每类失败原因打印几条例子")
     p.set_defaults(func=cmd_audit)
+
+    p = sub.add_parser("brief", help="决策点推送：库档案（必查+惯例卡片）+ 知识库里带 push 标记的片段")
+    p.add_argument("db_id", nargs="?")
+    p.add_argument("--step", help="只推某个步骤的片段（0/1/3/3.5/4/5/6/7）")
+    p.set_defaults(func=cmd_brief)
 
     p = sub.add_parser("schema", help="表结构 + 行数 + 样例值")
     p.add_argument("db_id")
@@ -1116,13 +1377,15 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("sql")
     p.add_argument("--max-rows", type=int, default=50)
     p.add_argument("--timeout", type=float, default=30.0)
+    p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）—— answer 的闸门 1 凭据")
     p.set_defaults(func=cmd_run)
 
-    p = sub.add_parser("answer", help="记录第 idx 题的最终 SQL")
+    p = sub.add_parser("answer", help="记录第 idx 题的最终 SQL（有探针覆盖 + 形状预演两道闸门）")
     p.add_argument("idx", type=int)
     p.add_argument("sql")
     p.add_argument("--no-check", action="store_true", help="跳过执行前检查")
     p.add_argument("--max-rows", type=int, default=20)
+    p.add_argument("--force", action="store_true", help="跳过闸门 1/2（会在 probe_log 留痕）")
     p.set_defaults(func=cmd_answer)
 
     p = sub.add_parser("answers", help="查看已作答")
@@ -1152,6 +1415,10 @@ def main():
             pass
     args = build_parser().parse_args()
     args.func(args)
+    # 探针留痕统一在分发层做：run / find / cols / schema / desc … 只要带了 --for 就记账，
+    # 而 answer / score 自己不作为“探针”（避免用“提交动作”冒充“查证动作”）。
+    if getattr(args, "for_idx", None) and getattr(args, "command", "") not in PROBE_ONLY:
+        log_probe(args)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@
 
 ---
 
+<!-- push step=4 -->
 ## ⓪ 落笔之前：概念先定位（列名靠猜 = 最贵的错）
 
 - [ ] ⭐ **题干里的概念名词，查过库了吗？** 别用英文语感猜列名。实测教训：
@@ -24,6 +25,7 @@
       的 `frpm."School Type" LIKE '%Continuation%'` 与 `"Educational Option Type"='Continuation School'`
       **都是 459 行、diff=0** —— 我当时把错因归到列上，真实错因是 **NULL 未排除**；
       ④ 否则选**更专门**的那列（命中行数更少 / 取值集合更窄），**并把结论写进 `db/<库>.md`**。
+<!-- /push -->
 
 ## ① 写 `SELECT` 的列时
 

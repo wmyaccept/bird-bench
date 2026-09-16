@@ -1,5 +1,13 @@
 # 什么才算对（EX 判定规范）
 
+<!-- push step=5 -->
+## ⚡ 决策速查（提交前的判定口径）
+- `set(预测) == set(金标)` ⇒ **列数、列序、行集三者都要精确**：多一列/少一列/换顺序都是 0 分。
+- 加不加 `DISTINCT` **不影响判定**（重复行被 set 折叠），但也别用 DISTINCT 掩盖行集错误。
+- `ORDER BY` 不影响判定，只在并列时决定 `LIMIT 1` 取到哪一行。
+- 浮点顺序会影响判定：`CAST(x AS REAL) * 100 / n` 与 `CAST(x AS REAL) / n * 100` 末位可能不同。
+<!-- /push -->
+
 判分依据是 BIRD 官方的 `evaluation_ex.py` / `evaluation_utils.py`，核心只有一行：
 
 ```python

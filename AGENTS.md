@@ -95,19 +95,36 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 "D:/python/python" tools/bird.py --dataset dev score --list-wrong 12
 ```
 
-### 三个元工具（写 SQL 前 / 复盘时必用）
+### 元工具与两道闸门（写 SQL 前 / 提交时 / 复盘时必须用）
 
 ```bash
-# ① 换库第一题之前：查**这个库自己**的写法惯例（只统计已提交题，不污染未做的题）
+# ① 知识推送：把 references 知识库与当前库档案推到决策点（换库跑一次）
+"D:/python/python" tools/bird.py --dataset dev2025 brief <db_id>
+"D:/python/python" tools/bird.py --dataset dev2025 brief --step 4      # 只推“写 SQL/口径”那一段
+# ② 库惯例：查这个库自己的写法（只统计已提交题，不污染未做的题）
 "D:/python/python" tools/bird.py --dataset dev2025 conventions --db <db_id>
-# ② 概念是「列名」时反查：候选 表.列 + 非空/去重行数（配合按取值的 bird_find）
+# ③ 概念反查：按列名（cols）与按取值（find）两个方向都要查
 "D:/python/python" tools/bird.py --dataset dev2025 cols <db_id> "type|code|option"
-# ③ 复盘：EX + 各库正确率 + 失败类型分布 + 结构特征差异频次（main/count/x100…）
+# ④ 探针留痕：给这些 idx 记下“我真的查过”（answer 的闸门 1 凭据）
+"D:/python/python" tools/bird.py --dataset dev2025 run <db_id> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for 344
+# ⑤ 复盘：EX + 各库正确率 + 失败类型分布 + 结构特征差异频次 + 闸门合规率
 "D:/python/python" tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 ```
 
-> ① 的结论写进 `db/<库>.md` 末尾的「惯例卡片」（11 个库已生成）。
-> 不做①直接做题 = 靠语感猜库级写法，实测这是 68% EX 的最大单一来源。
+⭐ **两道机器闸门（`answer` 会真的拒绝）**：
+
+| 闸门 | 规则 |
+|---|---|
+| 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（只有工具真跑过才写得进去） |
+| 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致 |
+
+```bash
+"D:/python/python" tools/bird.py --dataset dev2025 answer 344 "/* shape: 1x1 */ SELECT COUNT(...) FROM ..."
+```
+
+跳过闸门用 `--force`，但会留在 probe_log 里、`audit` 会统计强制率。
+`references/*.md` 里 `<!-- push step=N -->` 包住的片段、以及 `db/<库>.md` 的惯例卡片，
+都会被 `brief` 推到决策点、并在 `answer` 成功时自动回放。
 
 ## 硬性规则
 
