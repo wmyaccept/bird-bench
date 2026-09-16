@@ -31,6 +31,9 @@
 - [ ] **5. `WHERE` 里的每个值都核对过库内真写法吗？** 每个库风格都不同：
       `card_games`/`thrombosis_prediction` **首字母大写**；`california_schools` **小写 f**。
       **evidence 给的值不一定是库里的写法。**
+- [ ] **5b. 题干里的每个「概念名词」都定位过了吗？**（**不是值，是概念** —— “办学类型/资助类型/区号/职务/地名”）
+      → 先 `bird_find <db> <词>`（概念以值存在）或 `bird_schema --table <表>` 通读列名（概念是列名），
+      **猜列名是失分最大头**（`california_schools` 12 道挂起题里 6 道如此）。
 - [ ] **6. 日期是哪种格式？** `'YYYY-MM-DD'` / `'YYYYMM'` / `'YYYY-MM-DD HH:MM:SS.0'` 都出现过。
       **动手前 `SELECT 该列 FROM 表 LIMIT 1`。**（`financial` 的旧笔记是 Mini-Dev 的 `'930101'`，Dev 已改）
 - [ ] **7. 多值串列用 `=` 还是 `LIKE`？** 先试精确匹配：

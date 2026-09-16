@@ -380,6 +380,59 @@ def cmd_tables(args):
         con.close()
 
 
+def cmd_find(args):
+    """概念词反查：题干里的一个词，究竟躺在哪张表哪一列里？
+
+    用途：题干出现 “locally funded / high schools / option / Riverside” 这类概念词时，
+    **不要用英文语感猜列名**，直接搜库内真值。用 EXISTS 短路，没命中的列只扫一遍、很快。
+    """
+    path = db_path(args.db_id)
+    con = connect_readonly(path, timeout=args.timeout)
+    try:
+        tables = [
+            r[0]
+            for r in con.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' "
+                "AND substr(name, 1, 7) != 'sqlite_' ORDER BY name"
+            )
+        ]
+        pattern = f"%{args.word}%"
+        print(f"db: {args.db_id}   反查词: {args.word!r}   (列取值全文匹配，不区分大小写)")
+        print()
+        found = 0
+        for table in tables:
+            cols = [r[1] for r in con.execute(f'PRAGMA table_info("{table}")')]
+            for col in cols:
+                probe = f'SELECT 1 FROM "{table}" WHERE CAST("{col}" AS TEXT) LIKE ? LIMIT 1'
+                try:
+                    if not con.execute(probe, (pattern,)).fetchone():
+                        continue
+                except sqlite3.Error:
+                    continue
+                found += 1
+                cnt = con.execute(
+                    f'SELECT COUNT(*) FROM "{table}" WHERE CAST("{col}" AS TEXT) LIKE ?', (pattern,)
+                ).fetchone()[0]
+                vals = [
+                    r[0]
+                    for r in con.execute(
+                        f'SELECT DISTINCT "{col}" FROM "{table}" WHERE CAST("{col}" AS TEXT) '
+                        f"LIKE ? LIMIT ?",
+                        (pattern, args.samples),
+                    )
+                ]
+                shown = " | ".join(repr(v) for v in vals)
+                print(f'  {table}."{col}"   命中 {cnt} 行   真值: {shown}')
+        print()
+        if not found:
+            print("没有任何列含有该词 → 换同义词再试，或这个词其实是**列名**概念")
+            print("(列名概念用 `schema <db> --table <表>` 通读列名，别只 grep 关键词)")
+        else:
+            print(f"共 {found} 列命中。命中 ≥2 列时：挑与题干措辞最一致的，把结论写进 db/<库>.md")
+    finally:
+        con.close()
+
+
 def load_tied_gold() -> dict[int, list[str]]:
     """并列题的补充金标：question_id -> [sql, ...]。只有 dev 数据集有。"""
     name = DATASET.get("tied")
@@ -757,6 +810,15 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("tables", help="只列表名与行数（最便宜的第一步）")
     p.add_argument("db_id")
     p.set_defaults(func=cmd_tables)
+
+    p = sub.add_parser(
+        "find", help="概念词反查：库内哪张表哪一列含这个词（别用英文语感猜列名）"
+    )
+    p.add_argument("db_id")
+    p.add_argument("word")
+    p.add_argument("--samples", type=int, default=3, help="每个命中列显示几个真值")
+    p.add_argument("--timeout", type=float, default=60.0)
+    p.set_defaults(func=cmd_find)
 
     p = sub.add_parser("schema", help="表结构 + 行数 + 样例值")
     p.add_argument("db_id")

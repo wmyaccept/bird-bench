@@ -883,3 +883,61 @@ financial 25 / california_schools 23（本轮做完）/ debit_card 5。
 - `traps.md`：① 加列序；③ 加 “if there are any”；④ NULL 规则改写（两种金标写法）+ 并列第一。
 - `SKILL.md` 第 7 步：新增 **「挂起清单集中复盘」固定动作**（含"绝不许把金标拼回 answers.json"）。
 - `db/california_schools.md`：必查 1 改成**概念→列映射表**（10 行，逐条带实测题号）。
+
+---
+
+## 第 23 轮｜怎么根治「概念映射错」和「列序错」（本轮产出：新工具 + 两道闸门）
+
+### 1) 概念映射错 → 改成「查」，不许「猜」
+
+新建 **`bird_find`**（`tools/bird.py find` + `.pi/extensions` 第 8 个工具）：
+`python tools/bird.py --dataset dev2025 find <db_id> "<词>"` → 遍历所有表所有列做取值全文匹配，
+报出「命中列 + 命中行数 + 真值样本」（EXISTS 短路，没命中的列只扫一遍，秒级）。
+
+实测（`california_schools`）：
+
+| 反查词 | 命中 | 结果 |
+|---|---|---|
+| `locally funded` | 2 列 | `frpm."Charter Funding Type"` 328 行 / `schools."FundingType"` 460 行 |
+| `option` | 3 列 | 全是校名（点不出 `Educational Option Type` —— 该列取值里没有 "option" 这个词） |
+| `continuation` | **7 列** | `frpm."School Type"`=459 / `frpm."Educational Option Type"`=459 / `schools.EdOpsName`=539 … |
+
+**它的边界也说清楚了**：
+- 概念以**值**存在库里（"locally funded"）→ 好用，直接把 6 个候选压到 2 个。
+- 概念是**列名**（"district code"）→ 搜不到，必须 `bird_schema --table <表>` **逐行通读列名**
+  （我当初只 grep `%Type%`，就漏掉了 `frpm."District Code"`，**grep 关键词不算读过列名**）。
+- 命中多列时按优先级：evidence 点名 → 只有一列 → 行集合相同则任选 → 否则选更专门的列**并记进库档案**。
+
+### 2) 纠正一条我自己写错的规则（重要）
+
+复盘时我把 `[1]`（continuation 学校最低三个免费率）归因成「列选错了」。本轮实测：
+
+```sql
+SELECT COUNT(*) FROM frpm WHERE "School Type" LIKE '%Continuation%'                       -- 459
+SELECT COUNT(*) FROM frpm WHERE "Educational Option Type" = 'Continuation School'          -- 459
+  ... AND ("Educational Option Type" IS NOT 'Continuation School')                          -- diff = 0
+-- 459 行里 rate（Free Meal Count / Enrollment）为 NULL 的有 4 行
+```
+
+⇒ **两列是同一批 459 行，列没选错**；真实错因是 `ORDER BY rate ASC LIMIT 3` 把 **4 个 NULL 捞到了最前面**
+（SQLite 里 NULL 在 ASC 时排最前）。**NULL 类实际是 3 道（1、40、43），不是我以为的 2 道。**
+⇒ 规则已改正：`traps.md` ⓪ 的例子里写清了「多列行集合相同 → 差异一定在别处」，
+`db/california_schools.md` 里也标了「两列任选」。
+
+### 3) 列序错 → 变成写 SQL 前的固定仪式
+
+EX 是 `set(预测) == set(金标)`，**列序和列数同级重要**（`81` 列集合全对、顺序反了 = 0 分）。
+现在写 `SELECT` 前强制在 SQL 上留一行注释、按题干出现顺序编号：
+
+```sql
+-- 题干顺序: ① in which city ② lowest grade ③ indicate the school name
+SELECT City, `Low Grade`, `School Name` FROM ...
+```
+
+写进 `SKILL.md` 第 4 步（固定动作）+ `checklist.md` 1b（提交前勾）。
+
+### 本轮毕业
+
+`bird.py find`（新子命令）· `index.ts` bird_find（第 8 个工具）· `AGENTS.md` 标准动作 4.5 ·
+`traps.md` 新增 ⓪ 节 · `checklist.md` 新增 5b、1b 强化 · `SKILL.md` 新增第 3.5 步与第 4 步仪式 ·
+`db/california_schools.md` 修正续表 + NULL 条。

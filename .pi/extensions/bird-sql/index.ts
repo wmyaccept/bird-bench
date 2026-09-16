@@ -311,6 +311,29 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.registerTool({
+    name: "bird_find",
+    label: "BIRD Find",
+    description:
+      "概念词反查：题干里的一个词（如 'locally funded'、'continuation'、'Riverside'）究竟躺在哪张表哪一列。遍历所有表的全部列做取值全文匹配，报出命中列、命中行数和真值样本。写 SQL 前用它定列，别用英文语感猜列名。",
+    promptSnippet: "反查一个概念词到底在哪张表哪一列（列名靠猜是最常见的失分原因）",
+    promptGuidelines: [
+      "题干出现'办学类型/资助类型/区码/职务'这类概念名词、而你不确定它对应哪一列时，先 bird_find 反查，再写 SQL。",
+      "命中 ≥2 列时不要盲猜：evidence 点名就用它；只有一列命中就用它；多列命中且行集合相同则任选；否则选更专门的那列并把结论记进 db/<库>.md。",
+      "概念是'列名'而不是'值'时（如 'district code'）bird_find 查不到，改用 bird_schema table=<表> 通读列名，别只 grep 关键词。",
+    ],
+    parameters: Type.Object({
+      db_id: Type.String({ description: DB_ID_DESC }),
+      word: Type.String({ description: "要反查的概念词（可以是片段，如 'funded'、'Continuation'）" }),
+      samples: Type.Optional(Type.Number({ description: "每个命中列显示几个真值，默认 3" })),
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["find", params.db_id, params.word];
+      if (params.samples !== undefined) args.push("--samples", String(params.samples));
+      return toResult(await getBackend(ctx).call(ctx, args, signal));
+    },
+  });
+
+  pi.registerTool({
     name: "bird_answer",
     label: "BIRD Answer",
     description:

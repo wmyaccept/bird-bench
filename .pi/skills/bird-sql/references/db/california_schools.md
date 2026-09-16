@@ -6,7 +6,9 @@
 
    | 题干说法 | 真正该用的列 |
    |---|---|
-   | “type of educational option” / “continuation school” | **`frpm."Educational Option Type"`**（值 `'Continuation School'`）⚠️ 不是 `schools.EdOpsName`，也不是 `frpm."School Type"` |
+   | “type of educational option” / “continuation school” | **`frpm."Educational Option Type"`**（值 `'Continuation School'`；
+   与 `frpm."School Type"` 命中的 `'Continuation High Schools'` **是同一批 459 行、diff=0**，两列任选）；
+   ⚠️ 别用 `schools.EdOpsName`（那是另一套分类） |
    | “high school” + 一起吃 | `frpm."School Type" = 'High Schools (Public)'`（用**精确值**；`LIKE '%High School%'` 会混进别的类） |
    | “district code” | **`frpm."District Code"`** ⚠️ 不是 `schools.DOC` |
    | 学校名（与 frpm 联查时） | `frpm."School Name"`（金标常直接用 frpm 的，不绕 schools） |
@@ -22,8 +24,9 @@
    **绕 `schools` 反而会多过滤掉行** → 我 999 行 vs 金标 1068 行）；
    “列学校 + 可选属性（分数/电话/网址）” → **`LEFT JOIN`**（`27`：金标 8574 行 = 纯 `schools` 行数）；
    CDS 前导 0 → **先 naive**，空集/可疑再 `CAST(CDSCode AS INTEGER)=cds`。
-3. ⭐ **行数差一点时先查“学区行”和地名口径**：`schools` 里混着学区行（`School`/`School Name` 为 NULL），
-   题干要“学校”时必须 `School IS NOT NULL`（`49`：金标 858 行、我 879 行）；
+3. ⭐ **取极值时先看 NULL / 学区行**：库里有 NULL，`ORDER BY … ASC LIMIT 3` 会把 **NULL 排在前面**
+   （实测 `1`：459 行 continuation 里有 **4 行 rate 为 NULL**，我桶了前 3 个 NULL → 形状对、值全错）；
+   `schools` 里又混着学区行（`School` 为 NULL），题干要“学校”时必须 `School IS NOT NULL`（`49`：858 vs 879 行）；
    题干地名先在 `schools.County` / `frpm."District Name"` / `City` 之间各试一次（`26` 金标 `County='Monterey'`）；
    `County` 值**不带 'County'**，`"Educational Option Type"` / `"School Type"` 用**精确值**。
 

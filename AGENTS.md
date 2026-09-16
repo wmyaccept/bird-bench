@@ -6,7 +6,7 @@
 ## 目录
 
 ```
-.pi/extensions/bird-sql/index.ts   工具层：7 个 bird_* 工具（TypeScript）
+.pi/extensions/bird-sql/index.ts   工具层：8 个 bird_* 工具（TypeScript）
 .pi/skills/bird-sql/
   SKILL.md                         入口：硬规则 + 7 步工作流（每步绑定"读哪个文件"）
   references/
@@ -70,6 +70,8 @@ simple 860/860 已答，EX 675/860 = 78.49%
 2. `bird_question <idx>` 读题干 + **evidence**
 3. `bird_schema <db_id>` 看库里有几张表
 4. `bird_schema <db_id> table=<表>` 看列、样例值、人工标注的字段说明
+4.5 `bird_find <db_id> <概念词>` ⭐ **概念词反查**：题干里的“办学类型/资助类型/区号”这类词
+   究竟在哪张表哪一列 —— **列名靠猜是失分最大头，别用英文语感猜**
 5. `bird_query <db_id> "SELECT ..."` 只读试跑，反复验证
 6. `bird_answer <idx> "<最终SQL>"` 提交
 7. 每 10–20 题 `bird_score` 一次，按错因分类

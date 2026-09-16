@@ -54,18 +54,41 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 📖 **读**：`shapes.md` 的 A 部分（A1–A10）
 📤 **产出**：这道题属于哪个骨架（A1 单属性 / A2 极值 / A4 计数 / A5 列表 / A6 比率 …）
 
-### 第 3 步｜**查当前库的"交题前必查 3 条"**
+### 第 3 步｜**查当前库的“交题前必查 3 条”**
 
 📖 **读**：`db/<db_id>.md` 顶部的 **⚠️ 交题前必查**
 📤 **产出**：这次写 SQL 要特别防的 3 条（例：`card_games` = ① DISTINCT ② 值首字母大写 ③ `=` vs `LIKE`）
 
 > **这一步是防止"写了没看到"的关键**：库级坑不在长文档里翻，而是每次只读**当前库的 1 个短文件**。
 
+### 第 3.5 步｜⭐ **两个概念先定位（列名靠猜是最贵的错）**
+
+题干里的**概念名词**（办学类型、资助类型、区号、职务、地名…）必须**查出**它对应哪一列，不许用英文语感猜。
+两道闸门，看概念是"值"还是"列名"：
+
+| 概念类型 | 怎么做 | 例 |
+|---|---|---|
+| 概念以**值**的形式存在库里（“continuation / locally funded / High Schools (Public)”） | `bird_find <db> <词>` → 报出哪张表哪一列命中 + 真值样本 | `find california_schools "option"` → 点出 `frpm."Educational Option Type"` |
+| 概念是**列名**（“district code”这种不可搜值的） | `bird_schema <db> table=<表>` **逐行通读列名**（别只 grep 关键词！） | 我 grep `%Type%` 就漏掉了 `frpm."District Code"` |
+
+**命中 ≥2 列时的优先级**（写进 `traps.md` ⓪）：evidence 点名 → 用它；只有一列命中 → 用它；
+多列命中且**行集合相同** → 任选（差异一定在别处）；否则选**更专门**的那列，**并把结论写进 `db/<库>.md`**（积累才有用）。
+
 ### 第 4 步｜**写 SQL（对着陷阱表逐条过）**
 
 📖 **读**：`traps.md` —— 它不是按主题、而是**按你正在写的部分**组织的：
 写 `SELECT` 看 ①、写 `JOIN` 看 ②、写 `WHERE 值` 看 ③、写聚合看 ④。
 📤 **产出**：SQL
+
+⭐ **写 `SELECT` 列之前的固定动作（治列序错）**：把题干里的概念**按出现的先后标号**，
+SQL 里就照这个顺序写，并在 SQL 上留一行注释当自检：
+
+```sql
+-- 题干顺序: ① in which city ② lowest grade ③ indicate the school name
+SELECT City, `Low Grade`, `School Name` FROM ...
+```
+
+（EX 是 `set(预测) == set(金标)` ⇒ **列序和列数同级重要**，`california_schools` 81 就是列集合全对、只因顺序反了得 0 分。）
 
 ### 第 5 步｜**提交前自检**
 

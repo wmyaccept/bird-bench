@@ -5,6 +5,22 @@
 
 ---
 
+## ⓪ 落笔之前：概念先定位（列名靠猜 = 最贵的错）
+
+- [ ] ⭐ **题干里的概念名词，查过库了吗？** 别用英文语感猜列名。实测教训：
+      我把「type of educational option」猜成 `schools.EdOpsName`（金标 `frpm."Educational Option Type"`）、
+      「district code」猜成 `schools.DOC`（金标 `frpm."District Code"`）、
+      「locally funded charter」猜成 `frpm` 那套（金标 `schools.Charter=1 + schools.FundingType`）。
+      - 概念以**值**存在于库里 → `bird_find <db> <词>`（报出命中列 + 真值样本 + 命中行数）
+      - 概念是**列名**（“district code”搜不到值） → `bird_schema <db> table=<表>` **逐行通读列名**
+        （只 grep `%Type%` 就漏掉了 `District Code` —— **grep 关键词不算读过列名**）
+- [ ] ⭐ **`bird_find` 命中 ≥2 列怎么选？**
+      ① evidence 点名 → 用它；② 只有一列命中 → 用它；
+      ③ 多列命中但**行集合相同** → 任选（差异一定在别处）：实测 `california_schools` 1
+      的 `frpm."School Type" LIKE '%Continuation%'` 与 `"Educational Option Type"='Continuation School'`
+      **都是 459 行、diff=0** —— 我当时把错因归到列上，真实错因是 **NULL 未排除**；
+      ④ 否则选**更专门**的那列（命中行数更少 / 取值集合更窄），**并把结论写进 `db/<库>.md`**。
+
 ## ① 写 `SELECT` 的列时
 
 - [ ] **要 `DISTINCT` 吗？** 一个实体多行时，金标常常要**去重集合**：
