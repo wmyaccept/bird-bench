@@ -867,6 +867,7 @@ def _probe_record(idx: int, db_id: str, kind: str, detail: str):
                 {
                     "idx": idx,
                     "db": db_id,
+                    "ds": DATASET_KEY,
                     "kind": kind,
                     "detail": str(detail)[:200],
                     "ts": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -901,6 +902,12 @@ def log_probe(args):
 
 
 def load_probes() -> dict[int, list[dict]]:
+    """读探针日志。
+
+    ⭐ 按数据集过滤：三个数据集的 idx 体系互相重叠（dev2025 的 344 与 minidev 的 344 是
+    两道完全不同的题），不隔离就会出现“在 A 集查过 ⇒ B 集同号题也能交”的假通过。
+    早期没有 ds 字段的历史记录按“兼容”处理（视为当前数据集）。
+    """
     out: dict[int, list[dict]] = {}
     if not PROBE_LOG.exists():
         return out
@@ -908,6 +915,8 @@ def load_probes() -> dict[int, list[dict]]:
         try:
             rec = json.loads(line)
         except json.JSONDecodeError:
+            continue
+        if rec.get("ds") and rec["ds"] != DATASET_KEY:
             continue
         if isinstance(rec.get("idx"), int):
             out.setdefault(rec["idx"], []).append(rec)
@@ -1324,6 +1333,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("tables", help="只列表名与行数（最便宜的第一步）")
     p.add_argument("db_id")
+    p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）")
     p.set_defaults(func=cmd_tables)
 
     p = sub.add_parser(
@@ -1365,11 +1375,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--table", help="只看某一张表")
     p.add_argument("--samples", type=int, default=3, help="每列显示几个去重样例值（0 关闭）")
     p.add_argument("--timeout", type=float, default=30.0)
+    p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）")
     p.set_defaults(func=cmd_schema)
 
     p = sub.add_parser("desc", help="读人工标注的 database_description CSV")
     p.add_argument("db_id")
     p.add_argument("--table", help="只看某张表")
+    p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）")
     p.set_defaults(func=cmd_desc)
 
     p = sub.add_parser("run", help="在指定库上试跑只读 SQL")

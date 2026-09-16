@@ -50,11 +50,19 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 ### 第 0.5 步｜⭐⭐ **惯例体检：把“猜惯例”换成“查惯例”**（换库时一次性，30 秒）
 
 ```bash
+# 在 pi 会话里直接调工具（等价，推荐）：
+#   bird_brief db_id=<库>            bird_brief db_id=<库> step="4"
+#   bird_conventions db=<库>          bird_cols db_id=<库> pattern="type|option"
+# 在 bash 里批量做（dev/dev2025）时用命令行：
 python tools/bird.py --dataset dev2025 brief <db_id>          # ★ 知识库推送到决策点（换库跑一次，~100 行）
 python tools/bird.py --dataset dev2025 brief --step 4          # 只推“写 SQL / 口径”这一步的片段
 python tools/bird.py --dataset dev2025 conventions --db <db_id>  # 已提交题的金标统计
 python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反查
 ```
+
+> ⚠️ 之前扩展里没有这四个工具（`bird_brief` / `bird_cols` / `bird_conventions` / `bird_audit`），
+> 导致这一整套“标准动作”在 pi 里只能退回 bash，甚至因为拿不到 `--for` 而交不上题。
+> 2026-09-16 已补齐（同上：探针可用 `for_idx` 留痕、`bird_answer` 有 `force`、所有工具可传 `dataset`）。
 
 ⭐ **知识库不再靠“我主动去读”**：`references/*.md` 里带 `<!-- push step=N -->` 标记的片段
 会被 `brief` 按步骤推出来（step=1 读题形状、2 骨架、3.5 概念定位、4 写 SQL/口径、5 判定、7 复盘）。
@@ -147,6 +155,8 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 ### 第 6 步｜**提交（两道机器闸门，过不去交不上）**
 
 ```bash
+# pi 会话里用工具（推荐）：bird_query / bird_find / bird_cols / bird_schema 传 for_idx=<idx>
+#                          bird_answer 的 sql 里带 /* shape: RxC */
 # ① 探针留痕：任何 run / find / cols / schema 带 --for <idx>，就为这题记下“我真的查过”
 python tools/bird.py --dataset dev2025 run <db> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for <idx>
 # ② SQL 最前面写形状声明（预测的结果集形状）
@@ -155,7 +165,7 @@ python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ...
 
 | 闸门 | 规则 | 不过会怎样 |
 |---|---|---|
-| **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（**只有工具真跑过才写得进去**，人无法凭空声明） | `answer` 拒绝记录并告诉你该跑哪条 |
+| **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（**只有工具真跑过才写得进去**，人无法凭空声明），且**按数据集隔离**（minidev 的 344 ≠ dev2025 的 344） | `answer` 拒绝记录并告诉你该跑哪条 |
 | **闸门 2 形状预演** | SQL 里必须有 `/* shape: 行数x列数 */`，且必须与实测一致 | 拒绝记录（不符时告诉你差几行几列） |
 
 确属一目了然的题可以用 `--force` 跳过，但会记进 probe_log、`audit` 会统计 ——

@@ -162,6 +162,35 @@ class BirdBackend {
 
 const DB_ID_DESC = "BIRD 数据库 id，例如 debit_card_specializing / formula_1 / superhero";
 const IDX_DESC = "题目序号 idx（不是 question_id！用 bird_list 查），从 0 开始";
+const DATASET_DESC =
+  "数据集：minidev（默认）| dev（旧版 Dev 1534）| dev2025（新版 Dev 1534，当前主战场）。" +
+  "三者的题号与作答文件是分开的，统计类工具（bird_conventions / bird_audit）要传对，否则看到的是别集的数字。";
+const DatasetType = Type.Optional(Type.String({ description: DATASET_DESC }));
+const FOR_DESC =
+  "把这次探测记给这些题号（数字 / 逗号串 / 数字数组都可，如 344 或 [344,345]）。" +
+  "bird_answer 之前必须有至少一次带 for_idx 的真实探测，否则会被闸门 1 拒绝。";
+const ForIdxType = Type.Optional(
+  Type.Union([Type.Number(), Type.String(), Type.Array(Type.Number())], { description: FOR_DESC }),
+);
+
+/** `--dataset` 是 bird.py 的全局选项，必须放在子命令**之前**。 */
+function withDataset(args: string[], dataset?: string): string[] {
+  return dataset ? ["--dataset", dataset, ...args] : args;
+}
+
+/** for_idx 三种写法统一成 bird.py 的 `--for` 值。 */
+function forArg(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  if (Array.isArray(value)) return value.map((x) => String(x)).join(",");
+  const text = String(value).trim();
+  return text ? text : null;
+}
+
+/** 把 `--for` 插进参数表（只在有值时插）。 */
+function withFor(args: string[], value: unknown): string[] {
+  const forValue = forArg(value);
+  return forValue ? [...args, "--for", forValue] : args;
+}
 
 export default function (pi: ExtensionAPI) {
   let backend: BirdBackend | null = null;
@@ -198,9 +227,13 @@ export default function (pi: ExtensionAPI) {
     description:
       "查看 BIRD 数据集状态：数据是否就绪、题目总数、数据库列表、已作答数量。开始解 BIRD 题目时先调用它。",
     promptSnippet: "查看 BIRD 数据集状态、题目总数与作答进度",
-    parameters: Type.Object({}),
-    async execute(_toolCallId, _params, signal, _onUpdate, ctx) {
-      return toResult(await getBackend(ctx).call(ctx, ["info"], signal));
+    parameters: Type.Object({
+      dataset: DatasetType,
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      return toResult(
+        await getBackend(ctx).call(ctx, withDataset(["info"], params.dataset), signal),
+      );
     },
   });
 
@@ -220,6 +253,7 @@ export default function (pi: ExtensionAPI) {
       ),
       offset: Type.Optional(Type.Number({ description: "从第几条开始，默认 0" })),
       limit: Type.Optional(Type.Number({ description: "返回多少条，默认 20" })),
+      dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["list"];
@@ -227,7 +261,7 @@ export default function (pi: ExtensionAPI) {
       if (params.difficulty) args.push("--difficulty", params.difficulty);
       args.push("--offset", String(params.offset ?? 0));
       args.push("--limit", String(params.limit ?? 20));
-      return toResult(await getBackend(ctx).call(ctx, args, signal));
+      return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
     },
   });
 
@@ -243,9 +277,14 @@ export default function (pi: ExtensionAPI) {
     ],
     parameters: Type.Object({
       idx: Type.Number({ description: IDX_DESC }),
+      dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
-      const result = await getBackend(ctx).call(ctx, ["question", String(params.idx)], signal);
+      const result = await getBackend(ctx).call(
+        ctx,
+        withDataset(["question", String(params.idx)], params.dataset),
+        signal,
+      );
       return toResult(result, { idx: params.idx });
     },
   });
@@ -271,20 +310,27 @@ export default function (pi: ExtensionAPI) {
       samples: Type.Optional(
         Type.Number({ description: "每列显示几个去重样例值，默认 3，传 0 关闭" }),
       ),
+      dataset: DatasetType,
+      for_idx: ForIdxType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const bird = getBackend(ctx);
       if (params.descriptions) {
         const args = ["desc", params.db_id];
         if (params.table) args.push("--table", params.table);
-        return toResult(await bird.call(ctx, args, signal));
+        return toResult(
+          await bird.call(ctx, withFor(withDataset(args, params.dataset), params.for_idx), signal),
+        );
       }
       if (!params.table) {
-        return toResult(await bird.call(ctx, ["tables", params.db_id], signal));
+        const args = withFor(["tables", params.db_id], params.for_idx);
+        return toResult(await bird.call(ctx, withDataset(args, params.dataset), signal));
       }
       const args = ["schema", params.db_id, "--table", params.table];
       if (params.samples !== undefined) args.push("--samples", String(params.samples));
-      return toResult(await bird.call(ctx, args, signal));
+      return toResult(
+        await bird.call(ctx, withFor(withDataset(args, params.dataset), params.for_idx), signal),
+      );
     },
   });
 
@@ -302,11 +348,19 @@ export default function (pi: ExtensionAPI) {
       db_id: Type.String({ description: DB_ID_DESC }),
       sql: Type.String({ description: "单条只读 SQL（SELECT / WITH / EXPLAIN）" }),
       max_rows: Type.Optional(Type.Number({ description: "最多返回多少行，默认 50" })),
+      dataset: DatasetType,
+      for_idx: ForIdxType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["run", params.db_id, params.sql];
       args.push("--max-rows", String(params.max_rows ?? 50));
-      return toResult(await getBackend(ctx).call(ctx, args, signal));
+      return toResult(
+        await getBackend(ctx).call(
+          ctx,
+          withFor(withDataset(args, params.dataset), params.for_idx),
+          signal,
+        ),
+      );
     },
   });
 
@@ -319,17 +373,26 @@ export default function (pi: ExtensionAPI) {
     promptGuidelines: [
       "题干出现'办学类型/资助类型/区码/职务'这类概念名词、而你不确定它对应哪一列时，先 bird_find 反查，再写 SQL。",
       "命中 ≥2 列时不要盲猜：evidence 点名就用它；只有一列命中就用它；多列命中且行集合相同则任选；否则选更专门的那列并把结论记进 db/<库>.md。",
-      "概念是'列名'而不是'值'时（如 'district code'）bird_find 查不到，改用 bird_schema table=<表> 通读列名，别只 grep 关键词。",
+      "概念是'列名'而不是'值'时（如 'district code'）bird_find 查不到，改用 bird_cols 按列名反查。",
+      "探测时一定带上 for_idx：它既是 bird_answer 的闸门凭据，也让探测记录进 probe_log —— 复盘时能看出哪些题是没查就交的。",
     ],
     parameters: Type.Object({
       db_id: Type.String({ description: DB_ID_DESC }),
       word: Type.String({ description: "要反查的概念词（可以是片段，如 'funded'、'Continuation'）" }),
       samples: Type.Optional(Type.Number({ description: "每个命中列显示几个真值，默认 3" })),
+      dataset: DatasetType,
+      for_idx: ForIdxType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["find", params.db_id, params.word];
       if (params.samples !== undefined) args.push("--samples", String(params.samples));
-      return toResult(await getBackend(ctx).call(ctx, args, signal));
+      return toResult(
+        await getBackend(ctx).call(
+          ctx,
+          withFor(withDataset(args, params.dataset), params.for_idx),
+          signal,
+        ),
+      );
     },
   });
 
@@ -337,19 +400,28 @@ export default function (pi: ExtensionAPI) {
     name: "bird_answer",
     label: "BIRD Answer",
     description:
-      "提交第 idx 题的最终 SQL。会先真的在数据库上跑一遍：跑不通会拒绝记录并回报错误，跑得通则把 SQL 记入 work/answers.json。",
+      "提交第 idx 题的最终 SQL。会先真的在数据库上跑一遍：跑不通会拒绝记录并回报错误，跑得通则把 SQL 记入 answers 文件。" +
+      "两道机器闸门：① 本题必须已有带 for_idx 的真实探测；② SQL 最前面必须写 /* shape: 行数x列数 */。",
     promptSnippet: "提交 BIRD 第 idx 题的最终 SQL（先试跑，失败会拒绝记录）",
     promptGuidelines: [
-      "BIRD 每题定稿后用 bird_answer 提交；提交前建议先 bird_query 验证结果不是空集也不是明显异常值。",
+      "bird_answer 的闸门 1：本题在 probe_log 里必须已有记录（只有带 for_idx 的 bird_query/bird_cols/bird_find/bird_schema 才会写入）—— 不能凭空声称'我查过了'。",
+      "bird_answer 的闸门 2：SQL 最前面必须写 /* shape: 行数x列数 */，与实测形状不符会被拒绝（列表题不知几行可写 /* shape: ?x2 */ 只校验列数；计数题/极值题必须写数字）。",
+      "确属一目了然、不必探测的题用 force=true 跳过闸门 —— 会记进 probe_log 并被 bird_audit 统计（强制率本身是要盯的指标）。",
     ],
     parameters: Type.Object({
       idx: Type.Number({ description: IDX_DESC }),
       sql: Type.String({ description: "你为该题定稿的只读 SQL" }),
+      force: Type.Optional(
+        Type.Boolean({ description: "true = 跳过两道闸门（会记进 probe_log，bird_audit 会统计强制率）" }),
+      ),
+      dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["answer", String(params.idx), params.sql];
+      if (params.force) args.push("--force");
       const result = await getBackend(ctx).call(
         ctx,
-        ["answer", String(params.idx), params.sql],
+        withDataset(args, params.dataset),
         signal,
       );
       return toResult(result, { idx: params.idx, sql: params.sql });
@@ -373,13 +445,122 @@ export default function (pi: ExtensionAPI) {
       list_wrong: Type.Optional(
         Type.Number({ description: "列出前 N 道错题及失败原因，默认 10" }),
       ),
+      dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["score"];
       if (params.db) args.push("--db", params.db);
       if (params.difficulty) args.push("--difficulty", params.difficulty);
       args.push("--list-wrong", String(params.list_wrong ?? 10));
-      return toResult(await getBackend(ctx).call(ctx, args, signal));
+      return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
+    },
+  });
+
+  // ────────────────────────────────────────── 知识库 / 诊断类工具（第 0.5、3.5、7 步）
+
+  pi.registerTool({
+    name: "bird_brief",
+    label: "BIRD Brief",
+    description:
+      "决策点推送：把 references 知识库（带 <!-- push step=N --> 标记的片段）与当前库档案（'交题前必查' + 惯例卡片）推到眼前。换库做第一题之前先跑一次 " +
+      "bird_brief db_id=<库>；卡在某一步时用 step 只推那一步。知识库是唯一数据源，所以它推出来的就是文档里写着的。",
+    promptSnippet: "把知识库与当前库档案推到决策点（换库先跑，step 可只推某一步）",
+    promptGuidelines: [
+      "换库第一题之前必须 bird_brief db_id=<库> —— 否则等于靠语感猜库级写法，实测这是准确率最大的单一来源。",
+      "step 取值：1 读题/形状、2 题型骨架、3.5 概念定位、4 写 SQL/口径/方言、5 判定口径、7 复盘归因。",
+    ],
+    parameters: Type.Object({
+      db_id: Type.Optional(Type.String({ description: "数据库 id（给出时同时推该库档案的必查与惯例卡片）" })),
+      step: Type.Optional(Type.String({ description: "只推某一步的片段：1 / 2 / 3.5 / 4 / 5 / 7" })),
+      dataset: DatasetType,
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["brief"];
+      if (params.db_id) args.push(params.db_id);
+      if (params.step) args.push("--step", params.step);
+      return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
+    },
+  });
+
+  pi.registerTool({
+    name: "bird_cols",
+    label: "BIRD Cols",
+    description:
+      "列名反查：把题干里的概念（'district code'、'funding type'、'区号'）当**列名正则**去所有表里找，报出每个命中的 '表.列' + 非空行数/去重数 + 样例值，末尾给裁决提示。" +
+      "概念是取值时用 bird_find，概念是列名时用它 —— 列名靠猜是本项目最大失分源。",
+    promptSnippet: "按列名反查概念落在哪些表的哪些列（含非空/去重行数，用来裁决同名列）",
+    promptGuidelines: [
+      "换库第一题之前跑 bird_cols db_id=<库> pattern=\"type|code|option|status\" 看清这个库的列名惯例。",
+      "命中 ≥2 列时先比'非空行数'：差得远 ⇒ 是粒度不同的两列；再按 evidence 点名 > 更专门 > 行集合相同则任选 来裁决，并把结论写进 db/<库>.md。",
+    ],
+    parameters: Type.Object({
+      db_id: Type.String({ description: DB_ID_DESC }),
+      pattern: Type.String({ description: "列名正则，例如 'type|kind|option'" }),
+      samples: Type.Optional(Type.Number({ description: "每个命中列显示几个真值，默认 3" })),
+      dataset: DatasetType,
+      for_idx: ForIdxType,
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["cols", params.db_id, params.pattern];
+      if (params.samples !== undefined) args.push("--samples", String(params.samples));
+      return toResult(
+        await getBackend(ctx).call(
+          ctx,
+          withFor(withDataset(args, params.dataset), params.for_idx),
+          signal,
+        ),
+      );
+    },
+  });
+
+  pi.registerTool({
+    name: "bird_conventions",
+    label: "BIRD Conventions",
+    description:
+      "用**已提交题的金标**统计这个库的写作惯例：计数形态（COUNT(列)/DISTINCT/COUNT(*)）、主表（FROM 第一张）、SELECT DISTINCT 比例、*100、输出列数分布、JOIN 数分布。" +
+      "换库第 0.5 步必跑 —— 惯例是分布问题，只能用统计回答，不能靠回忆猜。只统计已提交题，不会把未做的题漏进来。",
+    promptSnippet: "查这个库自己的写法惯例（计数形态 / 主表 / DISTINCT 比例），只统计已提交题",
+    promptGuidelines: [
+      "结论写进 db/<库>.md 的惯例卡片；主表'几乎总是 X'就直接照用，'主表不固定'说明本库是错题重灾区，写 SQL 前必须单独确认主表。",
+    ],
+    parameters: Type.Object({
+      db: Type.Optional(Type.String({ description: "只看某个库，例如 card_games" })),
+      examples: Type.Optional(Type.Number({ description: "每个库打印几条计数题金标作形状示范，默认 2" })),
+      dataset: DatasetType,
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["conventions"];
+      if (params.db) args.push("--db", params.db);
+      if (params.examples !== undefined) args.push("--examples", String(params.examples));
+      return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
+    },
+  });
+
+  pi.registerTool({
+    name: "bird_audit",
+    label: "BIRD Audit",
+    description:
+      "复盘归因：EX 与各库正确率 + 错题的**失败类型分布**（列数/列序/行集/值口径/执行失败）+ 错题里'我的结构特征 ≠ 金标'的频次（main/tables/ncount/x100/like/cast…）+ 闸门合规率（探针覆盖/概念探针/--force/写了形状声明）。" +
+      "读法：main 差得多 ⇒ 概念定位或主表错；count 差得多 ⇒ 计数形态错；x100 ⇒ 百分比口径错。",
+    promptSnippet: "复盘：错因分布 + 结构特征差异频次 + 闸门合规率",
+    promptGuidelines: [
+      "每批 10–20 题之后跑一次，按错因分类再回去改 skill，而不是重复猜。",
+      "合规率里'探针覆盖'低 ⇒ 这批是靠 --force 交的，流程没真走。",
+    ],
+    parameters: Type.Object({
+      difficulty: Type.Optional(
+        Type.String({ description: "只复盘某个难度：simple | moderate | challenging" }),
+      ),
+      db: Type.Optional(Type.String({ description: "只复盘某个库" })),
+      list: Type.Optional(Type.Number({ description: "每类失败原因打印几条例子，默认 3" })),
+      dataset: DatasetType,
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["audit"];
+      if (params.difficulty) args.push("--difficulty", params.difficulty);
+      if (params.db) args.push("--db", params.db);
+      args.push("--list", String(params.list ?? 3));
+      return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
     },
   });
 

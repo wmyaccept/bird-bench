@@ -115,8 +115,26 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 | 闸门 | 规则 |
 |---|---|
-| 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（只有工具真跑过才写得进去） |
-| 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致 |
+| 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（只有工具真跑过才写得进去），**且按数据集隔离**（dev2025 的 344 ≠ minidev 的 344） |
+| 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致（行数可写 `?`，那就只校验列数） |
+
+### ⭐ pi 里的工具与上面的命令一一对应（同一套后端，同一套闸门）
+
+| pi 工具 | 等价的 CLI | 关键参数 |
+|---|---|---|
+| `bird_brief` | `brief [db] [--step N]` | `db_id` / `step` |
+| `bird_cols` | `cols <db> <正则>` | `for_idx` |
+| `bird_conventions` | `conventions --db <db>` | `db` / `examples` |
+| `bird_audit` | `audit [--difficulty D] [--db X]` | `difficulty` / `db` / `list` |
+| `bird_query` | `run <db> <sql>` | **`for_idx`**（留痕）+ `max_rows` |
+| `bird_find` | `find <db> <词>` | **`for_idx`** |
+| `bird_schema` | `tables` / `schema` / `desc` | **`for_idx`** |
+| `bird_answer` | `answer <idx> <sql>` | `force`（跳过闸门，会留痕） |
+| 所有工具 | — | `dataset`：`minidev`（默认）/ `dev` / `dev2025` |
+
+> 2026-09-16 修：此前扩展里根本没有 `brief/cols/conventions/audit`，`bird_query` 也无法带 `--for`、
+> `bird_answer` 没有 `--force` —— 后果是在 pi 里做题会被自己的闸门 1 100% 拦住（只能退回 bash）。
+> 现已补齐，并用 `D:/tmp/bird/p0_smoke.cjs`（41 项断言，真实调用每个工具）逐条验证。
 
 ```bash
 "D:/python/python" tools/bird.py --dataset dev2025 answer 344 "/* shape: 1x1 */ SELECT COUNT(...) FROM ..."
