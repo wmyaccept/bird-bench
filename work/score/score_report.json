@@ -4,9 +4,9 @@
   "answered": 949,
   "unanswered": 585,
   "total_questions": 1534,
-  "correct": 710,
-  "ex_percent": 74.82,
-  "ex_percent_full_set": 46.28,
+  "correct": 713,
+  "ex_percent": 75.13,
+  "ex_percent_full_set": 46.48,
   "results": [
     {
       "idx": 0,
@@ -216,7 +216,7 @@
       "db_id": "california_schools",
       "difficulty": "simple",
       "correct": false,
-      "detail": "预测 SQL 执行失败: OperationalError: interrupted"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 52,
@@ -1622,8 +1622,8 @@
       "idx": 386,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 387,
@@ -3156,7 +3156,7 @@
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 695,
@@ -4506,8 +4506,8 @@
       "idx": 978,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 3 行 4 列 / 金标 2 行 3 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 979,
@@ -4954,8 +4954,8 @@
       "idx": 1092,
       "db_id": "european_football_2",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 4 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1097,
