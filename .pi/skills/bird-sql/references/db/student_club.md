@@ -48,3 +48,7 @@ event.event_id            = attendance.link_to_event
 - **“full name” 没 evidence 时可能是 1 列**：`1366`“List all the members”金标 1 列（我给了
   `first_name, last_name` 两列）；而 `1414` 的 evidence 明写“full name refers to first_name, last_name”（两列）。
   ⇒ **evidence 写了就按 evidence，没写就两种都可能。**
+
+⚠️ **`budget` 的列名**（实测 `1450`）：`budget_id, category, spent, remaining, amount, event_status, link_to_event`。
+题干说 “budget more than forty” → 用 `budget.amount > 40`（**不是** `spent`，也不是 `planned_amount`）。
+`expense.cost` 才是“花了多少钱”（`incurred less than 50USD` → `expense.cost < 50`）。

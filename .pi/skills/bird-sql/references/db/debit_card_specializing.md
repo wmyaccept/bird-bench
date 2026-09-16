@@ -22,3 +22,10 @@ yearmonth ──CustomerID──── customers（Date 'YYYYMM'，覆盖 2011-2
 - 消费额 `yearmonth.Consumption`（一人一月一行）；交易金额 = `Amount * Price`
   （`Price` 是单价，不是总价）。
 - `Currency` 只有 `'CZK'` / `'EUR'`；`Segment` 是 `LAM`/`SME`/`KAM`。
+
+⚠️ **日度交易在 `transactions_1k`，不是 `transactions`**（实测 `1511`/`1512`/`1524`）：
+- 库里只有 `customers / gasstations / products / transactions_1k / yearmonth`
+- `yearmonth.Date` **只有月度**（`'YYYY-MM'`）→ 题干给到具体某一天（如 `2012/8/25`）时必须用
+  `transactions_1k`（列：`TransactionID, Date, Time, CustomerID, CardID, GasStationID, ProductID, Amount, Price`）
+- 我写 `FROM transactions` 直接 `no such table`，用 `yearmonth` 查某天 → **0 行**（空集是硬触发器）
+- `gasstations.Segment` 取值只有：`Value for money` / `Premium` / `Other` / `Noname` / `Discount`

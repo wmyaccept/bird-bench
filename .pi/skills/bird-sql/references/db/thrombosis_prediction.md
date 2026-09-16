@@ -33,3 +33,8 @@ Patient ──ID── Examination（就诊：Diagnosis / Symptoms / Thrombosis�
 ⚠️ **本库错误率 40%，其中 17 道都是“形状对、值不同”** —— 说明存在系统性口径偏差
 （计数用 `COUNT(*)` 还是 `COUNT(DISTINCT ID)`、要不要 JOIN `Examination`）。
 ⇒ 这种库不适合“逐题猜”，应该先做一次**专项口径实验**（把几种计数/JOIN 组合成一行摆出来对比）。
+
+⚠️ **数值列可能带 `<` / `>` 前缀**（evidence 会提醒：“excluding any '<' or '>' prefix if present”）：
+比较前要 `CAST(REPLACE(REPLACE(CAST(col AS TEXT),'<',''),'>','') AS REAL)`，
+否则 `'<5'` 会被 CAST 成 0，把不该命中的行算进来。
+另：**“latest record of each patient” 要 `Date=(SELECT MAX(Date) FROM Laboratory WHERE ID=...)`**。

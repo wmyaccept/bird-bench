@@ -4,9 +4,9 @@
   "answered": 949,
   "unanswered": 585,
   "total_questions": 1534,
-  "correct": 708,
-  "ex_percent": 74.6,
-  "ex_percent_full_set": 46.15,
+  "correct": 710,
+  "ex_percent": 74.82,
+  "ex_percent_full_set": 46.28,
   "results": [
     {
       "idx": 0,
@@ -216,7 +216,7 @@
       "db_id": "california_schools",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+      "detail": "预测 SQL 执行失败: OperationalError: interrupted"
     },
     {
       "idx": 52,
@@ -3156,7 +3156,7 @@
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
     },
     {
       "idx": 695,
@@ -4506,8 +4506,8 @@
       "idx": 978,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "列数不同（预测 3 行 4 列 / 金标 2 行 3 列）"
     },
     {
       "idx": 979,
@@ -4696,14 +4696,14 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同、首列也对得上，但整行元组不同（预测 5 行 1 列 / 金标 5 行 1 列，多出 0 组 / 少 3 组）—— 大概率是列顺序或多选了列"
+      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
     },
     {
       "idx": 1027,
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同、首列也对得上，但整行元组不同（预测 10 行 1 列 / 金标 10 行 1 列，多出 0 组 / 少 7 组）—— 大概率是列顺序或多选了列"
+      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
     },
     {
       "idx": 1033,
@@ -4954,8 +4954,8 @@
       "idx": 1092,
       "db_id": "european_football_2",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 4 行 1 列）"
     },
     {
       "idx": 1097,
@@ -5025,14 +5025,14 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 10848 行 1 列 / 金标 1147 行 1 列）"
+      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
     },
     {
       "idx": 1128,
       "db_id": "european_football_2",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1129,
@@ -5367,8 +5367,8 @@
       "idx": 1260,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 40 行 1 列 / 金标 11 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1261,
@@ -5395,8 +5395,8 @@
       "idx": 1278,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1280,
@@ -6138,7 +6138,7 @@
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 9438 行 1 列 / 金标 1424 行 1 列）"
+      "detail": "行数不同（预测 1425 行 1 列 / 金标 1424 行 1 列）"
     },
     {
       "idx": 1434,
@@ -6207,8 +6207,8 @@
       "idx": 1450,
       "db_id": "student_club",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 33 行 2 列 / 金标 2 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1459,
