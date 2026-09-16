@@ -25,3 +25,11 @@ superhero ──id── hero_power ──power_id── superpower
 - 实测全量：**81 道 75 对 / 6 错（92.6%）**。未解的四道都是口径类：
   `720`（“over 15 powers”：金标 71 行 vs 我 102 行，已确认 `hero_power` 无重复行 —— 仍未解释）、
   `741`/`767`/`791`（极值/均值口径）。
+
+## 惯例卡片（实测统计，n=95 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 25 / DISTINCT 0 / `COUNT(*)` 3 / 无 67　⇒ 本库以 `COUNT(列)` 为主（col 25 / DISTINCT 0 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：superhero 78 / hero_power 10 / hero_attribute 4 / publisher 2 / superpower 1　⇒ 主表几乎总是 **superhero**（78/95）
+- `SELECT DISTINCT`：5/95　|　`*100`：0　|　`BETWEEN`：1
+- 输出列数分布：1列×90 / 2列×5
+- JOIN 数分布：0:16, 1:58, 2:19, 3:2

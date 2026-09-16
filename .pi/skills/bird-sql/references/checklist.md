@@ -5,6 +5,10 @@
 
 ## A. 形状（先看这个，形状错 = 100% 错）
 
+- [ ] **0. 这个库的惯例卡片读了吗？**（**换库第一题之前**必须跑过一次）
+      `python tools/bird.py --dataset dev2025 conventions --db <db_id>` → 看计数形态分布、
+      主表分布、`SELECT DISTINCT` 比例、`*100`。结论在 `db/<库>.md` 末尾的“惯例卡片”。
+      ⇒ 实测：不看惯例、靠语感猜库级写法，是本项目 68% EX 的主要来源。
 - [ ] **1. 列数 = 题干提到的概念数？** 三种偏差都实测过：
       金标少给（`card_games` 435「How many X? **List out the id**」→ 只要 id）、
       金标多给（`toxicology` 264「labels for A, B and C」→ **2 列**，多一个实体 id）、
@@ -15,6 +19,9 @@
       金标按题干顺序 `City, Low Grade, School` 排，就成了 ❌。
       ⇒ **写 `SELECT` 时按题干从左到右出现的顺序列字段**（“In which city… what is its lowest grade… Indicate the school name”
       → City, Low Grade, School）。
+- [ ] **2b. 主表和表集合对了吗？** ① `FROM` 第一张表按惯例卡片选（主表决定**行宇宙**：
+      `thrombosis_prediction` 三表 ID 覆盖率 1238/302/70，选错 = 换了候选集）；
+      ② **表集合最小化** —— 只 JOIN 题干真用到的表（实测 24：多 JOIN `schools` → 999 vs 金标 1068）。
 - [ ] **2. 行数量级对吗？** 心里估一下：问"哪个/谁"→ 通常 1 行；"列出 X"→ 几十行；
       "多少 X"→ 1 行 1 列。**对不上量级就是口径或 JOIN 错了**，别硬交。
 - [ ] **3. 要不要 `DISTINCT`？** ← 看 `db/<当前库>.md` 的"必查"。
@@ -32,8 +39,10 @@
       `card_games`/`thrombosis_prediction` **首字母大写**；`california_schools` **小写 f**。
       **evidence 给的值不一定是库里的写法。**
 - [ ] **5b. 题干里的每个「概念名词」都定位过了吗？**（**不是值，是概念** —— “办学类型/资助类型/区号/职务/地名”）
-      → 先 `bird_find <db> <词>`（概念以值存在）或 `bird_schema --table <表>` 通读列名（概念是列名），
-      **猜列名是失分最大头**（`california_schools` 12 道挂起题里 6 道如此）。
+      → `bird.py cols <db> "type|code|option"`（概念是**列名**，一次列出表.列 + 非空/去重行数）
+      或 `find <db> <词>`（概念以**值**存在）。**猜列名是失分最大头**
+      （`california_schools` 12 道挂起题里 6 道如此；本轮 42 道错题里 `main` 差 20 道）。
+      命中多列时：evidence 点名 > 只有一列命中 > 行集合相同则任选 > 选更专门那列（写回库档案）。
 - [ ] **6. 日期是哪种格式？** `'YYYY-MM-DD'` / `'YYYYMM'` / `'YYYY-MM-DD HH:MM:SS.0'` 都出现过。
       **动手前 `SELECT 该列 FROM 表 LIMIT 1`。**（`financial` 的旧笔记是 Mini-Dev 的 `'930101'`，Dev 已改）
 - [ ] **7. 多值串列用 `=` 还是 `LIKE`？** 先试精确匹配：
@@ -45,8 +54,10 @@
       阈值、`DISTINCT`、分母、列名、单位。（evidence 写 `COUNT(full_name)` 就别用 `COUNT(*)`）
 - [ ] **9. 聚合函数旁边还有非聚合列吗？** 有 → **必须 `GROUP BY`**
       （`student_club` 1467：忘了 → 1 行 vs 金标 7 行）。
-- [ ] **10. 分母是"行数"还是"去重实体数"？** 先试行数；题干主语是**实体**且 JOIN 会扇出时
-      用 `COUNT(DISTINCT 实体id)`（`codebase_community` 709：2 vs 4）。
+- [ ] **10. 计数形态对不对？默认 `COUNT(主表.主键列)`**（实测 11 库 1057 道金标：`COUNT(列)` 占绝对多数，
+      `COUNT(*)` 很少；`COUNT(DISTINCT)` 只在 **financial / thrombosis** 常见）。
+      分母是“行数”还是“去重实体数”→ 先看惯例卡片；题干主语是**实体**且 JOIN 会扇出时用
+      `COUNT(DISTINCT 实体id)`（`codebase_community` 709：2 vs 4）。
 - [ ] **11. 取极值时查并列了吗？** `superhero` 837（`MIN=5` 有 **10 个**并列）、
       `financial` 101（**315 个** account 并列）。
       行数不对 → 换 `WHERE col = (SELECT MIN/MAX(col) ...)`。
@@ -78,4 +89,5 @@
 - ⚠️ **同一题不试第 3 种写法**：skill 写明"先试 A 不行改 B"的照做；B 也不行就**交 B**、
   记入挂起清单、做下一题。正确的修法是把根因写回 `db/<库>.md`，下次同类题一次做对。
 - **同库连做**（schema 认知跨题复用）；一批 10–20 题一起提交，再跑一次 `bird_score`。
-- 每批按**错因分类**记录：是"值差一个"还是"行数差一截"？前者是口径问题，后者是条件问题。
+- 每批按**错因分类**记录（用 `bird.py audit` 自动出分布）：是"值差一个"还是"行数差一截"？
+  前者是口径/惯例问题，后者是条件/表集合问题。

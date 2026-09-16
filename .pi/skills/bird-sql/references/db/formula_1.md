@@ -62,3 +62,11 @@ races ──circuitId── circuits
 13. ⚠️ **表名是驼峰，不是 snake_case**（实测连续踩坑）：`constructorStandings`、`constructorResults`、
     `driverStandings`、`lapTimes`、`pitStops`。写 SQL 前先用 `bird_schema formula_1` 确认表名，
     不要凭直觉写 `constructor_standings` / `lap_times`（会直接 `no such table`）。
+
+## 惯例卡片（实测统计，n=145 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 18 / DISTINCT 3 / `COUNT(*)` 3 / 无 121　⇒ 本库以 `COUNT(列)` 为主（col 18 / DISTINCT 3 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：circuits 41 / races 26 / drivers 26 / results 15 / qualifying 11　⇒ 主表**不固定**（circuits 最多也只占 41/145）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：24/145　|　`*100`：0　|　`BETWEEN`：2
+- 输出列数分布：1列×110 / 2列×21 / 3列×12 / 4列×2
+- JOIN 数分布：0:43, 1:82, 2:19, 3:1

@@ -12,8 +12,12 @@
       「district code」猜成 `schools.DOC`（金标 `frpm."District Code"`）、
       「locally funded charter」猜成 `frpm` 那套（金标 `schools.Charter=1 + schools.FundingType`）。
       - 概念以**值**存在于库里 → `bird_find <db> <词>`（报出命中列 + 真值样本 + 命中行数）
-      - 概念是**列名**（“district code”搜不到值） → `bird_schema <db> table=<表>` **逐行通读列名**
-        （只 grep `%Type%` 就漏掉了 `District Code` —— **grep 关键词不算读过列名**）
+      - 概念是**列名**（“district code”搜不到值） → ⭐ **`bird.py cols <db> "code|type|option"`**
+        （一次列出所有匹配的 `表.列` + **非空行数 / 去重数**）；`bird_schema <db> table=<表>` 通读列名也行，
+        但只 grep `%Type%` 会漏掉 `District Code` —— **grep 关键词不算读过列名**。
+      - 概念是**库级写法**（该不该 DISTINCT / 主表是谁 / 计数怎么写） → `bird.py conventions --db <db>`
+        （**换库必跑**；实测 `COUNT(列)` 是 11 库的绝对主流，`COUNT(DISTINCT)` 只在 financial、thrombosis 常见）
+      - ⭐ **命中 ≥2 列时先比“非空行数”**：行数差得远 ⇒ 是**不同粒度**的两列，选与题干实体粒度一致的那列。
 - [ ] ⭐ **`bird_find` 命中 ≥2 列怎么选？**
       ① evidence 点名 → 用它；② 只有一列命中 → 用它；
       ③ 多列命中但**行集合相同** → 任选（差异一定在别处）：实测 `california_schools` 1
@@ -34,14 +38,26 @@
       ⇒ **拿不准时，题干里的每个名词都当成一列来给。**
 - [ ] **"full name" 是 1 列还是 2 列？** `student_club` 1366 实测是 **1 列**，而 1414 的 evidence
       明写 `first_name, last_name`（2 列）→ **evidence 写了就按 evidence。**
-- [ ] **`COUNT(*)` 还是 `COUNT(DISTINCT 实体id)`？** 题干主语是**实体**且 JOIN 会扇出时用后者：
-      `codebase_community` 709「how many of the **posts**」→ `COUNT(DISTINCT posts.Id)`=**2**（`COUNT(*)`=4 错）。
+- [ ] ⭐⭐ **计数形态三选一：默认 `COUNT(主表.主键列)`**（不是 `COUNT(*)`、也不是 `COUNT(DISTINCT)`）。
+      实测 11 库 1057 道已提交题的金标：`COUNT(列)` 全面占优（codebase 46 / superhero 21 / student_club 25 /
+      card_games 18 / california 29 …），`COUNT(DISTINCT)` 只在 **financial（23）和 thrombosis（29）** 常见，
+      `COUNT(*)` 很少。⇒ **先看 `db/<库>.md` 末的“惯例卡片”，再决定**：
+      - 本库以 `COUNT(列)` 为主 → `COUNT(T1.主键列)`（如 `COUNT(T1.member_id)`、`COUNT(T2.driverId)`）
+      - 本库以 `COUNT(DISTINCT)` 为主 / evidence 明写 distinct → `COUNT(DISTINCT T1.主键列)`
+      - 题干主语是**实体**且 JOIN 会扇出 → 也要去重（`codebase_community` 709：`COUNT(DISTINCT posts.Id)`=2，`COUNT(*)`=4 错）
 - [ ] ⭐ **列的顺序 = 题干提到的顺序**（`set()` 判定 ⇒ **列序不同也是 0 分**）：
       实测 `california_schools` 81：列集合一模一样，我写 `School, City, Low Grade`、
       金标按题干顺序 `City, Low Grade, School` → ❌。
       ⇒ 写 `SELECT` 前先把题干里的概念**从左到右标个 1,2,3**，照序输出。
 
 ## ② 写 `FROM` / `JOIN` 时
+
+- [ ] ⭐⭐ **主表先定，再写 JOIN**：`FROM` 第一张表按 `db/<库>.md` 的惯例卡片选。
+      多表库里**主表决定行宇宙**：`thrombosis_prediction` 三表整体 ID 覆盖率 1238 / 302 / **70**
+      ⇒ 选错表就是换了候选集，**形状再对值也必不同**（本轮 42 道错题里 20 道与此相关）。
+- [ ] ⭐ **表集合最小化**：只 JOIN 题干真正用到的表。实测 `california_schools` 24：我多 JOIN 了一张
+      `schools` → 999 行，金标只用 `satscores JOIN frpm` → 1068 行。
+      （与下面“JOIN 隐式过滤”不矛盾：先用**最小表集**，行数偏少再加表）
 
 - [ ] **连接键是哪一套 ID？** 同一个库常有多套：
       `european_football_2`（`id` vs `player_api_id`）、`codebase_community`、`formula_1`（`raceId`=race number）。

@@ -74,3 +74,11 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
 题干说 “the post with only one comment and parent id 107829” 时，
 用 `comments.PostId=107829` 会返回 **0 行**（该 id 是帖子的父帖 id）。
 凡是出现 "parent id / parent post"，先想 `posts.ParentId`。
+
+## 惯例卡片（实测统计，n=172 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 53 / DISTINCT 8 / `COUNT(*)` 3 / 无 108　⇒ 本库以 `COUNT(列)` 为主（col 53 / DISTINCT 8 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：users 71 / posts 44 / comments 22 / badges 15 / votes 8　⇒ 主表**不固定**（users 最多也只占 71/172）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：9/172　|　`*100`：2　|　`BETWEEN`：7
+- 输出列数分布：1列×146 / 2列×25 / 3列×1
+- JOIN 数分布：0:49, 1:109, 2:14

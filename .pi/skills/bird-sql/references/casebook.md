@@ -1005,3 +1005,64 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 
 本库三表的 ID 覆盖率差异巨大（`Patient` 1238 / `Laboratory` 302 / `Examination` 70 个可连），
 所以**任何“选哪张表做主表”决定答案**。凡计数/极值题，先问一句：**金标的主表是 Patient 还是 Examination？**
+
+---
+
+## 第 26 轮｜⭐ 结构性复盘：为什么 68%？把"猜"换成"查"
+
+### 数据（`bird.py audit --difficulty moderate`，132 已答）
+
+```
+EX = 68.18%     错题 42 道
+失败类型：列数 2 | 行集不同 9 | **值/口径不同 31（74%）**
+结构特征差异频次：main 20/42(48%) · tables 13 · count 13 · njoin 9 · x100 5
+```
+
+### 根因（不是"手滑"，是 skill 里没有"查"的环节）
+
+1. **`main` 差 20/42** —— 我一直在用"英文语感 + evidence"猜该用哪张表。
+   而**主表决定行宇宙**（`thrombosis_prediction` 三表 ID 覆盖率 1238/302/**70**），
+   选错表 = 换了候选集，形状再对值也必错。
+2. **`count` 差 13/42** —— `COUNT(*)` / `COUNT(列)` / `COUNT(DISTINCT)` 三选一，
+   我按印象选，**而这是库级惯例**。
+3. 关键洞见：**skill 里唯一的"查"只有 `bird_find`（按取值）**，
+   缺"按列名查"和"按库查惯例"两个方向 → 只能猜。
+
+### 三份实测证据（不再是 1–2 道题的过拟合）
+
+| 库 | COUNT(列) | COUNT(DISTINCT) | COUNT(*) | 主表(FROM 第一张) |
+|---|---|---|---|---|
+| thrombosis | 19 | **29** | 6 | **Patient 113** / Examination 12 |
+| financial | 13 | **23** | 6 | client 16 / account 14（JOIN 可到 15，多 `WITH`） |
+| california_schools | **29** | 4 | 3 | schools 32 / frpm 23 / satscores 22（无单一主表） |
+| card_games | 18 | 4 | 4 | cards 92 / sets 25 |
+| superhero | 21 | 0 | 3 | superhero 68 / hero_power 7 |
+| codebase / formula_1 / student_club / european_football_2 / debit_card / toxicology | 12–46 | 1–8 | 0–3 | 各自有明确实体主表 |
+
+⇒ **`COUNT(主表.主键列)` 才是金标默认形态**（11 库 1057 道），`COUNT(DISTINCT)` 只在 financial/thrombosis 常见。
+
+### 修法（三件机器，全部已落地）
+
+1. **`bird.py cols <db> <正则>`** —— 列名反查：列出所有匹配的 `表.列` + **非空/去重行数**。
+   实测 `cols california_schools "type|option"` 一次吐出 9 个候选列（含当初漏掉的 `frpm."District Code"`）。
+2. **`bird.py conventions --db X`** —— 只统计**已提交题**的金标，输出该库的计数形态/主表/DISTINCT/`*100`/JOIN 分布。
+3. **`bird.py audit`** —— 复盘一键出「失败类型分布 + 结构特征差异频次 + 并排例子」。
+4. 11 个库的**惯例卡片**已写进各自 `db/<库>.md` 末尾（`mk_cards.py` 可刷新）。
+
+### 流程改造（SKILL.md）
+
+- 新增 **第 0.5 步 惯例体检**（换库必跑 `conventions`）
+- 第 3.5 步从"两个方向"扩成 **三向概念定位**（值 → `find`；列名 → `cols`；库级写法 → `conventions`），
+  并要求**显式写出**「概念 → 候选(表.列) → 裁决依据」
+- 第 4 步新增**表与计数形态固定动作**（主表按惯例、表集合最小化、计数默认 `COUNT(主表.主键列)`、不随手 DISTINCT）
+- 第 7 步复盘改用 `audit` 先拿分布
+
+### 验证（新库 `debit_card_specializing` 剩 5 道，用新流程）
+
+**4 ✅ / 1 ❌**，且唯一的错题 `1520` **形状（2 行 3 列）是对的**，只值不同。
+⇒ `main` / `count` 两类错因在本批**归零**（对比 california_schools 47.8%）。
+
+### 局限（诚实记账）
+
+- 惯例卡片需要**已答题量**：`toxicology` 靠 minidev 的 81 道才凑出来；全新库只能靠第 0 步结构体检。
+- **金标自身 bug**（OR/AND 缺括号、`DENSE_RANK` 并列、`<=` vs `<`）无法用规则预测 ⇒ 这部分是硬性上限。

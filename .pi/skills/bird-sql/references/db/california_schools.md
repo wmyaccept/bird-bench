@@ -71,3 +71,11 @@ satscores ──cds ───┘
   题干说 "postal/mailing street" → 用 `Mail*`；说 "unabbreviated" → 用不带 `Abr` 的。
 - "type of education offered" → `EdOpsName`（实测 `idx 42` 命中，值为 `'Traditional'`）。
 - 考试优秀率：`Excellence rate = NumGE1500 / NumTstTakr`。
+
+## 惯例卡片（实测统计，n=85 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 12 / DISTINCT 5 / `COUNT(*)` 3 / 无 65　⇒ 本库以 `COUNT(列)` 为主（col 12 / DISTINCT 5 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：schools 35 / satscores 26 / frpm 24　⇒ 主表**不固定**（schools 最多也只占 35/85）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：3/85　|　`*100`：13　|　`BETWEEN`：6
+- 输出列数分布：1列×41 / 2列×15 / 3列×8 / 12列×4 / 13列×3 / 6列×3
+- JOIN 数分布：0:17, 1:50, 3:3, 4:6, 5:6, 7:1, 8:1, 9:1

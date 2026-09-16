@@ -95,6 +95,20 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 "D:/python/python" tools/bird.py --dataset dev score --list-wrong 12
 ```
 
+### 三个元工具（写 SQL 前 / 复盘时必用）
+
+```bash
+# ① 换库第一题之前：查**这个库自己**的写法惯例（只统计已提交题，不污染未做的题）
+"D:/python/python" tools/bird.py --dataset dev2025 conventions --db <db_id>
+# ② 概念是「列名」时反查：候选 表.列 + 非空/去重行数（配合按取值的 bird_find）
+"D:/python/python" tools/bird.py --dataset dev2025 cols <db_id> "type|code|option"
+# ③ 复盘：EX + 各库正确率 + 失败类型分布 + 结构特征差异频次（main/count/x100…）
+"D:/python/python" tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
+```
+
+> ① 的结论写进 `db/<库>.md` 末尾的「惯例卡片」（11 个库已生成）。
+> 不做①直接做题 = 靠语感猜库级写法，实测这是 68% EX 的最大单一来源。
+
 ## 硬性规则
 
 - **⭐ 做题时不许思考，思考只在复盘时。** 以 skill 为准，一次定稿就提交；

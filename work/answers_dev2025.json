@@ -1055,5 +1055,10 @@
   "1305": "SELECT COUNT(T1.ID) FROM Patient T1 JOIN Laboratory T2 ON T1.ID=T2.ID WHERE T1.Admission='+' AND T2.WBC BETWEEN 3.5 AND 9.0\t----- bird -----\tthrombosis_prediction",
   "1308": "SELECT COUNT(T1.ID) FROM Examination T1 JOIN Laboratory T2 ON T1.ID=T2.ID WHERE T2.PLT>100 AND T2.PLT<400 AND T1.Diagnosis IS NOT NULL\t----- bird -----\tthrombosis_prediction",
   "1309": "SELECT T2.PLT FROM Patient T1 JOIN Laboratory T2 ON T1.ID=T2.ID WHERE T2.PLT>100 AND T2.PLT<400 AND T1.Diagnosis='MCTD'\t----- bird -----\tthrombosis_prediction",
-  "1311": "SELECT COUNT(T1.ID) FROM Examination T1 JOIN Laboratory T2 ON T1.ID=T2.ID WHERE T1.Thrombosis IN ('1','2') AND T2.PT<14\t----- bird -----\tthrombosis_prediction"
+  "1311": "SELECT COUNT(T1.ID) FROM Examination T1 JOIN Laboratory T2 ON T1.ID=T2.ID WHERE T1.Thrombosis IN ('1','2') AND T2.PT<14\t----- bird -----\tthrombosis_prediction",
+  "1474": "SELECT T1.CustomerID FROM customers T1 JOIN yearmonth T2 ON T1.CustomerID=T2.CustomerID WHERE T1.Currency='CZK' AND T2.Date BETWEEN '201101' AND '201112' GROUP BY T1.CustomerID ORDER BY SUM(T2.Consumption) DESC LIMIT 1\t----- bird -----\tdebit_card_specializing",
+  "1475": "SELECT COUNT(*) FROM (SELECT T1.CustomerID FROM customers T1 JOIN yearmonth T2 ON T1.CustomerID=T2.CustomerID WHERE T1.Segment='KAM' AND T2.Date BETWEEN '201201' AND '201212' GROUP BY T1.CustomerID HAVING SUM(T2.Consumption)<30000)\t----- bird -----\tdebit_card_specializing",
+  "1487": "SELECT T1.CustomerID FROM customers T1 JOIN yearmonth T2 ON T1.CustomerID=T2.CustomerID WHERE T1.Segment='LAM' AND T1.Currency='EUR' AND T2.Date='201310' ORDER BY T2.Consumption DESC LIMIT 1\t----- bird -----\tdebit_card_specializing",
+  "1516": "SELECT COUNT(*) FROM transactions_1k T1 JOIN customers T2 ON T1.CustomerID=T2.CustomerID WHERE T1.Date='2012-08-26' AND T1.Time<'13:00:00' AND T2.Currency='CZK'\t----- bird -----\tdebit_card_specializing",
+  "1520": "SELECT T2.Consumption, T2.Date, T1.Price FROM transactions_1k T1 JOIN yearmonth T2 ON T1.CustomerID=T2.CustomerID WHERE T1.Date='2012-08-24' AND T1.Price=124.05 AND T2.Date='201201'\t----- bird -----\tdebit_card_specializing"
 }

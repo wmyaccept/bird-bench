@@ -106,3 +106,11 @@ WHERE <T1 上的条件> AND <T2/T3 上的条件>
 
 - ⭐ **诊断名一律 `=` 精确**（1264 `='APS'`、1289 `='SJS'` 金标；用 `LIKE '%X%'` 会吃进组合诊断行）；
   唯一例外是 `SLE` 有时写 `LIKE '%SLE%'`（1279）——两种在无组合行时结果相同。
+
+## 惯例卡片（实测统计，n=142 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 20 / DISTINCT 30 / `COUNT(*)` 6 / 无 86　⇒ 本库**偏 DISTINCT**（30 vs col 20）⇒ 计数写 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：Patient 120 / Examination 12 / Laboratory 10　⇒ 主表几乎总是 **Patient**（120/142）
+- `SELECT DISTINCT`：28/142　|　`*100`：8　|　`BETWEEN`：12
+- 输出列数分布：1列×111 / 2列×17 / 3列×12 / 4列×2
+- JOIN 数分布：0:22, 1:106, 2:13, 4:1

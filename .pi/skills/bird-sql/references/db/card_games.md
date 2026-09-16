@@ -84,3 +84,11 @@ cards ──uuid── legalities / rulings / foreign_data
     - `legalities.format`：小写（`legacy` / `oldschool` / `duel` / `pauper` …）
 12. **`faceConvertedManaCost` 最大值 7.0 有 22 张并列**；`convertedManaCost` 同理 ——
     “最高 X 的前 N 张”类题排序不稳定，`514`/`392`/`342` 都因并列而错。
+
+## 惯例卡片（实测统计，n=138 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 21 / DISTINCT 4 / `COUNT(*)` 6 / 无 107　⇒ 本库以 `COUNT(列)` 为主（col 21 / DISTINCT 4 / star 6）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：cards 102 / sets 26 / foreign_data 5 / set_translations 4 / legalities 1　⇒ 主表几乎总是 **cards**（102/138）
+- `SELECT DISTINCT`：32/138　|　`*100`：5　|　`BETWEEN`：1
+- 输出列数分布：1列×120 / 2列×15 / 3列×3
+- JOIN 数分布：0:76, 1:60, 2:1, 3:1

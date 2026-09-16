@@ -29,3 +29,11 @@ yearmonth ──CustomerID──── customers（Date 'YYYYMM'，覆盖 2011-2
   `transactions_1k`（列：`TransactionID, Date, Time, CustomerID, CardID, GasStationID, ProductID, Amount, Price`）
 - 我写 `FROM transactions` 直接 `no such table`，用 `yearmonth` 查某天 → **0 行**（空集是硬触发器）
 - `gasstations.Segment` 取值只有：`Value for money` / `Premium` / `Other` / `Noname` / `Discount`
+
+## 惯例卡片（实测统计，n=81 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 13 / DISTINCT 2 / `COUNT(*)` 2 / 无 64　⇒ 本库以 `COUNT(列)` 为主（col 13 / DISTINCT 2 / star 2）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：transactions_1k 40 / customers 23 / yearmonth 11 / gasstations 7　⇒ 主表**不固定**（transactions_1k 最多也只占 40/81）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：10/81　|　`*100`：10　|　`BETWEEN`：4
+- 输出列数分布：1列×75 / 2列×3 / 3列×3
+- JOIN 数分布：0:22, 1:47, 2:12

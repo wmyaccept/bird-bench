@@ -47,3 +47,11 @@ molecule ──molecule_id── atom / bond / connected
    而不是 1 行 × 2 列 —— **不要自作主张加 `LIMIT 1`**（`223` 就是因此错的）。
 
 ---
+
+## 惯例卡片（实测统计，n=81 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 19 / DISTINCT 21 / `COUNT(*)` 1 / 无 40　⇒ 本库**偏 DISTINCT**（21 vs col 19）⇒ 计数写 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：atom 33 / bond 24 / molecule 18 / connected 6　⇒ 主表**不固定**（atom 最多也只占 33/81）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：18/81　|　`*100`：4　|　`BETWEEN`：4
+- 输出列数分布：1列×61 / 2列×11 / 3列×5 / 4列×2 / 7列×1 / 11列×1
+- JOIN 数分布：0:31, 1:35, 2:6, 7:1, 8:5, 9:3

@@ -433,6 +433,267 @@ def cmd_find(args):
         con.close()
 
 
+def _list_tables(con) -> list[str]:
+    return [
+        r[0]
+        for r in con.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' "
+            "AND substr(name, 1, 7) != 'sqlite_' ORDER BY name"
+        )
+    ]
+
+
+def cmd_cols(args):
+    """列名反查（与 find 互补：find 按**取值**，本命令按**列名**）。
+
+    用途：题干出现 “district code / school type / 办学类型 / 资助类型” 这类**列名概念**时，
+    grep 关键词不算读过列名 —— 用本命令把所有匹配的 `表.列` 列出来，并给出
+    **非空行数 / 去重数**：这两个数常直接决定该选哪一列（覆盖面量级不同）。
+    """
+    con = connect_readonly(db_path(args.db_id), timeout=args.timeout)
+    try:
+        rx = re.compile(args.pattern, re.I)
+        print(f"db: {args.db_id}   列名正则: {args.pattern!r}")
+        print()
+        hit = 0
+        for table in _list_tables(con):
+            for col in [r[1] for r in con.execute(f'PRAGMA table_info("{table}")')]:
+                if not rx.search(col):
+                    continue
+                hit += 1
+                try:
+                    n, nd = con.execute(
+                        f'SELECT COUNT("{col}"), COUNT(DISTINCT "{col}") FROM "{table}"'
+                    ).fetchone()
+                    vals = [
+                        r[0]
+                        for r in con.execute(
+                            f'SELECT DISTINCT "{col}" FROM "{table}" '
+                            f'WHERE "{col}" IS NOT NULL LIMIT ?',
+                            (args.samples,),
+                        )
+                    ]
+                    info = f"非空 {n} 行 / 去重 {nd}"
+                except sqlite3.Error as exc:
+                    vals, info = [], f"读取失败: {exc}"
+                shown = " | ".join(repr(v) for v in vals)
+                print(f'  {table}."{col}"   {info}   样例: {shown}')
+        print()
+        if not hit:
+            print("没有列名匹配 → 概念可能藏在**取值**里，改用 `find <db> <词>`；或换同义说法再试。")
+        elif hit > 1:
+            print("命中多列 → 裁决顺序：evidence 点名 > 行集合相同则任选 > 更专门的那列（结论写回 db/<库>.md）。")
+    finally:
+        con.close()
+
+
+def _top_split(text: str) -> list[str]:
+    items, depth, cur = [], 0, ""
+    for ch in text:
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        if ch == "," and depth == 0:
+            items.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    if cur.strip():
+        items.append(cur)
+    return items
+
+
+def _select_items(sql: str) -> list[str]:
+    flat = " ".join(sql.split())
+    up = flat.upper()
+    start = up.find("SELECT")
+    if start < 0:
+        return []
+    rest = flat[start + 6 :]
+    depth, idx = 0, 0
+    while idx < len(rest):
+        ch = rest[idx]
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        elif depth == 0 and rest[idx : idx + 4].upper() == "FROM":
+            break
+        idx += 1
+    return [x.strip() for x in _top_split(rest[:idx])]
+
+
+def _sql_profile(sql: str) -> dict:
+    """一条 SQL 的结构指纹：用 SQL 文本能看出来的形状/口径特征。"""
+    flat = " ".join(sql.split())
+    up = flat.upper()
+    tables = re.findall(r"(?:FROM|JOIN)\s+([A-Za-z_][A-Za-z0-9_]*)", flat)
+    if re.search(r"COUNT\s*\(\s*DISTINCT", up):
+        count_form = "COUNT(DISTINCT)"
+    elif re.search(r"COUNT\s*\(\s*\*", up):
+        count_form = "COUNT(*)"
+    elif "COUNT(" in up:
+        count_form = "COUNT(列)"
+    else:
+        count_form = "无"
+    items = _select_items(flat)
+    return {
+        "ncol": len(items),
+        "distinct": "SELECT DISTINCT" in up,
+        "count": count_form,
+        "main": tables[0] if tables else "-",
+        "tables": tuple(sorted(set(tables))),
+        "njoin": max(0, len(tables) - 1),
+        "x100": bool(re.search(r"\*\s*100", flat)),
+        "between": "BETWEEN" in up,
+        "like": "LIKE" in up,
+        "cast": "CAST" in up,
+        "strftime": "STRFTIME" in up,
+        "groupby": "GROUP BY" in up,
+        "limit": "LIMIT" in up,
+    }
+
+
+def _answered_gold(only_db: str | None = None) -> list[tuple[int, dict, str]]:
+    """只取**已提交题**的金标 —— 绝不能把未做的题的金标带进来。"""
+    questions = load_questions()
+    answers = load_answers()
+    gold = load_gold()
+    rows = []
+    for i, q in enumerate(questions):
+        if str(i) not in answers:
+            continue
+        if only_db and q["db_id"] != only_db:
+            continue
+        rows.append((i, q, gold[i][0]))
+    return rows
+
+
+def cmd_conventions(args):
+    """换库第 0.5 步：用**已提交题的金标**统计本库的写作惯例（把猜惯例换成查惯例）。
+
+    只统计形状/口径（计数形态、主表、DISTINCT、*100、区间写法…），不产出答案。
+    """
+    from collections import Counter
+
+    rows = _answered_gold(args.db)
+    if not rows:
+        fail("没有可统计的已提交题（conventions 只看已提交题的金标，避免污染未做的题）")
+    groups: dict[str, list[str]] = {}
+    for _, q, gold_sql in rows:
+        groups.setdefault(q["db_id"], []).append(gold_sql)
+    for db in sorted(groups, key=lambda d: -len(groups[d])):
+        sqls = groups[db]
+        profs = [_sql_profile(s) for s in sqls]
+        print(f"### {db}   (n={len(sqls)} 道已提交题的金标)")
+        cols = Counter(p["ncol"] for p in profs).most_common()
+        print(f"  输出列数: {dict(cols)}")
+        print(
+            f"  计数形态: {dict(Counter(p['count'] for p in profs).most_common())}"
+            f"   |  SELECT DISTINCT: {sum(p['distinct'] for p in profs)}/{len(profs)}"
+            f"   |  *100: {sum(p['x100'] for p in profs)}"
+            f"   |  BETWEEN: {sum(p['between'] for p in profs)}"
+        )
+        print(f"  主表(FROM 第一张): {dict(Counter(p['main'] for p in profs).most_common())}")
+        print(f"  JOIN 数: {dict(sorted(Counter(p['njoin'] for p in profs).items()))}")
+        if args.examples:
+            shown = set()
+            for sql, p in zip(sqls, profs):
+                if p["count"] == "无":
+                    continue
+                shape = (p["count"], p["main"], p["ncol"], p["distinct"])
+                if shape in shown:
+                    continue
+                shown.add(shape)
+                print(f"    计数例 {shape} -> {sql[:160]}")
+                if len(shown) >= args.examples:
+                    break
+        print()
+    print("读法：COUNT(列) 多 → 默认 `COUNT(主表.主键列)`；COUNT(DISTINCT) 多 → 这个库习惯去重；")
+    print("      主表分布决定『FROM 第一张表』选谁；JOIN 数大 → 金标常用 WITH 多步聚合。")
+
+
+def cmd_audit(args):
+    """复盘用：对已提交题重算 EX，并按**失败类型 + 结构特征差异**归因。
+
+    产出的是错因分布（列数/行集/值 各自多少道、哪个结构特征差得最多），不是答案。
+    """
+    from collections import Counter
+
+    questions = load_questions()
+    answers = load_answers()
+    gold = load_gold()
+    n = correct = 0
+    per_db: dict[str, list[int]] = {}
+    buckets: dict[str, list[int]] = {}
+    wrong = []
+    for i, q in enumerate(questions):
+        key = str(i)
+        if key not in answers:
+            continue
+        if args.difficulty and q["difficulty"] != args.difficulty:
+            continue
+        if args.db and q["db_id"] != args.db:
+            continue
+        mine = answers[key].split("\t")[0]
+        ok, detail = compare_ex(db_path(q["db_id"]), mine, gold[i])
+        n += 1
+        correct += bool(ok)
+        stat = per_db.setdefault(q["db_id"], [0, 0])
+        stat[0] += 1
+        stat[1] += bool(ok)
+        if ok:
+            continue
+        if "列数不同" in detail:
+            kind = "A 形状·列数"
+        elif "整行元组不同" in detail:
+            kind = "B 形状·列序/多列"
+        elif "行数不同" in detail:
+            kind = "C 行集不同"
+        elif "取值不同" in detail:
+            kind = "D 值/口径不同"
+        else:
+            kind = "E 其他/执行失败"
+        buckets.setdefault(kind, []).append(i)
+        wrong.append((i, q, mine, detail))
+    if not n:
+        fail("该筛选条件下没有已提交的题")
+    print(f"== 已答 {n}  正确 {correct}  EX = {correct / n * 100:.2f}% ==")
+    print()
+    print("各库: 正确/已答")
+    for db, (tot, ok) in sorted(per_db.items(), key=lambda kv: kv[1][1] / kv[1][0]):
+        print(f"  {db:<26} {ok:>3}/{tot:<3} {ok / tot * 100:5.1f}%")
+    print()
+    print(f"错题 {len(wrong)} 道，失败类型分布：")
+    for kind in sorted(buckets):
+        print(f"  {kind:<16} {len(buckets[kind]):>3}   {buckets[kind][:20]}")
+    print()
+    keys = ["main", "tables", "njoin", "count", "x100", "between", "like", "strftime", "cast"]
+    print("错题里『我的结构特征 ≠ 金标』的频次（最大的是首要根因）：")
+    tally = []
+    for k in keys:
+        d = sum(1 for i, q, mine, _ in wrong if _sql_profile(mine)[k] != _sql_profile(gold[i][0])[k])
+        tally.append((d, k))
+    for d, k in sorted(tally, reverse=True):
+        print(f"  {k:<10} {d:>3}/{len(wrong)}")
+    print()
+    shown: dict[str, int] = {}
+    for i, q, mine, detail in wrong:
+        kind = next((b for b, ids in buckets.items() if i in ids), "E")
+        if shown.get(kind, 0) >= args.list:
+            continue
+        shown[kind] = shown.get(kind, 0) + 1
+        f, g = _sql_profile(mine), _sql_profile(gold[i][0])
+        diffk = [k for k in keys if f[k] != g[k]]
+        print("-" * 96)
+        print(f"[{i}] {q['db_id']} | {detail}")
+        print(f"  Q   : {q['question'][:95]}")
+        print(f"  MY  : {mine[:190]}")
+        print(f"  GOLD: {' '.join(gold[i][0].split())[:190]}")
+        print("  差异特征: " + ", ".join(f"{k}={f[k]} vs {g[k]}" for k in diffk))
+
+
 def load_tied_gold() -> dict[int, list[str]]:
     """并列题的补充金标：question_id -> [sql, ...]。只有 dev 数据集有。"""
     name = DATASET.get("tied")
@@ -819,6 +1080,24 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--samples", type=int, default=3, help="每个命中列显示几个真值")
     p.add_argument("--timeout", type=float, default=60.0)
     p.set_defaults(func=cmd_find)
+
+    p = sub.add_parser("cols", help="列名反查：这个概念（列名）出现在哪些表的哪些列（含非空/去重行数）")
+    p.add_argument("db_id")
+    p.add_argument("pattern", help="列名正则，例如 'type|kind|option'")
+    p.add_argument("--samples", type=int, default=3)
+    p.add_argument("--timeout", type=float, default=30.0)
+    p.set_defaults(func=cmd_cols)
+
+    p = sub.add_parser("conventions", help="用已提交题的金标统计本库写作惯例（换库第 0.5 步）")
+    p.add_argument("--db", help="只看某个库")
+    p.add_argument("--examples", type=int, default=2, help="每个库打印几条计数题金标作形状示范")
+    p.set_defaults(func=cmd_conventions)
+
+    p = sub.add_parser("audit", help="复盘：按失败类型与结构特征差异归因已提交的错题")
+    p.add_argument("--difficulty", choices=["simple", "moderate", "challenging"])
+    p.add_argument("--db")
+    p.add_argument("--list", type=int, default=3, help="每类失败原因打印几条例子")
+    p.set_defaults(func=cmd_audit)
 
     p = sub.add_parser("schema", help="表结构 + 行数 + 样例值")
     p.add_argument("db_id")

@@ -44,6 +44,23 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 📤 **产出**：这张库的体检单（尤其 JOIN 命中率——`thrombosis_prediction` 就是靠它发现
 `Examination` 806 行里只有 70 行能连上 `Patient`）
 
+### 第 0.5 步｜⭐⭐ **惯例体检：把“猜惯例”换成“查惯例”**（换库时一次性，30 秒）
+
+```bash
+python tools/bird.py --dataset dev2025 conventions --db <db_id>      # 已提交题的金标统计
+python tools/bird.py --dataset dev2025 cols <db_id> "type|option"    # 列名反查
+```
+
+`conventions` **只统计已提交题**的金标（绝不碰未做的题），给的是**这个库自己**的写法分布：
+计数形态、主表（`FROM` 第一张表是谁）、`SELECT DISTINCT` 比例、`*100`、JOIN 数。
+
+实测（1057 道已提交题）：`COUNT(列)` 是绝对主流；`COUNT(DISTINCT)` 只在 `financial`(23/62)
+和 `thrombosis_prediction`(29/135) 常见；主表分布很集中（`superhero` 68/81 是 `superhero`、
+`thrombosis` 113/135 是 `Patient`、`california_schools` 则 schools 32 / frpm 23 / satscores 22 三分天下
+——**没有单一主表的库就是错题重灾区**）。
+
+📤 **产出**：本库“惯例卡片”，直接追加进 `db/<db_id>.md`（例：`db/thrombosis_prediction.md` 末尾）。
+
 ### 第 1 步｜**读题**
 
 `bird_question <idx>` → 题干 + **evidence**。
@@ -66,13 +83,23 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 题干里的**概念名词**（办学类型、资助类型、区号、职务、地名…）必须**查出**它对应哪一列，不许用英文语感猜。
 两道闸门，看概念是"值"还是"列名"：
 
-| 概念类型 | 怎么做 | 例 |
+| 概念形态 | 用什么查 | 例 |
 |---|---|---|
-| 概念以**值**的形式存在库里（“continuation / locally funded / High Schools (Public)”） | `bird_find <db> <词>` → 报出哪张表哪一列命中 + 真值样本 | `find california_schools "option"` → 点出 `frpm."Educational Option Type"` |
-| 概念是**列名**（“district code”这种不可搜值的） | `bird_schema <db> table=<表>` **逐行通读列名**（别只 grep 关键词！） | 我 grep `%Type%` 就漏掉了 `frpm."District Code"` |
+| 以**值**存在库里（“continuation / locally funded”） | `find <db> <词>`（`bird_find` / `bird.py find`） | `find california_schools "option"` → `frpm."Educational Option Type"` |
+| 是**列名**概念（“district code / funding type”） | **`bird.py cols <db> "code|type"`** ← ★ 新增的反查器 | `cols california_schools "type|option"` 一次列出 **9 个候选列 + 非空/去重行数** |
+| 是**库级写法**（该不该 DISTINCT、主表是谁） | `bird.py conventions --db <db>`（第 0.5 步） | `thrombosis` → `Patient` 当主表、计数 29/54 用 DISTINCT |
 
-**命中 ≥2 列时的优先级**（写进 `traps.md` ⓪）：evidence 点名 → 用它；只有一列命中 → 用它；
-多列命中且**行集合相同** → 任选（差异一定在别处）；否则选**更专门**的那列，**并把结论写进 `db/<库>.md`**（积累才有用）。
+📤 **产出（写 SQL 前必须显式写出这 3 行，不许在脑子里想）**：
+
+```
+概念 → 候选(表.列) → 裁决依据
+“办学类型” → frpm."School Type" / frpm."Educational Option Type" → 两者行集合相同(459) ⇒ 任选
+“资助类型” → schools.FundingType(1642 行) / frpm."Charter Funding Type"(1167 行) → evidence 点名前者
+```
+
+**命中 ≥2 列时的裁决顺序**（写进 `traps.md` ⓪）：evidence 点名 → 只有一列命中 →
+多列且**行集合相同**则任选（差异必在别处）→ 否则选**更专门**的那列，**并把结论写进 `db/<库>.md`**。
+⭐ **`cols` 输出的“非空行数”就是裁决线索**：同一概念的两个候选列行数差得远，往往是不同粒度的两列。
 
 ### 第 4 步｜**写 SQL（对着陷阱表逐条过）**
 
@@ -90,6 +117,18 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 
 （EX 是 `set(预测) == set(金标)` ⇒ **列序和列数同级重要**，`california_schools` 81 就是列集合全对、只因顺序反了得 0 分。）
 
+⭐⭐ **表与计数形态的固定动作**（本轮 42 道错题里 `main` 差 20 道、`count` 差 13 道 —— 就是这四个动作没做）：
+
+1. **主表**：按第 0.5 步的惯例卡片选 `FROM` 第一张表。多表库里主表决定**行宇宙**：
+   `thrombosis_prediction` 三表的 ID 覆盖率是 1238 / 302 / **70** ⇒ 选错表就是换了候选集，**值必然不同**。
+2. **表集合最小化**：只 JOIN 题干真正用到的表。实测 24：我多 JOIN 了 `schools` → 999 行，
+   金标只有 `satscores JOIN frpm` → 1068 行。
+3. **计数形态三选一**（默认照惯例卡片）：
+   `COUNT(主表.主键列)` 是默认 → `COUNT(DISTINCT 列)` 仅当本库以 DISTINCT 为主（financial/thrombosis）
+   或 evidence 明写 distinct → `COUNT(*)` 只在规范统计里占比明显时用。
+4. **不要随手加 `DISTINCT`**：实测金标 `SELECT DISTINCT` 比例很低
+   （california 3/77、codebase 9/151、card_games 30/125）。
+
 ### 第 5 步｜**提交前自检**
 
 📖 **读**：`checklist.md` —— **逐条勾**，不许跳。
@@ -101,7 +140,16 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 
 ### 第 7 步｜**批末复盘**（每批 10–20 题，或一个库做完）
 
-`bird_score` 看 EX + 错题 detail → 📖 读 `diagnosis.md` 按 detail 反推错因。
+**先用工具拿错因分布，再读细节文档**：
+
+```bash
+python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
+```
+
+→ 直接给出：EX、各库正确率、**失败类型分布**（列数/列序/行集/值）、
+**结构特征差异频次**（`main`/`tables`/`count`/`x100`…哪个差得最多就是首要根因）、每类 3 条并排例子。
+（`main` 差得多 ⇒ 概念定位/主表问题；`count` 差得多 ⇒ 计数形态问题；`x100` ⇒ 百分比口径问题。）
+再 📖 读 `diagnosis.md` 按 detail 反推单题错因。
 **然后必须把结论写进"能被读到的地方"**（这是唯一让你下次不犯同样错的办法）：
 
 | 结论类型 | 写到哪 |

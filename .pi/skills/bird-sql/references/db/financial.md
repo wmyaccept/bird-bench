@@ -27,3 +27,11 @@ card ──disp_id── disp
 - ⚠️ **“how many X **and** Y” 可能是 1 行 2 列**（`idx 172`：owner/disponent 数，金标用
   `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
 - 实测全量：**62 道 52 对 / 10 错（83.9%）**。
+
+## 惯例卡片（实测统计，n=65 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 13 / DISTINCT 24 / `COUNT(*)` 6 / 无 22　⇒ 本库**偏 DISTINCT**（24 vs col 13）⇒ 计数写 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：client 18 / account 14 / district 10 / disp 7 / loan 7　⇒ 主表**不固定**（client 最多也只占 18/65）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：3/65　|　`*100`：15　|　`BETWEEN`：8
+- 输出列数分布：1列×22 / 7列×7 / 5列×7 / 4列×7 / 2列×6 / 8列×5
+- JOIN 数分布：0:3, 1:11, 2:6, 3:8, 6:1, 7:3, 8:2, 9:8, 10:6, 11:8, 12:1, 13:5, 14:2, 15:1

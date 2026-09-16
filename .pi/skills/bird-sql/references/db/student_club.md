@@ -52,3 +52,11 @@ event.event_id            = attendance.link_to_event
 ⚠️ **`budget` 的列名**（实测 `1450`）：`budget_id, category, spent, remaining, amount, event_status, link_to_event`。
 题干说 “budget more than forty” → 用 `budget.amount > 40`（**不是** `spent`，也不是 `planned_amount`）。
 `expense.cost` 才是“花了多少钱”（`incurred less than 50USD` → `expense.cost < 50`）。
+
+## 惯例卡片（实测统计，n=146 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+
+- 计数形态：col 32 / DISTINCT 1 / `COUNT(*)` 1 / 无 112　⇒ 本库以 `COUNT(列)` 为主（col 32 / DISTINCT 1 / star 1）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：member 61 / event 35 / budget 19 / expense 10 / major 10　⇒ 主表**不固定**（member 最多也只占 61/146）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：9/146　|　`*100`：4　|　`BETWEEN`：3
+- 输出列数分布：1列×119 / 2列×21 / 3列×6
+- JOIN 数分布：0:38, 1:93, 2:13, 3:2
