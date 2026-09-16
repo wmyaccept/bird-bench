@@ -814,3 +814,39 @@ dev2025 全量：**949 已答 / 710 正确 / EX(已答) 74.82% / 全量 46.28%**
 **✅ 已执行恢复**：把变错的 3 道（386 / 978 / 1092）恢复成旧答案后，
 dev2025 全量：**949 已答 / 713 正确 / EX(已答) 75.13% / 全量 46.48%**（3 道全部 ✅ 验证）。
 ⇒ **新规矩：重写某题前，先查旧答案在评分器下是否已经正确；已经正确的不要重写，直接跳过。**
+
+---
+
+## 第 21 轮｜moderate 启动：california_schools 23 道（11 对）
+
+dev2025 未答 moderate **419 道**，按库：thrombosis 85 / card_games 53 / european_football_2 50 /
+formula_1 43 / toxicology 36 / student_club 36 / superhero 33 / codebase_community 30 /
+financial 25 / california_schools 23（本轮做完）/ debit_card 5。
+
+**california_schools moderate：23 道 11 对（48%）**；本库累计 77 已答 / 42 对（54.6%）。
+
+### 三条经验（已毕业）
+
+1. **概念→列映射**是 moderate 的命门（猜错直接 0 分）：`DOC`(52/54)、`SOC`(11)、`EILCode`('HS')、
+   `EdOpsCode`('SSS'/'SPECON')、`NCESDist`、`Latitude`、管理员三组 `AdmFName/AdmLName/AdmEmail`、
+   `frpm."NSLP Provision Status"`（含 `'Lunch Provision 2'` 和 `'Breakfast Provision 2'` 两个值 → 别取错）。
+   → 写进 `db/california_schools.md` 必查 1。
+2. **LEFT JOIN 规则**（跨库通则，进 `traps.md` ②）：题干有 “if there is any / along with the score”
+   这类可选属性 → 金标用 LEFT JOIN；验证手法 = 金标行数是否等于**只按主表条件**筛出的行数
+   （实测 `27`：金标 8574 = 纯 `schools` 行数）。
+3. **县 vs 市**：题干 “schools in X” 且 X 是县名 → `County`（实测 `26`：`City='Monterey'` → **0 行**）。
+
+### 挂起（不再重试）
+
+| 题 | 情况 |
+|---|---|
+| 26 | 换 County + `Free Meal Count` 后 6 行 ✅形状，但值不同（探针 2 轮） |
+| 24 | 金标 1068；naive join 999、CAST join 1083 —— 都不是 |
+| 25 | 金标 6；`AVG(AvgScrMath)>400` 80、去 HAVING 80 |
+| 33 | 金标 2 行；`BETWEEN 1900 AND 2000` 3 行、开区间也 3 行 |
+| 49 | 金标 858 行 **3 列**（我 2 列）、68 金标 3 行（我 1 行） |
+| 40 / 43 / 65 / 81 / 85 | **1 行但值不同**（5 道） |
+
+⭐ **观察：moderate 的错题里“形状完全正确、只有值不同”的比例很高（5/12）**——
+这类是“极值题选中了另一行”，**没有可以从形状反推的信号**，只能靠猜口径，
+属于天然的挂起项。⇒ moderate 不要把时间花在这种题上。

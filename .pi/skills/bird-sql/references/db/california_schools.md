@@ -2,14 +2,18 @@
 
 ## ⚠️ 交题前必查（本库最容易翻车的 3 条）
 
-1. **列在哪张表**：`Low Grade`/`High Grade`/`FRPM Count`/各类 `Enrollment` → **`frpm`**；
-   `GSoffered`/地址/`Phone`/`FundingType`/`StatusType`/`Virtual` → **`schools`**；
-   `AvgScrMath`/`NumTstTakr`/`NumGE1500`/`sname` → **`satscores`**。
-2. **CDS 前导 0**：`satscores` 2269 行里 2058 行 14 位、**211 行 13 位**。
-   **先试 naive join**（金标多数就是它），空了再改 `CAST(CDSCode AS INTEGER)=cds`（能全匹配）。
-3. **取值/概念**：`County` 值**不带 "County"**；`Virtual='F'` = Exclusively Virtual；
-   `'Directly funded'` 小写 f；`schools` 里混着学区行（`School` 为 NULL）；
-   "邮编/邮寄地址"→`MailStreet`，"unabbreviated"→不带 `Abr`。
+1. ⭐ **概念→列**（moderate 高频，猜错就是 0 分）：
+   `schools.DOC`（**52**=Elementary School District / **54**=Unified）、`SOC`（**11**=Youth Authority/CEA）、
+   `EILCode`（**'HS'**=高中）、`EdOpsCode`（**'SSS'**=State Special School / **'SPECON'**=Special Education Consortia）、
+   `NCESDist`（NCES 区号）、`Latitude`/`Longitude`、`StatusType='Closed'`、
+   管理员 = `AdmFName1/2/3` + `AdmLName1/2/3` + `AdmEmail1/2/3`；
+   `frpm."School Type"`（`'Continuation Schools'`）、`frpm."NSLP Provision Status"`
+   （`'Lunch Provision 2'` / `'Breakfast Provision 2'` / `'CEP'` / `'Provision 1/2/3'` / `'Multiple Provision Types'`）。
+2. ⭐ **`JOIN` 选谁**：`列学校 + SAT 分数` 类用 **`LEFT JOIN satscores`**（实测 `27`：金标 8574 行 = 纯 `schools` 行数）；
+   CDS 前导 0 → **先 naive `ss.cds=s.CDSCode`**，空集/可疑再改 `CAST(s.CDSCode AS INTEGER)=ss.cds`。
+3. ⭐ **县 vs 市**：题干 “schools in X”（X 是县名）→ 用 **`County`**，不是 `City`
+   （实测 `26`：`City='Monterey'` → **0 行**；`County='Monterey'` → 6 行）；`County` 值**不带 'County'**。
+   “free or reduced-priced meals”→ `Free Meal Count (...)`（`FRPM Count` 是另一列）。
 
 ## 连接图与坑
 

@@ -35,6 +35,10 @@
 - [ ] **JOIN 是不是"隐式过滤"？** 多 JOIN 一张表会把行数砍掉，金标**可能就是靠它过滤**的
       （`codebase_community` 116、`toxicology` 的诊断类题）。
       ⇒ 行数比金标**多**时，试试**多加**一张表；比金标**少**时，试试**减**一张。
+- [ ] ⭐ **“列出 A 以及它的 B（如果有）/ 以及 B 的分数” → 先试 `LEFT JOIN`**（实测 `california_schools 27`）：
+      题干带 “if there is any”、“along with the score” 这类**可选属性**时，金标往往用 LEFT JOIN，
+      没有该属性的实体（分数为 NULL）**也要出现在结果里**。
+      验证手法：金标行数 == **只按主表条件筛出的行数**（`27` 金标 8574 = 纯 `schools` 行数）→ 就是 LEFT JOIN。
 
 ## ③ 写 `WHERE` 的**值之前**（最容易翻车）
 
