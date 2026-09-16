@@ -38,14 +38,29 @@ SUBMISSION_PLAN.md                 打榜提交方案（待执行；含官方 gu
 | key | 题目数 | 难度分布 | 用途 |
 |---|---|---|---|
 | `minidev`（默认） | 500 | 148/250/102 | 快速迭代、调 skill |
-| `dev` | 1534 | 925/464/145 | **和排行榜 Dev 列（人类 92.96 / GPT-4 46.35）可比** |
+| `dev` | 1534 | 925/464/145 | **旧版 Dev（2024-06）**，已全量做完 simple |
+| `dev2025` | 1534 | **860/443/231** | **新版 Dev（2025-11-06 官方修订）← 后续以此为准** |
 
-- 切换：`python tools/bird.py --dataset dev <cmd>`，或环境变量 `BIRD_DATASET=dev`。
-- 准备数据：`python tools/setup_data.py --dataset dev`（330 MiB）。
-- ⚠️ **Mini-Dev 是 Dev 的子集**（500 题里 494 题题干与 Dev 完全相同）。所以两边的
-  `answers` 必须分开存，否则 idx 会串号。已做过的题用题干映射迁移。
-- ⚠️ **两个文件的金标不完全一致**：可映射的 496 题里有 13 题金标 SQL 不同（2.6%）。
-  因此同一道题可能在 Mini-Dev 对、在 Dev 错。**以 Dev 为准**（排行榜用的是 Dev）。
+- `dev` 与 `dev2025` **共用同一批数据库**，`question_id` 一一对应、**idx 顺序完全一致**。
+- 新版差异：question 变 11.9%、evidence 变 24.6%、**金标 SQL 变 29.4%**，并有
+  **65 道旧 simple 被改写升级为 challenging**（单属性问答 → 多维度分析）。
+- 切换：`python tools/bird.py --dataset dev2025 <cmd>`，或环境变量 `BIRD_DATASET=dev2025`。
+- 对标基准（官方 README，dev2025 全量 1534）：gemini-3-pro-preview **68.97**、claude-sonnet-4.5 66.56、GPT-5.1 64.02。
+
+### 旧版 Dev 的成绩（已完成）
+
+```
+simple 925/925 全部完成，EX 744/925 = 80.43%
+```
+
+### 新版 Dev 的复核成绩（用旧答案对新金标）
+
+```
+simple 860/860 已答，EX 675/860 = 78.49%
+全量：已答 949/1534，正确 697 → 全量 EX 45.44%
+```
+
+> ⚠️ 两个 dev 的答案文件**分开存**：`work/answers_dev.json` vs `work/answers_dev2025.json`。
 
 ## 解一道题的标准动作
 

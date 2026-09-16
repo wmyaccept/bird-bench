@@ -1,47 +1,47 @@
 {
-  "dataset": "BIRD Dev 1534 (SQLite)",
-  "dataset_key": "dev",
+  "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
+  "dataset_key": "dev2025",
   "answered": 949,
   "unanswered": 585,
   "total_questions": 1534,
-  "correct": 765,
-  "ex_percent": 80.61,
-  "ex_percent_full_set": 49.87,
+  "correct": 697,
+  "ex_percent": 73.45,
+  "ex_percent_full_set": 45.44,
   "results": [
     {
       "idx": 0,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
     },
     {
       "idx": 2,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 5 行 1 列 / 金标 5 行 14 列）"
     },
     {
       "idx": 3,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
     },
     {
       "idx": 5,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 4 行 13 列）"
     },
     {
       "idx": 6,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 15 列）"
     },
     {
       "idx": 7,
@@ -53,9 +53,9 @@
     {
       "idx": 8,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 10 行 16 列）"
     },
     {
       "idx": 9,
@@ -67,23 +67,23 @@
     {
       "idx": 10,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 15 列）"
     },
     {
       "idx": 11,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 7806 行 1 列 / 金标 4954 行 12 列）"
     },
     {
       "idx": 13,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 9 列）"
     },
     {
       "idx": 14,
@@ -96,8 +96,8 @@
       "idx": 15,
       "db_id": "california_schools",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 16,
@@ -116,30 +116,30 @@
     {
       "idx": 18,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
     },
     {
       "idx": 19,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 12 列）"
     },
     {
       "idx": 20,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
     },
     {
       "idx": 21,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
     },
     {
       "idx": 22,
@@ -216,7 +216,7 @@
       "db_id": "california_schools",
       "difficulty": "simple",
       "correct": false,
-      "detail": "预测 SQL 执行失败: OperationalError: interrupted"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 52,
@@ -229,8 +229,8 @@
       "idx": 53,
       "db_id": "california_schools",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 32 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 54,
@@ -270,16 +270,16 @@
     {
       "idx": 60,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 2 行 1 列 / 金标 2 行 15 列）"
     },
     {
       "idx": 61,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 3 行 17 列）"
     },
     {
       "idx": 63,
@@ -298,9 +298,9 @@
     {
       "idx": 66,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 7 行 17 列）"
     },
     {
       "idx": 67,
@@ -312,9 +312,9 @@
     {
       "idx": 69,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 12 列）"
     },
     {
       "idx": 70,
@@ -347,9 +347,9 @@
     {
       "idx": 78,
       "db_id": "california_schools",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 12 列）"
     },
     {
       "idx": 80,
@@ -403,30 +403,30 @@
     {
       "idx": 92,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 11 列）"
     },
     {
       "idx": 96,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 30 行 11 列）"
     },
     {
       "idx": 97,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 14 行 1 列 / 金标 14 行 18 列）"
     },
     {
       "idx": 101,
       "db_id": "financial",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "detail": "行数不同（预测 1 行 1 列 / 金标 315 行 1 列）"
     },
     {
       "idx": 102,
@@ -438,30 +438,30 @@
     {
       "idx": 103,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
     },
     {
       "idx": 104,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
     },
     {
       "idx": 105,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 15 列）"
     },
     {
       "idx": 106,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 17 列）"
     },
     {
       "idx": 107,
@@ -488,29 +488,29 @@
       "idx": 110,
       "db_id": "financial",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 4 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 111,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
     },
     {
       "idx": 112,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
     },
     {
       "idx": 113,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 13 列）"
     },
     {
       "idx": 114,
@@ -522,44 +522,44 @@
     {
       "idx": 121,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 55 行 2 列 / 金标 55 行 16 列）"
     },
     {
       "idx": 122,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 15 列）"
     },
     {
       "idx": 123,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 82 行 3 列 / 金标 31 行 12 列）"
     },
     {
       "idx": 124,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 145 行 3 列 / 金标 122 行 17 列）"
     },
     {
       "idx": 126,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 12 行 9 列）"
     },
     {
       "idx": 127,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 4167 行 1 列 / 金标 4167 行 21 列）"
     },
     {
       "idx": 132,
@@ -578,23 +578,23 @@
     {
       "idx": 134,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 6 列）"
     },
     {
       "idx": 139,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 2 行 12 列）"
     },
     {
       "idx": 140,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 9 列）"
     },
     {
       "idx": 141,
@@ -613,65 +613,65 @@
     {
       "idx": 143,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 88 行 1 列 / 金标 88 行 19 列）"
     },
     {
       "idx": 146,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 85 行 1 列 / 金标 85 行 17 列）"
     },
     {
       "idx": 147,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 21 行 9 列）"
     },
     {
       "idx": 153,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 77 行 8 列）"
     },
     {
       "idx": 154,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 2 行 10 列）"
     },
     {
       "idx": 155,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 9 行 4 列）"
     },
     {
       "idx": 156,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 13 列）"
     },
     {
       "idx": 157,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 13 列）"
     },
     {
       "idx": 158,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 21 列）"
     },
     {
       "idx": 159,
@@ -690,23 +690,23 @@
     {
       "idx": 161,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 15 列）"
     },
     {
       "idx": 162,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 14 列）"
     },
     {
       "idx": 164,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 16 列）"
     },
     {
       "idx": 165,
@@ -718,9 +718,9 @@
     {
       "idx": 166,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 11 列）"
     },
     {
       "idx": 167,
@@ -767,9 +767,9 @@
     {
       "idx": 178,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 8 列）"
     },
     {
       "idx": 179,
@@ -781,16 +781,16 @@
     {
       "idx": 181,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 13 列）"
     },
     {
       "idx": 183,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 16 列）"
     },
     {
       "idx": 184,
@@ -802,37 +802,37 @@
     {
       "idx": 187,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 6 列）"
     },
     {
       "idx": 190,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 9 列）"
     },
     {
       "idx": 191,
       "db_id": "financial",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 16 列）"
     },
     {
       "idx": 195,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 6 列）"
     },
     {
       "idx": 196,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 6 列）"
     },
     {
       "idx": 199,
@@ -844,9 +844,9 @@
     {
       "idx": 200,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 2 行 1 列 / 金标 2 行 9 列）"
     },
     {
       "idx": 202,
@@ -858,30 +858,30 @@
     {
       "idx": 203,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 4 列）"
     },
     {
       "idx": 204,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 7 列）"
     },
     {
       "idx": 205,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 438 行 1 列 / 金标 340 行 9 列）"
     },
     {
       "idx": 209,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 5 列）"
     },
     {
       "idx": 210,
@@ -935,9 +935,9 @@
     {
       "idx": 224,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 4 行 1 列 / 金标 4 行 10 列）"
     },
     {
       "idx": 225,
@@ -956,9 +956,9 @@
     {
       "idx": 229,
       "db_id": "toxicology",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 5 列）"
     },
     {
       "idx": 233,
@@ -1077,7 +1077,7 @@
       "db_id": "toxicology",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 2 行 3 列）"
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 274,
@@ -1223,8 +1223,8 @@
       "idx": 309,
       "db_id": "toxicology",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 8 行 2 列 / 金标 5 行 3 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 311,
@@ -1363,8 +1363,8 @@
       "idx": 341,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 67 行 1 列 / 金标 72 行 1 列）"
     },
     {
       "idx": 342,
@@ -1434,7 +1434,7 @@
       "db_id": "card_games",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 29 行 1 列 / 金标 4 行 1 列）"
+      "detail": "行数不同（预测 29 行 1 列 / 金标 3 行 1 列）"
     },
     {
       "idx": 358,
@@ -1552,8 +1552,8 @@
       "idx": 376,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 5039 行 1 列 / 金标 3088 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 377,
@@ -1601,8 +1601,8 @@
       "idx": 383,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 384,
@@ -1622,22 +1622,22 @@
       "idx": 386,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 387,
       "db_id": "card_games",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 187 行 2 列 / 金标 10 行 2 列）"
+      "detail": "行数相同但取值不同（预测 187 行 2 列 / 金标 187 行 2 列）"
     },
     {
       "idx": 388,
       "db_id": "card_games",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 312 行 2 列 / 金标 1 行 2 列）"
+      "detail": "列数不同（预测 312 行 2 列 / 金标 312 行 3 列）"
     },
     {
       "idx": 389,
@@ -1727,8 +1727,8 @@
       "idx": 406,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 173949 行 1 列 / 金标 278230 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 410,
@@ -1833,7 +1833,7 @@
       "db_id": "card_games",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 2 列）"
+      "detail": "列数不同（预测 0 行 0 列 / 金标 10 行 2 列）"
     },
     {
       "idx": 430,
@@ -1895,29 +1895,29 @@
       "idx": 442,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 9 行 2 列 / 金标 3 行 2 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 443,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 87 行 1 列 / 金标 61 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 444,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1052 行 2 列 / 金标 95 行 2 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 445,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 2 行 3 列 / 金标 2 行 2 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 447,
@@ -1944,8 +1944,8 @@
       "idx": 451,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 452,
@@ -1965,8 +1965,8 @@
       "idx": 454,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 455,
@@ -1979,8 +1979,8 @@
       "idx": 456,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "列数不同（预测 7 行 2 列 / 金标 1 行 3 列）"
     },
     {
       "idx": 457,
@@ -2056,8 +2056,8 @@
       "idx": 476,
       "db_id": "card_games",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 12 行 1 列）"
     },
     {
       "idx": 478,
@@ -2197,7 +2197,7 @@
       "db_id": "card_games",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
+      "detail": "行数相同、首列也对得上，但整行元组不同（预测 10 行 1 列 / 金标 10 行 1 列，多出 0 组 / 少 8 组）—— 大概率是列顺序或多选了列"
     },
     {
       "idx": 519,
@@ -2525,15 +2525,15 @@
       "idx": 580,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
     },
     {
       "idx": 582,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 4 行 1 列 / 金标 2 行 1 列）"
     },
     {
       "idx": 583,
@@ -2588,22 +2588,22 @@
       "idx": 593,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 594,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 596,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 456 行 1 列）"
     },
     {
       "idx": 597,
@@ -2624,7 +2624,7 @@
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
+      "detail": "列数不同（预测 10 行 1 列 / 金标 10 行 3 列）"
     },
     {
       "idx": 601,
@@ -2686,8 +2686,8 @@
       "idx": 610,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 80 行 1 列）"
     },
     {
       "idx": 611,
@@ -2735,8 +2735,8 @@
       "idx": 618,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 100 行 1 列 / 金标 46 行 1 列）"
     },
     {
       "idx": 619,
@@ -2826,8 +2826,8 @@
       "idx": 631,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 632,
@@ -2889,8 +2889,8 @@
       "idx": 646,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 2 列 / 金标 192 行 2 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 647,
@@ -2911,7 +2911,7 @@
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 12 行 2 列 / 金标 12 行 2 列）"
+      "detail": "行数不同（预测 12 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 650,
@@ -2945,8 +2945,8 @@
       "idx": 656,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 658,
@@ -3113,15 +3113,15 @@
       "idx": 686,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 7689 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 687,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 688,
@@ -3156,7 +3156,7 @@
       "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 1 列）"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 695,
@@ -3253,8 +3253,8 @@
       "idx": 711,
       "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 712,
@@ -3484,8 +3484,8 @@
       "idx": 763,
       "db_id": "superhero",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "列数不同（预测 6 行 1 列 / 金标 6 行 2 列）"
     },
     {
       "idx": 764,
@@ -3708,8 +3708,8 @@
       "idx": 810,
       "db_id": "superhero",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 811,
@@ -4184,8 +4184,8 @@
       "idx": 913,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 914,
@@ -4366,8 +4366,8 @@
       "idx": 949,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 950,
@@ -4408,15 +4408,15 @@
       "idx": 957,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 959,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 17 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 961,
@@ -4450,8 +4450,8 @@
       "idx": 967,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 3 行 2 列）"
     },
     {
       "idx": 968,
@@ -4478,8 +4478,8 @@
       "idx": 974,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 5268 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 975,
@@ -4513,8 +4513,8 @@
       "idx": 979,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 982,
@@ -4569,15 +4569,15 @@
       "idx": 993,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 4 列 / 金标 1 行 3 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 996,
       "db_id": "formula_1",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 997,
@@ -4640,14 +4640,14 @@
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 45 行 2 列 / 金标 45 行 1 列）"
+      "detail": "列数不同（预测 45 行 2 列 / 金标 45 行 3 列）"
     },
     {
       "idx": 1010,
       "db_id": "formula_1",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 11340 行 1 列）"
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 1012,
@@ -4682,7 +4682,7 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 1 行 2 列 / 金标 1 行 1 列）"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
       "idx": 1022,
@@ -4696,14 +4696,14 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
+      "detail": "行数相同、首列也对得上，但整行元组不同（预测 5 行 1 列 / 金标 5 行 1 列，多出 0 组 / 少 3 组）—— 大概率是列顺序或多选了列"
     },
     {
       "idx": 1027,
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
+      "detail": "行数相同、首列也对得上，但整行元组不同（预测 10 行 1 列 / 金标 10 行 1 列，多出 0 组 / 少 7 组）—— 大概率是列顺序或多选了列"
     },
     {
       "idx": 1033,
@@ -4997,7 +4997,7 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 8731 行 1 列 / 金标 8612 行 1 列）"
+      "detail": "行数不同（预测 8731 行 1 列 / 金标 8615 行 1 列）"
     },
     {
       "idx": 1119,
@@ -5010,8 +5010,8 @@
       "idx": 1122,
       "db_id": "european_football_2",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 5 行 1 列）"
     },
     {
       "idx": 1123,
@@ -5025,7 +5025,7 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 10848 行 1 列 / 金标 1514 行 1 列）"
+      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
     },
     {
       "idx": 1128,
@@ -5046,7 +5046,7 @@
       "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
     },
     {
       "idx": 1132,
@@ -5087,8 +5087,8 @@
       "idx": 1140,
       "db_id": "european_football_2",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 3 列 / 金标 9 行 3 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1142,
@@ -5241,8 +5241,8 @@
       "idx": 1199,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1203,
@@ -5255,8 +5255,8 @@
       "idx": 1204,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1206,
@@ -5304,8 +5304,8 @@
       "idx": 1222,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1224,
@@ -5367,8 +5367,8 @@
       "idx": 1260,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 40 行 1 列 / 金标 11 行 1 列）"
     },
     {
       "idx": 1261,
@@ -5416,15 +5416,15 @@
       "idx": 1283,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1286,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1288,
@@ -5444,8 +5444,8 @@
       "idx": 1299,
       "db_id": "thrombosis_prediction",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1301,
@@ -5528,8 +5528,8 @@
       "idx": 1322,
       "db_id": "student_club",
       "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 9 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1323,
@@ -5948,8 +5948,8 @@
       "idx": 1391,
       "db_id": "student_club",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1392,
@@ -6088,8 +6088,8 @@
       "idx": 1418,
       "db_id": "student_club",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 45 行 1 列 / 金标 19 行 1 列）"
     },
     {
       "idx": 1419,
@@ -6165,8 +6165,8 @@
       "idx": 1442,
       "db_id": "student_club",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 1443,
@@ -6208,7 +6208,7 @@
       "db_id": "student_club",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 33 行 2 列 / 金标 31 行 2 列）"
+      "detail": "列数不同（预测 33 行 2 列 / 金标 2 行 1 列）"
     },
     {
       "idx": 1459,
@@ -6376,7 +6376,7 @@
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 2 行 2 列 / 金标 1 行 2 列）"
+      "detail": "列数不同（预测 2 行 2 列 / 金标 2 行 3 列）"
     },
     {
       "idx": 1492,
@@ -6410,8 +6410,8 @@
       "idx": 1496,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1497,
@@ -6431,8 +6431,8 @@
       "idx": 1499,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 1500,
@@ -6459,8 +6459,8 @@
       "idx": 1503,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 7 行 1 列 / 金标 7 行 2 列）"
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 1504,
@@ -6473,8 +6473,8 @@
       "idx": 1505,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 1506,
@@ -6599,8 +6599,8 @@
       "idx": 1525,
       "db_id": "debit_card_specializing",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 1527,

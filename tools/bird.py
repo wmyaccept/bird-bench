@@ -70,6 +70,16 @@ DATASETS = {
         "answers": "answers_dev.json",
         "tied": "dev_tied_append.json",   # 42 道并列题的补充金标，命中任一即算对  # 与 minidev 分开存！idx 体系不同
     },
+    # 2025-11-06 官方修订版：题目/evidence/金标都改过（question 变 11.9%、evidence 24.6%、SQL 29.4%），
+    # 且难度重分类（simple 925→860）。数据库文件与 dev **共用**，idx 顺序也与 dev 完全一致。
+    "dev2025": {
+        "name": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
+        "dir": "DEV",
+        "questions": "dev_20251106.json",
+        "gold": None,                   # 金标直接在题目 json 的 SQL 字段里
+        "pred_stem": "pred_dev2025",
+        "answers": "answers_dev2025.json",
+    },
 }
 
 
@@ -94,7 +104,7 @@ DATASET_NAME = DATASET["name"]
 DS_DIR = DATA_DIR / DATASET["dir"]
 DB_ROOT = DS_DIR / "dev_databases"
 QUESTIONS_FILE = DS_DIR / DATASET["questions"]
-GOLD_FILE = DS_DIR / DATASET["gold"]
+GOLD_FILE = (DS_DIR / DATASET["gold"]) if DATASET.get("gold") else None
 PRED_FILE_NAME = DATASET["pred_stem"] + ".json"
 ANSWERS_FILE = WORK_DIR / DATASET["answers"]
 SCORE_DIR = WORK_DIR / "score"
@@ -123,7 +133,9 @@ def load_questions() -> list[dict]:
 
 
 def load_gold() -> list[tuple[str, str]]:
-    """返回 [(sql, db_id), ...]，顺序与 mini_dev_sqlite.json 一致。"""
+    """返回 [(sql, db_id), ...]，顺序与题目文件一致。"""
+    if GOLD_FILE is None:  # 2025-11-06 版：金标就在题目 json 的 SQL 字段里
+        return [(q["SQL"], q["db_id"]) for q in load_questions()]
     if not GOLD_FILE.exists():
         fail(f"找不到金标文件 {GOLD_FILE}")
     rows = []
@@ -210,7 +222,7 @@ def cmd_info(_args):
     print(f"数据集 : {DATASET_NAME}  [key={DATASET_KEY}]")
     print(f"数据目录: {DATA_DIR}")
     print(f"作答目录: {WORK_DIR}")
-    ok = QUESTIONS_FILE.exists() and GOLD_FILE.exists() and DB_ROOT.exists()
+    ok = QUESTIONS_FILE.exists() and (GOLD_FILE is None or GOLD_FILE.exists()) and DB_ROOT.exists()
     print(f"数据状态: {'就绪' if ok else '未就绪（先运行 tools/setup_data.py）'}")
     if not ok:
         ready = [k for k, v in DATASETS.items() if (DATA_DIR / v["dir"] / v["questions"]).exists()]

@@ -140,6 +140,55 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 | 16 | 1 行 1 列值不同 | naive / CAST / 按校名 JOIN（=2）都不对 |
 | 51 | 1 行 2 列值不同 | naive join / CAST join 两个不同的学校都不对 |
 
+## 第 18 轮：换新版 dev split（2025-11-06）复核
+
+官方 2025-11-13 发布了 `birdsql/bird_sql_dev_20251106`（"cleaner split"）。已接入 `--dataset dev2025`。
+
+### 新版到底改了什么（量化）
+
+| 维度 | 变化 |
+|---|---|
+| 题数 / `question_id` | **1534，与旧版一一对应，idx 顺序完全一致** |
+| `question` 文本 | 变 **182/1534（11.9%）** |
+| `evidence` | 变 **378/1534（24.6%）** |
+| **金标 `SQL`** | 变 **451/1534（29.4%）** |
+| 难度 | **重分类**：simple 925→**860**、challenging 145→**231** |
+
+⚠️ **重要发现：65 道旧 simple 被「改写」成了 challenging** —— 不是简单修订，而是
+把单属性问答扩写成多维度分析：
+
+> 旧："How many customers who choose statement of weekly issuance are Owner?"
+> 新："What is the **demographic breakdown and financial profile** of account owners who receive weekly..."
+
+### 复核结果（用旧答案对新金标）
+
+| | 旧 dev | **新 dev2025** |
+|---|---|---|
+| 已答 | 949 | 949 |
+| 正确 | 765 | **697** |
+| 已答 EX | 80.61% | **73.45%** |
+| 全量 EX | 49.87% | **45.44%** |
+
+按新版难度：**simple 860/860 已答、675 正确 = 78.49%**；moderate 22/24；
+challenging **0/65**（那些题被我按 simple 做，答案形态完全不匹配）。
+
+**跌分归因（不是能力退步，是题变了）**：
+
+| 库 | 旧→新 | 原因 |
+|---|---|---|
+| financial | 52→**15** | 62 道里 **39 道题目被改写**（错题 47 道中 39 道是改写过的） |
+| california_schools | 51→**31** | 54 道里 18 道被改写 |
+| card_games | 78→**81** | 金标修正后我原来的答案对了（+3） |
+| thrombosis_prediction | 30→**35** | 同上（+5） |
+
+### 对 skill 的影响
+
+1. **`db/*.md` 的“必查”是基于旧版积累的**，新版 financial / california_schools 题目形态已变，
+   那两条里的部分内容需要在新版上重新积累（旧坑不一定还成立）。
+2. 新版**全量基线**（README）：`gemini-3-pro-preview` **68.97%**、`claude-sonnet-4.5` 66.56%、
+   `GPT-5.1` 64.02%、`Qwen2.5-Coder-7B` 49.22% ← **这才是对标基准**。
+3. 下一步应该**按新题目重做被改写的题**（尤其 financial 的 39 道），而不是继续拿旧答案凑。
+
 ## 第 17 轮：debit_card_specializing 全量（55 道）—— **925 道 simple 全部完成**
 
 结果：**44 对 / 11 错（80%）**。错题里 7 道是“1 行 1 列值不同”，仍是口径类；
