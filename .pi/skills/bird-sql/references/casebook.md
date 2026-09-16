@@ -142,6 +142,41 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 
 ## 第 19 轮：重做 dev2025 被改写的题（financial 22 道）
 
+### 🔴 重大策略修正：改写题里 **simple 是高产田、challenging 是盐碱地**
+
+同是 122 道改写题，两类形态的收益率差了 **一个数量级**：
+
+| 类别 | 数量 | 实测 | 原因 |
+|---|---|---|---|
+| **simple 改写题** | 54 | **19✓/22 = 86%** | 题干基本还是“单实体 + 1～2 列”的经典形态（只是换了词） |
+| **challenging 改写题**（challenging Profile） | 44 | **1✓/22 = 5%** | 输出 6～21 列，列集合不可猜 |
+
+⇒ **规则：重做改写题时，先把所有 `difficulty=='simple'` 的做完，challenging 的放最后。**
+（`python -c "...new[i]['difficulty']=='simple'..."` 一行筛出来，不要按 idx 顺序做。）
+
+simple 改写题实测批量（几乎全对）：
+
+| idx | 库 | 题面关键点 | 结果 |
+|---|---|---|---|
+| 297 | toxicology | `element='c'` + `label='-'` | ✓ |
+| 342 | card_games | `convertedManaCost=MAX(...)`（并列坑此时未发作） | ✓ |
+| 383 / 406 / 413 / 429 / 443 / 496 | card_games | `legalities`（via uuid）/ `set_translations`（via setCode） | ✓ |
+| 561 / 564 / 596 / 618 / 711 | codebase_community | 见下方 ParentId 坑 | 4✓1✗ |
+| 767 / 810 / 843 | superhero | 比例题 / `hero_attribute` MAX | ✓ |
+| 851 / 876 / 913 / 959 | formula_1 | 驼峰表名坑 | ✓ |
+
+**两个新坑（已写进对应 `db/<库>.md`）：**
+1. `formula_1` 表名是**驼峰**：`constructorStandings` / `lapTimes` / `driverStandings` /
+   `constructorResults` / `pitStops`（我写 `constructor_standings` / `lap_times` → `no such table`）。
+2. `codebase_community` 的 “parent id” = **`posts.ParentId`**，不是 `comments.PostId`
+   （`564` 用后者返回 **0 行**）。
+
+**已知不可控失败（不重交）：**
+- `514`（card_games “top 10 最高 convertedManaCost”）→ 并列导致排序不稳定（库档案第 12 条已记）。
+- `386`（card_games “legal + future frameVersion”计数）→ 与 `383` 同形但金标口径不同，猜不出。
+- `618`（codebase_community “Vienna, Austria 有 badge 的年龄”）→ 金标 46 行，试了
+  精确 / LIKE / 无 DISTINCT / Age IS NOT NULL 组合均对不上（候选：23/34/52/100），放弃。
+
 ### 最终战果（直说）
 
 **22 道重做 → 只有 1 道对（`141`）；全量 EX 45.44% → 45.50%（correct 697 → 698）。**

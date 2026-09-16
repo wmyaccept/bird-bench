@@ -184,6 +184,8 @@ SELECT 名字 FROM t WHERE 名字 IN ('A','B') ORDER BY 指标 DESC LIMIT 1;
 ## A11. 多维度 Profile —— 题干出现 "comprehensive profile / overall statistics / segmented by"
 
 > ★ **这是新版 dev2025 新增的主力题型**（旧版 simple 被改写后大量变成它，多为 challenging）。
+> 🔴 **做题顺序：改写题里先做 `difficulty=='simple'` 的（实测 86% 对），
+> 这些 challenging 的 Profile 题放最后做（实测 5% 对）。**
 > 实测 5 道（financial 92/96/97/103/104）：**行数/粒度大多对，但金标列数是我猜的 2–3 倍**。
 
 **先定粒度（这部分容易对）：**

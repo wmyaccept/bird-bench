@@ -69,3 +69,8 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
   `SELECT COUNT(*) FROM tags WHERE TagName='careers'` = **1**（金标）
   vs `SELECT COUNT(*) FROM posts WHERE Tags LIKE '%<careers>%'` = 22（**错**）。
   ⇒ **evidence 点到哪张表的哪个列，就用那个列**，不要自己找“等价”的写法（详见 `naming-traps.md`）。
+
+⚠️ **"parent id" 指的是 `posts.ParentId`，不是 `comments.PostId`**（实测 `564`）：
+题干说 “the post with only one comment and parent id 107829” 时，
+用 `comments.PostId=107829` 会返回 **0 行**（该 id 是帖子的父帖 id）。
+凡是出现 "parent id / parent post"，先想 `posts.ParentId`。

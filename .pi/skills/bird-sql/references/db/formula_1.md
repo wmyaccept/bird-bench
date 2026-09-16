@@ -58,3 +58,7 @@ races ──circuitId── circuits
 6. **金标倾向少列**：`986`（“indicate the time in milliseconds”→ 只给 `milliseconds`）、
    `1009`（“list the time each driver spent”→ 只给 `duration`）、`1000`（“full location”→ 金标 1 列）。
    ⇒ “列出 X 的 Y” 类题，**只给 Y**，别把 X 的 id 也带上。
+
+13. ⚠️ **表名是驼峰，不是 snake_case**（实测连续踩坑）：`constructorStandings`、`constructorResults`、
+    `driverStandings`、`lapTimes`、`pitStops`。写 SQL 前先用 `bird_schema formula_1` 确认表名，
+    不要凭直觉写 `constructor_standings` / `lap_times`（会直接 `no such table`）。
