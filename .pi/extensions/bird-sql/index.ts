@@ -462,7 +462,7 @@ export default function (pi: ExtensionAPI) {
     name: "bird_brief",
     label: "BIRD Brief",
     description:
-      "决策点推送：把 references 知识库（带 <!-- push step=N --> 标记的片段）与当前库档案（'交题前必查' + 惯例卡片）推到眼前。换库做第一题之前先跑一次 " +
+      "决策点推送：把 references 知识库（带 <!-- push step=N --> 标记的片段）与**整份**当前库档案（必查 + 连接图与坑 + 值域陷阱/补充 + 惯例卡片）推到眼前。换库做第一题之前先跑一次 " +
       "bird_brief db_id=<库>；卡在某一步时用 step 只推那一步。知识库是唯一数据源，所以它推出来的就是文档里写着的。",
     promptSnippet: "把知识库与当前库档案推到决策点（换库先跑，step 可只推某一步）",
     promptGuidelines: [
@@ -470,7 +470,7 @@ export default function (pi: ExtensionAPI) {
       "step 取值：1 读题/形状、2 题型骨架、3.5 概念定位、4 写 SQL/口径/方言、5 判定口径、7 复盘归因。",
     ],
     parameters: Type.Object({
-      db_id: Type.Optional(Type.String({ description: "数据库 id（给出时同时推该库档案的必查与惯例卡片）" })),
+      db_id: Type.Optional(Type.String({ description: "数据库 id（给出时推**整份**库档案：必查 + 连接图与坑 + 值域陷阱/补充 + 惯例卡片）" })),
       step: Type.Optional(Type.String({ description: "只推某一步的片段：1 / 2 / 3.5 / 4 / 5 / 7" })),
       dataset: DatasetType,
     }),
