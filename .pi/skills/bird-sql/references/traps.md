@@ -150,6 +150,26 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       不是 `DISTINCT 属性` 的 3 行）。
 - [ ] ⭐ **“is it carcinogenic?” 这类二值判断题，金标给的是原始标签字符 `+`/`-`**，不是 `'yes'/'no'`
       （`toxicology` 283/244 实测）。
+- [ ] ⭐ ⭐ **“Rank … by X” 的金标往往就是 `RANK() OVER (ORDER BY X …)` 一个输出列**（而且聚合列排在前面）。
+      ⇒ 碰到 **Rank / 排名 / popularity** 字样，先按 **3 列**写：`(实体名, X 的值, RANK() OVER (…))`。
+      （`superhero` 726/728 都栽在这；简单集 763 是轻症。）
+- [ ] ⭐ ⭐ **问“最…”分两种形态，先看主语是人还是值**：
+      - **“Who/Which <人> is the <est>?”** ⇒ `ORDER BY 属性值 <方向>, T1.id LIMIT 1`（**取 1 行**，并列按 id 升序）
+        （`superhero` 736/766/794 金标都是这个形状）
+      - **“…the lowest/highest attribute value”**（问值） ⇒ `= (SELECT MIN/MAX(…))`（**全部并列**，837 金标 10 行）
+- [ ] ⭐ ⭐ **分母优先用“JOIN 之后的行数”**，不要用独立子查询去数：`codebase_community` 557 金标
+      `SUM(IIF(Age>65,1,0)) * 100 / COUNT(T1.Id)`（分母是同一次 JOIN 的行）；672 金标更是直接
+      `COUNT(users.Id)` **不去重**（数论坛帖子行），而 716 又要求 `COUNT(DISTINCT users.Id)` ——
+      **先写“不去重的 `COUNT(列)`”，形状/值对不上再换 DISTINCT**。
+- [ ] ⭐ **日期列相减别自作主张用 `JULIANDAY`**：`codebase_community` 692 的金标就是 `T1.Date - T2.CreationDate`
+      （SQLite 取字符串的数字前缀 ⇒ 得到**年份差**），用 JULIANDAY 反而 0 分。
+- [ ] ⭐ **“average … per month” 的分母是 12**（不是“有数据的月份数”）：`codebase_community` 665 金标 `COUNT(T1.Id) / 12`。
+      （同理：“per year” 想 12 个月 / “daily” 想 365。）
+- [ ] ⭐ ⭐ **字面量照题干/evidence 的写法抄，不要“替金标纠正大小写”**：`codebase_community` 640 题干写
+      `Mornington`、库里存的是 `mornington`，金标用大写 ⇒ 匹配不到任何行（= 0），答案是个负数。
+      我改成库里真实大小写反而错。**金标常有这种“它自己也没匹配上”的字面量。**
+- [ ] ⭐ **“comment” 要看上下文**：出现 **edit / edited / revision** 时，“comment” = `postHistory.Comment`（编辑备注），
+      不是 `comments.Text`（`codebase_community` 584 实测：14254 行 vs 金标 8 行）。
 - [ ] ⭐⭐ **evidence 里的公式不能照抄**，它只说明“用了哪些列”，不说明粒度：
       `student_club` 1454 按 evidence 的 `DIVIDE(SUM(cost), COUNT(event_id)) * 100` 算出 6686 ✗；
       正确读法是「这类成本 ÷ **全部**成本 × 100」。⚠️ 题面写了 percentage / percent 就**必须 ×100**

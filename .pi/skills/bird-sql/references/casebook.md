@@ -1835,3 +1835,46 @@ answer 2 "/* shape: 3x1 */ SELECT CustomerID FROM customers" --checks "<核心�
    ⇒ 同一个库两种相反口径，**分界在问句形态**（问人 vs 问值）。736/766/794 三题一致。
 3. **「at least five」= 字面 `LIMIT 5`**（751 我 162 行 ✗ → 金标 5 行）。
 4. 另两条基础坑：**列名是 `height_cm`/`weight_kg`**（不是 `height`）；**`race='Human'` 首字母大写**。
+
+---
+
+## 第 43 轮（2026-09-18）｜⭐ moderate **全量扫完**（443 道，306 对 = 69.07%）+ 四库复盘
+
+本轮按"先扫题、后复盘"的节奏把 dev2025 剩余 moderate 一次做完：
+student_club 36、superhero 33、codebase_community 30、financial 25、card_games 3（挂起三题收尾）。
+**dev2025 现在 0 道未答 moderate。**
+
+| 库 | moderate 对/答 | 本轮新增 |
+|---|---|---|
+| student_club | 41/48 = 85.4% | 36 道 29 对 |
+| superhero | 27/33 = 81.8% | 33 道 27 对 |
+| debit_card_specializing | 14/17 = 82.4% | — |
+| european_football_2 | 37/50 = 74.0% | — |
+| **codebase_community** | **17/30 = 56.7%** | 30 道 17 对 ⚠️ |
+| card_games | 36/53 = 67.9% | — |
+| thrombosis_prediction | 57/85 = 67.1% | — |
+| formula_1 | 29/43 = 67.4% | — |
+| toxicology | 23/36 = 63.9% | — |
+| **financial** | **14/25 = 56.0%** | 25 道 14 对 ⚠️ |
+| california_schools | 11/23 = 47.8% | — |
+| **合计** | **306/443 = 69.07%** | |
+
+### 复盘做对的一件事：**逐条读金标 SQL 找"它到底用了哪张表、哪个粒度"**
+
+这轮 24 道错题（codebase 13 + financial 11）几乎**没有一道是"列数/列名猜错"**，
+全部是**同一张概念落在两张表上、或者分母的粒度不同**。逐条对照后得到 5 条通用规则（已进 `traps.md` ④）：
+
+1. **`RANK() OVER (...)` 会直接当输出列**（superhero 726/728）⇒ 见 "Rank … by X" 按 **3 列**写。
+2. **分母用"JOIN 之后的行数"**（codebase 557/672/716）：同一批题里 672 要**不去重**、716 要 **DISTINCT**
+   ⇒ 先写不去重的 `COUNT(列)`。
+3. **“最…”分两种形态**：问人 ⇒ `ORDER BY 值, T1.id LIMIT 1`（superhero 736/766/794）；
+   问值 ⇒ `= (SELECT MIN/MAX)` 全部并列（superhero 837）。
+4. **金标会对字符串/日期偷懒**：日期相减直接 `Date - CreationDate`（= 年份差，codebase 692）；
+   `average … per month` 分母固定 12（codebase 665）；字面量照题干大写而不顾库里的小写（codebase 640，答案 -497）。
+5. **“district” 在本库有两条路**：financial 金标多数走 **`account.district_id`**（不是 `client.district_id`），
+   且 131 的 evidence 点名 A3 ⇒ **就必须给 A3**（128 点名 A2 ⇒ 给 A2）。
+
+### 一条流程教训
+
+- ⚠️ **`bird_score --db <库> --list-wrong` 会为形状校验重跑全量 1534 题**，本轮两次 1800s 超时。
+  **批量核对用 `bird.compare_ex` 逐题跑**（十几秒），`score` 只在要全量数字时用。

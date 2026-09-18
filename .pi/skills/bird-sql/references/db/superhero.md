@@ -37,20 +37,27 @@ superhero ──id── hero_power ──power_id── superpower
 > 由 `bird_conventions db=superhero write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（33 道，27 对 = 81.8%）—— 本库的两个"名字里没写但金标有"的规矩
 
-### ① 「Rank … by X」= **3 列**：`(id, 名称, 排序依据)`  ⭐⭐ 本库最大的一类失分
+### ① 「Rank … by X」= **3 列**，第 3 列是 **`RANK() OVER (...)`**（已核金标 SQL）⭐⭐ 本库最大的一类失分
 
-- **726**「Rank heroes published by Marvel Comics by their height in descending order」
-  → 金标 **387 行 × 3 列**（我只给 `superhero_name` 1 列）⇒ 猜 `(id, superhero_name, height_cm)`。
-- **728**「Rank superheroes from Marvel Comics by their eye color popularity, starting with the most common color」
-  → 金标 **19 行 × 3 列**（我 1 列）⇒ 猜 `(colour_id, colour, COUNT(superhero.id))`。
-- 简单集也有同款：**763 金标 6 行 2 列**（我 1 列）⇒ **"Rank/List … by 某属性"时，那个属性本身几乎一定在输出里**，
-  再加一个 id 列就是 3 列。**下次见到 "Rank …" 直接按 3 列写。**
+- **726**「Rank heroes published by Marvel Comics by their height in descending order」金标：
+  ```sql
+  SELECT superhero_name, height_cm, RANK() OVER (ORDER BY height_cm DESC) AS HeightRank
+  FROM superhero INNER JOIN publisher ON … WHERE publisher_name = 'Marvel Comics'
+  ```
+- **728**「Rank superheroes … by their eye color popularity」金标：
+  ```sql
+  SELECT colour.colour, COUNT(superhero.id), RANK() OVER (ORDER BY COUNT(superhero.id) DESC)
+  … GROUP BY colour.colour
+  ```
+  ⇒ 我两题都只给 1 列 ✗。**见 "Rank … by X" 一律 3 列：`(名称, X 的值, RANK() OVER (ORDER BY X …))`**
+  （简单集 763 金标 6 行 2 列是同一个病的轻症）。
 
 ### ② 「Who is the X-est?」= **1 行**（LIMIT 1），不是全部并列 —— 与 837 相反
 
-- **736**「Who is the dumbest superhero?」金标 **1 行**（我按并列给了 3 行）✗
-- **766**「the hero's full name with the highest attribute in strength」金标 **1 行**（我 63 行）✗
-- **794**「Which hero was the fastest?」金标 **1 行**（我 40 行）✗
+- **736**「Who is the dumbest superhero?」金标 `… ORDER BY T2.attribute_value ASC, T1.id LIMIT 1` ⇒ **1 行**（我按并列给了 3 行）✗
+- **766**「the hero's full name with the highest attribute in strength」金标 `ORDER BY attribute_value DESC LIMIT 1` ✗（我 63 行）
+- **794**「Which hero was the fastest?」金标 `ORDER BY attribute_value DESC, T1.id ASC LIMIT 1` ✗（我 40 行）
+  ⇒ 精确写法：**`ORDER BY 属性值 <方向>, T1.id` + `LIMIT 1`**（并列时按 id 升序取第一个），不是 `= (SELECT MAX(...))`。
 - ⚠️ 但 **837**（simple）「lowest attribute value」金标是 **10 行全部并列** ✓
   ⇒ **分界在问句形态**：**"Who/Which <人> is the <est>?" ⇒ 单人（LIMIT 1）**；
   **"…value/…with the lowest attribute value" ⇒ 全部并列**。别名档案顶部第 3 条要按这个细分读。

@@ -141,12 +141,12 @@ JOIN `cards` 会把同一张卡的所有版本都算进去（我因此给出 3 �
   WHERE T3.name='Coldsnap' AND T1.language='Italian' ORDER BY T2.convertedManaCost DESC`（**155 行 = 全部意大利语行**）
   ⇒ ① `T2.name` 是 **`cards.name`（英文名）**，不是 `foreign_data.name`；② 这个「最高 cmc」的过滤**在金标里就失效了**（没 LIMIT/没 MAX）——遇到金标自己走样的题，形状对了也拿不到分。
 - **446**「percentage of the cards with cmc 10 in set of Abyssal Horror」金标：2 列 `（百分比, T1.name）`，范围是 **`cards.name='Abyssal Horror'`**（卡本身，不是整个 set），分母 `COUNT(T1.id)` = 3。
-## 惯例卡片（实测统计，n=175 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=178 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 7 / COUNT(*) 6 / 无 130　⇒ 本库以 `COUNT(列)` 为主（32/45 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：cards 124 / sets 36 / set_translations 6 / foreign_data 6 / legalities 3　⇒ 主表几乎总是 **cards**（124/175）
-- `SELECT DISTINCT`：36/175　|　`*100`：10　|　`BETWEEN`：1
-- 输出列数分布：1列×147 / 2列×21 / 3列×7
-- JOIN 数分布：0:72, 1:94, 2:5, 3:3, 4:1
+- 计数形态：COUNT(列) 33 / COUNT(DISTINCT) 7 / COUNT(*) 6 / 无 132　⇒ 本库以 `COUNT(列)` 为主（33/46 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：cards 127 / sets 36 / set_translations 6 / foreign_data 6 / legalities 3　⇒ 主表几乎总是 **cards**（127/178）
+- `SELECT DISTINCT`：36/178　|　`*100`：10　|　`BETWEEN`：1
+- 输出列数分布：1列×149 / 2列×22 / 3列×7
+- JOIN 数分布：0:72, 1:97, 2:5, 3:3, 4:1
 
 > 由 `bird_conventions db=card_games write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

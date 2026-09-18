@@ -1,810 +1,1279 @@
 {
   "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
   "dataset_key": "dev2025",
-  "answered": 114,
-  "unanswered": 224,
+  "answered": 181,
+  "unanswered": 194,
   "total_questions": 1534,
-  "correct": 102,
-  "ex_percent": 89.47,
-  "ex_percent_full_set": 6.65,
+  "correct": 147,
+  "ex_percent": 81.22,
+  "ex_percent_full_set": 9.58,
   "results": [
     {
-      "idx": 717,
-      "db_id": "superhero",
+      "idx": 531,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 718,
-      "db_id": "superhero",
+      "idx": 532,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 719,
-      "db_id": "superhero",
+      "idx": 533,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 534,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 535,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 536,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 537,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 538,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 539,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 540,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 541,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 542,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 543,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 544,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 720,
-      "db_id": "superhero",
+      "idx": 545,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 546,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 547,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 548,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 549,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 550,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 551,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 552,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 553,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 554,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 555,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 556,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 557,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 558,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 559,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 560,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 561,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 562,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 563,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 564,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 565,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 566,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 567,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 568,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 569,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 570,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 571,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 572,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 573,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 574,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 575,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 576,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 577,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 578,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 579,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 580,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 102 行 1 列 / 金标 71 行 1 列）"
+      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
     },
     {
-      "idx": 721,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 722,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 723,
-      "db_id": "superhero",
+      "idx": 581,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 725,
-      "db_id": "superhero",
+      "idx": 582,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 4 行 1 列 / 金标 2 行 1 列）"
+    },
+    {
+      "idx": 583,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 726,
-      "db_id": "superhero",
+      "idx": 584,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": false,
-      "detail": "列数不同（预测 387 行 1 列 / 金标 387 行 3 列）"
+      "detail": "行数不同（预测 14254 行 1 列 / 金标 8 行 1 列）"
     },
     {
-      "idx": 727,
-      "db_id": "superhero",
+      "idx": 585,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 728,
-      "db_id": "superhero",
+      "idx": 587,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": false,
-      "detail": "列数不同（预测 19 行 1 列 / 金标 19 行 3 列）"
+      "detail": "行数不同（预测 19 行 3 列 / 金标 9 行 3 列）"
     },
     {
-      "idx": 729,
-      "db_id": "superhero",
+      "idx": 588,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 731,
-      "db_id": "superhero",
+      "idx": 589,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 732,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 733,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 734,
-      "db_id": "superhero",
+      "idx": 590,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 735,
-      "db_id": "superhero",
+      "idx": 591,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 736,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 737,
-      "db_id": "superhero",
+      "idx": 592,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 738,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 739,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 740,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 741,
-      "db_id": "superhero",
+      "idx": 593,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 742,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 745,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 746,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 747,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 748,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 749,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 750,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 751,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 162 行 1 列 / 金标 5 行 1 列）"
-    },
-    {
-      "idx": 752,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 753,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 754,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 755,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 756,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 757,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 758,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 759,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 761,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 762,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 763,
-      "db_id": "superhero",
+      "idx": 594,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 6 行 1 列 / 金标 6 行 2 列）"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
-      "idx": 764,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 765,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 766,
-      "db_id": "superhero",
+      "idx": 595,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 596,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 597,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 599,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 600,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 63 行 1 列 / 金标 1 行 1 列）"
+      "detail": "列数不同（预测 10 行 1 列 / 金标 10 行 3 列）"
     },
     {
-      "idx": 767,
-      "db_id": "superhero",
+      "idx": 601,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 768,
-      "db_id": "superhero",
+      "idx": 602,
+      "db_id": "codebase_community",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
+      "correct": false,
+      "detail": "行数不同（预测 96 行 2 列 / 金标 535 行 2 列）"
     },
     {
-      "idx": 770,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 771,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 774,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 776,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 777,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 778,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 779,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 780,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 781,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 782,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 783,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 784,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 785,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 786,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 787,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 789,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 790,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 791,
-      "db_id": "superhero",
+      "idx": 603,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 792,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 793,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 794,
-      "db_id": "superhero",
+      "idx": 604,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": false,
-      "detail": "行数不同（预测 40 行 1 列 / 金标 1 行 1 列）"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
-      "idx": 795,
-      "db_id": "superhero",
+      "idx": 605,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 796,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 797,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 798,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 799,
-      "db_id": "superhero",
+      "idx": 606,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 800,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 801,
-      "db_id": "superhero",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 802,
-      "db_id": "superhero",
+      "idx": 607,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 803,
-      "db_id": "superhero",
+      "idx": 608,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 804,
-      "db_id": "superhero",
+      "idx": 609,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 805,
-      "db_id": "superhero",
+      "idx": 610,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数不同（预测 236 行 1 列 / 金标 107 行 1 列）"
+      "detail": "行数不同（预测 1 行 1 列 / 金标 80 行 1 列）"
     },
     {
-      "idx": 806,
-      "db_id": "superhero",
+      "idx": 611,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 807,
-      "db_id": "superhero",
+      "idx": 612,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 808,
-      "db_id": "superhero",
+      "idx": 613,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 809,
-      "db_id": "superhero",
+      "idx": 614,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 810,
-      "db_id": "superhero",
+      "idx": 615,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 616,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 811,
-      "db_id": "superhero",
+      "idx": 617,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 812,
-      "db_id": "superhero",
+      "idx": 618,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
+      "detail": "行数不同（预测 10 行 1 列 / 金标 46 行 1 列）"
     },
     {
-      "idx": 813,
-      "db_id": "superhero",
+      "idx": 619,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 814,
-      "db_id": "superhero",
+      "idx": 620,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 621,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 622,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 623,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 624,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 625,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 626,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 627,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 628,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 629,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 630,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 631,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 632,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 633,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 815,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 816,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 817,
-      "db_id": "superhero",
+      "idx": 635,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 820,
-      "db_id": "superhero",
+      "idx": 636,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 637,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 638,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 640,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 641,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 642,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 643,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 644,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 645,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 646,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 647,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 648,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 649,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 12 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 650,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 651,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 652,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 821,
-      "db_id": "superhero",
+      "idx": 653,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 822,
-      "db_id": "superhero",
+      "idx": 654,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 823,
-      "db_id": "superhero",
+      "idx": 655,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 656,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 657,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 824,
-      "db_id": "superhero",
+      "idx": 658,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 659,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 660,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 661,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 662,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 663,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 664,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 665,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 666,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 667,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 668,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 669,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 670,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 671,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 672,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 673,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 674,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 675,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 676,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 677,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 678,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 679,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 680,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 681,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 682,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "预测 SQL 执行失败: OperationalError: interrupted"
+    },
+    {
+      "idx": 683,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 825,
-      "db_id": "superhero",
+      "idx": 684,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 685,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 826,
-      "db_id": "superhero",
+      "idx": 686,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 827,
-      "db_id": "superhero",
+      "idx": 687,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 688,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 689,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 690,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 691,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 692,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 693,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 694,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 828,
-      "db_id": "superhero",
+      "idx": 695,
+      "db_id": "codebase_community",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 830,
-      "db_id": "superhero",
+      "idx": 696,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 697,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 698,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 699,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 700,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 702,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 703,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 704,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 705,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 706,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 707,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 831,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 832,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 833,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 836,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 837,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 838,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 839,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 840,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 841,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 842,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 843,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 844,
-      "db_id": "superhero",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 845,
-      "db_id": "superhero",
+      "idx": 708,
+      "db_id": "codebase_community",
       "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 17030 行 2 列 / 金标 17030 行 2 列）"
+    },
+    {
+      "idx": 709,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 710,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 711,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 712,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 713,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 714,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 715,
+      "db_id": "codebase_community",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 716,
+      "db_id": "codebase_community",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     }
   ]
 }
