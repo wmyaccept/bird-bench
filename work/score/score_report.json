@@ -1,1207 +1,815 @@
 {
   "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
   "dataset_key": "dev2025",
-  "answered": 171,
-  "unanswered": 426,
+  "answered": 115,
+  "unanswered": 372,
   "total_questions": 1534,
-  "correct": 117,
-  "ex_percent": 68.42,
-  "ex_percent_full_set": 7.63,
+  "correct": 87,
+  "ex_percent": 75.65,
+  "ex_percent_full_set": 5.67,
   "results": [
     {
-      "idx": 340,
-      "db_id": "card_games",
+      "idx": 1020,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 341,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 67 行 1 列 / 金标 72 行 1 列）"
-    },
-    {
-      "idx": 342,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 343,
-      "db_id": "card_games",
+      "idx": 1021,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 654 行 1 列 / 金标 654 行 1 列）"
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
-      "idx": 344,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 345,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 346,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 347,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 348,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 349,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同、首列也对得上，但整行元组不同（预测 1 行 3 列 / 金标 1 行 3 列，多出 1 组 / 少 1 组）—— 大概率是列顺序或多选了列"
-    },
-    {
-      "idx": 350,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 6 行 1 列）"
-    },
-    {
-      "idx": 351,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 352,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 353,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 354,
-      "db_id": "card_games",
+      "idx": 1022,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 355,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 356,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 357,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 29 行 1 列 / 金标 3 行 1 列）"
-    },
-    {
-      "idx": 358,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 359,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 4 行 1 列 / 金标 3 行 1 列）"
-    },
-    {
-      "idx": 360,
-      "db_id": "card_games",
+      "idx": 1023,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 361,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 362,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 363,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 364,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 365,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 366,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 367,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 368,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 369,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 370,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 372,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 373,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 374,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 375,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 376,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 377,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 378,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 379,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 380,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 381,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 382,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 4991 行 1 列 / 金标 4991 行 1 列）"
-    },
-    {
-      "idx": 383,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 384,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 228781 行 2 列 / 金标 228765 行 2 列）"
-    },
-    {
-      "idx": 385,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 386,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 387,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 187 行 2 列 / 金标 187 行 2 列）"
-    },
-    {
-      "idx": 388,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 312 行 2 列 / 金标 312 行 3 列）"
-    },
-    {
-      "idx": 389,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 49 行 2 列 / 金标 49 行 2 列）"
-    },
-    {
-      "idx": 390,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 391,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 392,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同、首列也对得上，但整行元组不同（预测 3 行 1 列 / 金标 3 行 1 列，多出 0 组 / 少 2 组）—— 大概率是列顺序或多选了列"
-    },
-    {
-      "idx": 393,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 394,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 395,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 396,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 397,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 398,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 565 行 1 列）"
-    },
-    {
-      "idx": 399,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 999 行 2 列 / 金标 46 行 2 列）"
-    },
-    {
-      "idx": 400,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 28636 行 1 列 / 金标 121 行 1 列）"
-    },
-    {
-      "idx": 401,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 402,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 403,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 28639 行 2 列）"
-    },
-    {
-      "idx": 404,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 405,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 406,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 407,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 408,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 2059 行 1 列）"
-    },
-    {
-      "idx": 409,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 410,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 411,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 412,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 413,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 414,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 417,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 418,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 419,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 420,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 421,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 422,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 423,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 424,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 425,
-      "db_id": "card_games",
+      "idx": 1024,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
     },
     {
-      "idx": 426,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 3 行 2 列 / 金标 3 行 1 列）"
-    },
-    {
-      "idx": 427,
-      "db_id": "card_games",
+      "idx": 1025,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 428,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 429,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 430,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 2 行 2 列 / 金标 2 行 2 列）"
-    },
-    {
-      "idx": 432,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 3 列）"
-    },
-    {
-      "idx": 433,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 434,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 435,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 49729 行 2 列 / 金标 49729 行 1 列）"
-    },
-    {
-      "idx": 436,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 383 行 2 列 / 金标 383 行 1 列）"
-    },
-    {
-      "idx": 437,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 471 行 1 列 / 金标 471 行 1 列）"
-    },
-    {
-      "idx": 438,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 439,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 440,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 441,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 2 行 1 列 / 金标 10 行 1 列）"
-    },
-    {
-      "idx": 442,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 443,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 444,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 445,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 446,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 447,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 70 行 1 列）"
-    },
-    {
-      "idx": 448,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 480 行 2 列 / 金标 47 行 2 列）"
-    },
-    {
-      "idx": 449,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 450,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 451,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 452,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 453,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 4 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 454,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 455,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 456,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 7 行 2 列 / 金标 1 行 3 列）"
-    },
-    {
-      "idx": 457,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 458,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 459,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 460,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 461,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 462,
-      "db_id": "card_games",
+      "idx": 1026,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
       "correct": false,
       "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 463,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 464,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 465,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 466,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 467,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 468,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 469,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 6 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 470,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 3 行 1 列）"
-    },
-    {
-      "idx": 471,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 472,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 474,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 475,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 476,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 12 行 1 列）"
-    },
-    {
-      "idx": 478,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 479,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 480,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 481,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 482,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 483,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 484,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 155 行 1 列 / 金标 155 行 1 列）"
-    },
-    {
-      "idx": 485,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 486,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 488,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 489,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 490,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 491,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 492,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 493,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 495,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 496,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 497,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 498,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 499,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 501,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 502,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 503,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 504,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 505,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 508,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 509,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 510,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 511,
-      "db_id": "card_games",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 512,
-      "db_id": "card_games",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 514,
-      "db_id": "card_games",
+      "idx": 1027,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
     },
     {
-      "idx": 515,
-      "db_id": "card_games",
+      "idx": 1029,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 4 行 1 列 / 金标 4 行 1 列）"
+    },
+    {
+      "idx": 1030,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 516,
-      "db_id": "card_games",
+      "idx": 1032,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 1033,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1034,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1035,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1038,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "列数不同（预测 5 行 1 列 / 金标 5 行 2 列）"
+    },
+    {
+      "idx": 1039,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1040,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 517,
-      "db_id": "card_games",
+      "idx": 1043,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1044,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1045,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1046,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 518,
-      "db_id": "card_games",
+      "idx": 1047,
+      "db_id": "european_football_2",
       "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1048,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1049,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1050,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1051,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1052,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1053,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1054,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1055,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1056,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1057,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1059,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1060,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1061,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1062,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1063,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 26 行 1 列）"
+    },
+    {
+      "idx": 1064,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 3184 行 1 列 / 金标 3202 行 2 列）"
+    },
+    {
+      "idx": 1065,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1066,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1067,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1068,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1069,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1070,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1072,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1073,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1074,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1075,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1077,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1078,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1079,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1080,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1081,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1082,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1083,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1085,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 1086,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 24 行 1 列）"
+    },
+    {
+      "idx": 1087,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1088,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1089,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1090,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1091,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1092,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1093,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1095,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1096,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1097,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1098,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1099,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1100,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1101,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1102,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1103,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1104,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1105,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1106,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1107,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1108,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1109,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1110,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1111,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1112,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1113,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1116,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1117,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1118,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 8731 行 1 列 / 金标 8618 行 1 列）"
+    },
+    {
+      "idx": 1119,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1120,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1121,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1122,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 5 行 1 列）"
+    },
+    {
+      "idx": 1123,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1124,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1125,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1126,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1127,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1128,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1129,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1130,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1131,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
       "correct": false,
       "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
     },
     {
-      "idx": 519,
-      "db_id": "card_games",
+      "idx": 1132,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1133,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1134,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1135,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
+    },
+    {
+      "idx": 1136,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1137,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": false,
-      "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 1 列）"
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 524,
-      "db_id": "card_games",
+      "idx": 1138,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 525,
-      "db_id": "card_games",
+      "idx": 1140,
+      "db_id": "european_football_2",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 526,
-      "db_id": "card_games",
+      "idx": 1141,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1142,
+      "db_id": "european_football_2",
       "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1143,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1144,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 3 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 1145,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1146,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 1147,
+      "db_id": "european_football_2",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 1148,
+      "db_id": "european_football_2",
+      "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     }

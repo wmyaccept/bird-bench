@@ -14,7 +14,9 @@
       `python tools/bird.py --dataset dev2025 conventions --db <db_id>` → 看计数形态分布、
       主表分布、`SELECT DISTINCT` 比例、`*100`。结论在 `db/<库>.md` 末尾的“惯例卡片”。
       ⇒ 实测：不看惯例、靠语感猜库级写法，是本项目 68% EX 的主要来源。
-- [ ] **1. 列数 = 题干提到的概念数？** 三种偏差都实测过：  <!-- core -->
+- [ ] **1. 列数 = 「属性清单」的行数？**（**落笔前先写清单**：题干每出现一个属性词就写一行 `属性 → 表.列`；  <!-- core -->
+      词袋型维度（statistics / profile / activity）当场展开成 3–5 列。**清单行数 = 列数**，不足就回去补列）
+      三种偏差都实测过：
       金标少给（`card_games` 435「How many X? **List out the id**」→ 只要 id）、
       金标多给（`toxicology` 264「labels for A, B and C」→ **2 列**，多一个实体 id）、
       金标拼接（`financial` 1000「full location」→ 1 列）。
