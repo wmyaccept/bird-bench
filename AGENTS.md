@@ -120,7 +120,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 | 闸门 | 规则 |
 |---|---|
-| 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（只有工具真跑过才写得进去），**且按数据集隔离**（dev2025 的 344 ≠ minidev 的 344） |
+| 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有**真探针**记录（`tables/schema/desc/run/find/cols` 之一；**`checks` 与 `force` 不算** —— 硬交过一次不会让这题以后免探针），**且按数据集隔离**（dev2025 的 344 ≠ minidev 的 344） |
 | 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致（行数可写 `?`，只校验列数；**比对用完整结果**，`--max-rows` 只管预览）
 | 3 勾选留痕 | `--checks "0,1,1b,…"`：条目号必须都是 `checklist.md` 里真实存在的，核心条目（`1`/`1b`/`2`/`2b`/`8`/`12`/`13`）缺一不可；留痕进 `probe_log`，`audit` 统计勾选率与最常被漏的条目 |
 

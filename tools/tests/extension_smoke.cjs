@@ -236,6 +236,71 @@ function check(name, cond, detail = "") {
   check("force=true 能跳过闸门并记录", r.ok && /已记录第 2 题/.test(r.text), r.text.slice(0, 200));
   check("force 留痕（audit 可统计强制率）", /"kind": "force"/.test(fs.readFileSync(PROBE_LOG, "utf8")));
 
+  console.log(String.fromCharCode(10) + "── 4b. P14：force 记录不能冒充探针（闸门 1 不许自我满足）");
+  const os = require("node:os");
+  const cli2 = (args, extraEnv = {}) =>
+    execFileSync(PYTHON, [path.join(PROJECT, "tools", "bird.py"), ...args], {
+      cwd: PROJECT,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        PYTHONIOENCODING: "utf-8",
+        BIRD_WORK_DIR: FIXTURE + "/work",
+        ...extraEnv,
+      },
+    });
+  let gate1Blocked = false;
+  let gate1Msg = "";
+  try {
+    // 3 号题从未被探过；刚在上面被 --force 硬交过一次 ⇒ 旧实现下这里会放行
+    cli2(["answer", "2", "/* shape: 1x1 */ SELECT COUNT(*) FROM customers", "--checks", CHECKS_CORE]);
+  } catch (err) {
+    gate1Msg = String(err.stderr || err.stdout);
+    gate1Blocked = /闸门 1/.test(gate1Msg);
+  }
+  check("用 --force 交过一次之后，不用 force 再交同一题仍被闸门 1 拦住", gate1Blocked, gate1Msg.slice(0, 200));
+  check("错误信息说清了哪些动作才算探针（checks/force 不算）", /checks、force 都不算/.test(gate1Msg));
+  const auditOut = cli2(["audit"]);
+  check("audit 仍统计 --force（指标没被顺手删掉）", /--force [1-9]/.test(auditOut), auditOut.slice(0, 200));
+  check(
+    "audit 的「探针覆盖」不再把 force 过的题算成已探过（无探针 idx 里含 2）",
+    /无探针 idx：\[[^\]]*\b2\b/.test(auditOut),
+    auditOut.slice(0, 400),
+  );
+
+  console.log(String.fromCharCode(10) + "── 4c. P10 加固：核心标记被清空时不许静默降级");
+  // 先给 2 号题一个真探针（否则会先被闸门 1 拦住，测不到闸门 3）
+  cli2(["run", "demo", "SELECT CustomerID FROM customers", "--for", "2"]);
+  const nocore = fs.mkdtempSync(path.join(os.tmpdir(), "bird-nocore-"));
+  fs.writeFileSync(
+    path.join(nocore, "checklist.md"),
+    fs
+      .readFileSync(path.join(PROJECT, ".pi", "skills", "bird-sql", "references", "checklist.md"), "utf8")
+      .replace(/<!-- core -->/g, ""),
+  );
+  let coreGuard = "";
+  try {
+    cli2(["answer", "2", "/* shape: 1x1 */ SELECT COUNT(*) FROM customers", "--checks", CHECKS_CORE], {
+      BIRD_REFS: nocore,
+    });
+  } catch (err) {
+    coreGuard = String(err.stderr || err.stdout);
+  }
+  check(
+    "剥掉全部 `<!-- core -->` → 拒绝并报出 checklist.md 路径（fail-closed）",
+    /核心条目标记/.test(coreGuard) && /checklist\.md/.test(coreGuard),
+    coreGuard.slice(0, 200),
+  );
+  let coreForce = "";
+  try {
+    coreForce = cli2(["answer", "2", "/* shape: 1x1 */ SELECT COUNT(*) FROM customers", "--force"], {
+      BIRD_REFS: nocore,
+    });
+  } catch (err) {
+    coreForce = String(err.stderr || err.stdout);
+  }
+  check("同一条件下 --force 仍是唯一出口（且能交上）", /已记录第 2 题/.test(coreForce), coreForce.slice(0, 200));
+
   console.log("\n── 5. 数据集隔离（idx 重叠不能假通过）");
   const cli = (args) =>
     execFileSync(PYTHON, [path.join(PROJECT, "tools", "bird.py"), ...args], {

@@ -1580,3 +1580,56 @@ if expected and (expected[0], expected[1]) != (len(rows), len(columns)):    # tr
 
 > 教训：**瘦身不是"删"，而是"搬家 + 装门牌"**。而且搬家必须同时装**落点守卫**——
 > 否则下一个手滑就是把知识删了还全绿（P4「档案静默丢失」就是同一个坑的另一种形态）。
+
+---
+
+## 第 36 轮（2026-09-18）｜独立重验 P0–P13（14 条），当场又逮到一个 **P14**
+
+### 怎么验的（换角度，不复用之前会话的自证）
+
+1. **静态层**（`D:/tmp/bird/verify_static.py`）：每条跑一条**新鲜的证据命令** —— 注册工具数/数据集参数数、
+   文档里"固定 N 条"残留、哨兵出现位置、手抄数字、死链、AGENTS.md 与代码的数据集键、`--no-check` 残留、
+   未修表状态…… **24/24 通过**。
+2. **行为层**（`D:/tmp/bird/verify_behavior.py`，fixture 隔离副本上真跑）：`--force` 也跳不过执行、
+   21 行/50001 行的形状判定、闸门 3 三态、跨数据集隔离、answe 回放…… **15/15 通过**。
+3. **可证伪性**：把 `bird.py` 的 P14 修复 + 加固**回退**再跑 → check_docs 1 红 + smoke 4 红；
+   按字节还原（md5）后全绿。
+
+> ⚠️ **第一版验证脚本自己有 8 处误报**（`dataset: DATASET_DESC` 其实叫 `DatasetType`、
+> `⛔ 已作废` 少了 `**`、哨兵只搜了 `canon:resubmit` 没搜 `<!--`、把账本里的历史数字当"手抄数字"、
+> 链接检查项标题记错、我自己的 run 给题留了真探针却断言"覆盖 0/3"……）。
+> 这正是 P11 那条教训的又一次现场：**"工具报 bug"之前先怀疑工具**。
+
+### ⭐ 逮到 P14：`force` 记录冒充探针（与 P10 的 checks 是同一个洞的另一半）
+
+**病**：闸门 1 当时写的是黑名单 —— `[p for p in probes if p.get("kind") != "checks"]`。
+于是 `kind=="force"` 的记录**被算成探针**：
+
+```bash
+# 零探针的题，先用 --force 硬交一次（合法操作），然后……
+answer 2 "/* shape: 3x1 */ SELECT CustomerID FROM customers" --force --checks "<核心集>"
+# 再不带 --force 交同一题（仍然零探针）→ 旧实现**通过了**
+answer 2 "/* shape: 3x1 */ SELECT CustomerID FROM customers" --checks "<核心集>"
+```
+
+两重危害：① **闸门 1 自我满足** —— 硬交过一次，这题以后永远免探针；
+② **指标说谎** —— `audit` 的「探针覆盖」把这条算成"已探过"（实测 `探针覆盖 1/3`，那 1 条就是 force）。
+
+**修法（白名单，fail-closed 方向）**：`PROBE_KINDS = {tables, schema, desc, run, find, cols}`，
+闸门 1 与 audit 覆盖统计都用它；`checks`/`force` 都不算。
+新增探针动作忘了加进白名单 ⇒ 闸门只会**变严**（不会静默放行）；强制率改在**过滤之前**统计
+（否则 `--force` 那格永远是 0 —— 指标又说一次谎）。
+
+**顺带 P10 加固**：`checklist.md` 里 `<!-- core -->` 被清空时，旧实现会**静默降级**成
+"随便勾几个就行"（只检查 `items` 非空）。现在 `items` 在、`core` 空 ⇒ **拒绝并报出 checklist.md 路径**。
+
+**守卫**：`check_docs` +4（探针种类必须白名单且不含 checks/force、两处都用它、强制率过滤前统计、
+两份文档的闸门 1 口径都写清"checks 与 force 不算"）；`extension_smoke` §4b/§4c +6
+（force 过一次后仍被闸门 1 拦 / 错误信息说明口径 / audit 仍统计 --force / force-only 的题仍算无探针 /
+剥掉全部 core 标记 ⇒ 拒绝 / 同条件 --force 仍是唯一出口）。
+**投毒 3 次全部变红**（改 SKILL.md 口径、改 AGENTS.md 口径、把 P14 写回未修表），按字节还原。
+
+### 结论
+
+14 条（P0–P13）**全部真实修复**且各有机器守卫；本轮新增修复 **P14**。
+`run_all.py`：**178 项断言全绿**；未修表仍是「（无）」。

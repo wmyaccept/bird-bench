@@ -144,7 +144,7 @@ python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ...
 
 | 闸门 | 规则 | 不过会怎样 |
 |---|---|---|
-| **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（**只有工具真跑过才写得进去**，人无法凭空声明），且**按数据集隔离**（minidev 的 344 ≠ dev2025 的 344） | `answer` 拒绝记录并告诉你该跑哪条 |
+| **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有**真探针**记录（`tables/schema/desc/run/find/cols` 之一；**`checks` 与 `force` 不算** —— 硬交过一次不会让这题以后免探针），且**按数据集隔离**（minidev 的 344 ≠ dev2025 的 344） | `answer` 拒绝记录并告诉你该跑哪条 |
 | **闸门 2 形状预演** | SQL 里必须有 `/* shape: 行数x列数 */`，且必须与实测一致（**拿完整结果比**，`--max-rows` 只管预览） | 拒绝记录（不符时告诉你实测几行几列） |
 | **闸门 3 勾选留痕** | `--checks` 必须给出真实条目号（`checklist.md` 里带 `<!-- core -->` 的核心条目缺一不可） | 拒绝记录（缺条目时告诉你差哪一条） |
 

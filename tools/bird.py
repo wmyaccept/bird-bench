@@ -805,18 +805,20 @@ def cmd_audit(args):
         print(f"  {db:<26} {ok:>3}/{tot:<3} {ok / tot * 100:5.1f}%")
     print()
     answered_sql = {i: answers[str(i)].split("\t")[0] for i in ids}
-    probes_log = load_probes()
+    probes_all = load_probes()
     # ⭐ P10：每条答案「最近一次提交勾了哪些条目」的留痕（来自 --checks）
     ticked: dict = {}
     for i in ids:
-        recs = [p for p in probes_log.get(i, []) if p.get("kind") == "checks"]
+        recs = [p for p in probes_all.get(i, []) if p.get("kind") == "checks"]
         if recs:
             ticked[i] = [x.strip() for x in (recs[-1].get("detail") or "").split(",") if x.strip()]
-    # ⭐ 勾选记录（kind=checks）不算探针（否则失败提交留下的 checks 会让「探针覆盖」假通过）
-    probes_log = {k: [p for p in v if p.get("kind") != "checks"] for k, v in probes_log.items()}
+    # ⭐ 强制率要在过滤**之前**算（过滤后 force 记录就没了；否则这一行永远是 0 —— 指标又说谎）
+    forced = [i for i in ids if any(p.get("kind") == "force" for p in probes_all.get(i, []))]
+    # ⭐ P10/P14：checks 与 force 都不算探针（否则「探针覆盖」会被硬交过的题冒充；
+    #   且新写法一旦忘了排除，白名单只会让这门变严，不会静默放行）
+    probes_log = {k: [p for p in v if p.get("kind") in PROBE_KINDS] for k, v in probes_all.items()}
     no_probe = [i for i in ids if not probes_log.get(i)]
     concept_cov = [i for i in ids if any(is_concept_probe(p) for p in probes_log.get(i, []))]
-    forced = [i for i in ids if any(p.get("kind") == "force" for p in probes_log.get(i, []))]
     shaped = [i for i in ids if parse_shape(answered_sql[i])]
     print(
         f"合规：探针覆盖 {len(ids) - len(no_probe)}/{len(ids)}"
@@ -981,6 +983,13 @@ def answers_lock(timeout: float = 60.0):
 
 PROBE_LOG = WORK_DIR / "probe_log.jsonl"
 CONCEPT_KINDS = {"cols", "find"}
+
+# ⭐ P14：闸门 1 与「探针覆盖」指标只认「真的去查了这个库」的动作 —— 用**白名单**，不用黑名单。
+#   黑名单（只排 kind=="checks"）曾让 `kind=="force"` 的记录冒充探针：
+#   用 --force 硬交一次 ⇒ 这题以后永远不再需要探针（闸门 1 自我满足），
+#   而 audit 的「探针覆盖」把它算成已覆盖（指标说谎）。与 P10 修 checks 是同一个论证。
+#   新增探针工具而忘了加进这里 ⇒ 闸门只会变**严**（fail-closed 方向），不会变松。
+PROBE_KINDS = {"tables", "schema", "desc", "run", "find", "cols"}
 SHAPE_RE = re.compile(r"shape\s*:\s*(\d+|\?)\s*[x×*]\s*(\d+)", re.I)
 PROBE_ONLY = {"answer", "score", "answers", "reset", "info", "list"}
 
@@ -1180,8 +1189,8 @@ def cmd_answer(args):
     sql = guard_sql(args.sql)
 
     probes = load_probes()
-    # ⭐ 勾选记录（kind=checks）不算探针：否则一次失败的提交留下的 checks 会让闸门 1 假通过
-    mine = [p for p in probes.get(args.idx, []) if p.get("kind") != "checks"]
+    # ⭐ P14：`checks`（勾选留痕）与 `force`（强制放行）都**不是探针** —— 拿它们当探针会让闸门 1 自我满足
+    mine = [p for p in probes.get(args.idx, []) if p.get("kind") in PROBE_KINDS]
 
     # ══ 闸门 1：探针覆盖 —— “我查过了”必须有工具日志作证 ══
     if not mine and not args.force:
@@ -1191,6 +1200,7 @@ def cmd_answer(args):
             f'    run  {db_id} "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for {args.idx}\n'
             f'    cols {db_id} "概念正则" --for {args.idx}\n'
             f'    find {db_id} 关键词 --for {args.idx}\n'
+            f"  （只有这些动作算探针：{'/'.join(sorted(PROBE_KINDS))}；checks、force 都不算）\n"
             "  确实一目了然、不需要任何探测的题，加 --force（会在 probe_log 留痕，audit 会统计）。"
         )
 
@@ -1273,6 +1283,14 @@ def cmd_answer(args):
     ids_str = ",".join(item_ids)
     core_str = ",".join(core)
     if not args.force:
+        if not core:
+            # ⭐ P10 加固：条目表在、但一条 `<!-- core -->` 也没有 ⇒ 格式被改过。
+            #   缺了标记就会静默退化成「随便勾几个就行」—— 宁可拒绝，也不放行一个没法校验的凭据。
+            fail(
+                f"拒绝记录（闸门 3：勾选留痕）：{REFS / 'checklist.md'} 里一条核心条目标记（`<!-- core -->`）都没有。\n"
+                "  核心条目是闸门 3 的硬判断依据，格式变了就别静默放行 —— 先修仓库 / BIRD_REFS。\n"
+                "  确实要硬交用 --force（会留痕，audit 会统计强制率）。"
+            )
         if unknown:
             fail(
                 f"拒绝记录（闸门 3：勾选留痕）：这些条目号在 checklist.md 里不存在：{unknown}\n"

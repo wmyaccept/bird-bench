@@ -109,12 +109,33 @@ def main() -> int:
         "def checklist_items(" in bird_src and 'REFS / "checklist.md"' in bird_src,
     )
     check(
-        "checks 记录不算探针（否则失败的提交能给闸门 1 发假通行证）",
-        'p.get("kind") != "checks"' in bird_src,
+        "checks/force 都不算探针（否则失败的提交/硬交过的一次能给闸门 1 发假通行证）",
+        'p.get("kind") != "checks"' in bird_src or 'kind") in PROBE_KINDS' in bird_src,
+    )
+    # ⭐ P14：探针判定必须是**白名单**（黑名单会被新写法绕过：force 就绕过过）
+    m_probe = re.search(r"PROBE_KINDS = \{([^}]*)\}", bird_src)
+    ck = set(re.findall(r'"([a-z]+)"', m_probe.group(1))) if m_probe else set()
+    check(
+        f"探针种类是白名单且不含 checks/force（实际：{sorted(ck)}）",
+        bool(m_probe) and not ("checks" in ck or "force" in ck) and len(ck) >= 4,
+        str(sorted(ck)),
+    )
+    check(
+        "闸门 1 与 audit 覆盖统计都用这个白名单（两处以上）",
+        bird_src.count('get("kind") in PROBE_KINDS') >= 2,
+        str(bird_src.count('get("kind") in PROBE_KINDS')),
+    )
+    check(
+        "强制率在过滤**之前**统计（否则 --force 永远是 0 —— 指标又说谎）",
+        "for p in probes_all.get(i, [])" in bird_src,
     )
     for f in (AGENTS, SKILL / "SKILL.md"):
         t = txt(f)
         check(f"{f.name} 已改成「三道闸门」（与代码一致）", "三道" in t and "两道机器闸门" not in t)
+        check(
+            f"{f.name} 的闸门 1 口径写清了 checks/force 不算探针（P14）",
+            "`checks` 与 `force` 不算" in t,
+        )
 
     print("\n── P8 SKILL.md 常驻预算（搬出去的知识必须还有落点）")
     budget = 14500  # 常驻上下文上限：SKILL.md 实测 18.3KB 时启用（P8），改小要先搬东西出去
@@ -155,8 +176,8 @@ def main() -> int:
           len(act_rows) >= 1 or "（无）" in act, f"rows={len(act_rows)}")
     bad_act = [r[:50] for r in act_rows if "`rg" not in r and "wc -c" not in r]
     check("每条未修缺陷都带可复现的证据命令", not bad_act, " ｜ ".join(bad_act))
-    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 13) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
-    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P8/P9/P10/P11/P13）", not stale, str(stale))
+    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 13, 14) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
+    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P8/P9/P10/P11/P13/P14）", not stale, str(stale))
 
     print("\n── P3 作废索引：旧结论不许被当成现行规则")
     SENT_DEP = "<!-- canon:deprecated"
