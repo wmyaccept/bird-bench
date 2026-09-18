@@ -76,7 +76,7 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反�
 `conventions` **只统计已提交题**的金标（绝不碰未做的题），给的是**这个库自己**的写法分布：
 计数形态、主表（`FROM` 第一张表是谁）、`SELECT DISTINCT` 比例、`*100`、JOIN 数。
 
-**这里不抄数字**（手抄的数字必然过期，实测踩过：SKILL 里写着 1057 道/29/135，实际早就是别的值）：
+**这里不抄数字**（手抄的数字必然过期 —— 本文件曾写死过“已完成题数”“某库 DISTINCT 计数比”这类数字，实测很快就对不上了）：
 直接跑 `bird_conventions`（或读 `db/<库>.md` 的惯例卡片，两者同源）。
 大体规律：`COUNT(列)` 是绝对主流；`COUNT(DISTINCT)` 只在 `financial`、`thrombosis_prediction` 常见；
 `california_schools` 那类 schools/frpm/satscores 三分天下的库 ——**没有单一主表的库就是错题重灾区**。
@@ -112,7 +112,7 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反�
 |---|---|---|
 | 以**值**存在库里（“continuation / locally funded”） | `find <db> <词>`（`bird_find` / `bird.py find`） | `find california_schools "option"` → `frpm."Educational Option Type"` |
 | 是**列名**概念（“district code / funding type”） | **`bird.py cols <db> "code|type"`** ← ★ 新增的反查器 | `cols california_schools "type|option"` 一次列出 **9 个候选列 + 非空/去重行数** |
-| 是**库级写法**（该不该 DISTINCT、主表是谁） | `bird.py conventions --db <db>`（第 0.5 步） | `thrombosis` → `Patient` 当主表、计数 29/54 用 DISTINCT |
+| 是**库级写法**（该不该 DISTINCT、主表是谁） | `bird.py conventions --db <db>`（第 0.5 步） | 例：`thrombosis_prediction` 的主表是谁、计数该不该 DISTINCT，卡片里都写着 |
 
 📤 **产出（写 SQL 前必须显式写出这 3 行，不许在脑子里想）**：
 
@@ -151,8 +151,8 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 3. **计数形态三选一**（默认照惯例卡片）：
    `COUNT(主表.主键列)` 是默认 → `COUNT(DISTINCT 列)` 仅当本库以 DISTINCT 为主（financial/thrombosis）
    或 evidence 明写 distinct → `COUNT(*)` 只在规范统计里占比明显时用。
-4. **不要随手加 `DISTINCT`**：实测金标 `SELECT DISTINCT` 比例很低
-   （california 3/77、codebase 9/151、card_games 30/125）。
+4. **不要随手加 `DISTINCT`**：金标 `SELECT DISTINCT` 比例整体很低
+   （具体到每个库看 `db/<库>.md` 的惯例卡片，与 `bird_conventions` 同源；不要背数字）。
 
 ### 第 5 步｜**提交前自检**
 
@@ -209,8 +209,8 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 2. 每条归因到下面几类之一，**按类**写规则，而不是按题：
    `列序错` / `概念→列映射错` / `JOIN 选错或绕了弯路` / `NULL 未排除` / `极值选行口径错` / `并列未保留` /
    `该去重没去重` / `值字面不匹配`
-3. 归因完统计：**同一类 ≥ 2 道就毕业成 trap/checklist 规则**（一个库 12 道错题恰好能归到 5 类，
-   见 `casebook.md` 第 22 轮）。
+3. 归因完统计：**同一类 ≥ 2 道就毕业成 trap/checklist 规则**（`casebook.md` 第 22 轮有一例：
+   一批错题恰好能归到 5 类）。
 4. ⚠️ **绝对不许把金标 SQL 拼回 `answers.json`** —— 复盘只产出规则，不产出答案。
    验证规则是否有效，要拿**没做过的同类题**去试（skill 维护原则第 6 条）。
 

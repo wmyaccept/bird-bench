@@ -11,7 +11,7 @@
   SKILL.md                         入口：硬规则 + 7 步工作流（每步绑定"读哪个文件"）
   references/
     traps.md                       ★ 写 SQL 时按动作顺序逐条过（SELECT/JOIN/WHERE值/聚合）
-    checklist.md                   ★ 提交前固定 12 条必勾
+    checklist.md                   ★ 提交前必勾清单（逐条过，不许跳）
     shapes.md                      题型骨架 A1–A10
     db/<db_id>.md                  ★ 11 个库各一个短档案（顶部"交题前必查 3 条"+ 连接图）
     diagnosis.md / gold-style.md / scoring.md  出错反推 / 金标写法 / EX 判定
@@ -76,12 +76,14 @@ simple 860/860 已答，EX 675/860 = 78.49%
 6. `bird_answer <idx> "<最终SQL>"` 提交
 7. 每 10–20 题 `bird_score` 一次，按错因分类
 
-> 工具层目前固定用 `minidev`（extension 里写死了）。要在 `dev` 上做题，
-> 直接用 `python tools/bird.py --dataset dev <cmd>`，或给 pi 进程设 `BIRD_DATASET=dev`。
+> 数据集由**每个工具自带的 `dataset` 参数**指定：`minidev`（默认）/ `dev` / `dev2025`。
+> 三者的**题号体系与作答文件是分开的**，别混用（`dev` 与 `dev2025` 的 idx 顺序一致但金标不同）。
+> CLI 侧对应全局选项 `--dataset`：`python tools/bird.py --dataset dev2025 <cmd>`；
+> 也可给 pi 进程设 `BIRD_DATASET=dev2025`（要在 `import bird` 之前生效）。
 
-### 在 dev 上批量做题（推荐用法）
+### 批量做题（推荐用法）
 
-extension 只绑了 minidev，所以 dev 的题用 bash 直接调 `bird.py` 并**批量操作**，比一题一次工具调用快得多：
+一题一次工具调用在 pi 里比较慢。**用 bash 直接调 `bird.py` 批量操作**更快（`--dataset` 选数据集）：
 
 ```bash
 # 一次读一批题（含 evidence）
@@ -142,8 +144,22 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 ```
 
 跳过闸门用 `--force`，但会留在 probe_log 里、`audit` 会统计强制率。
-`references/*.md` 里 `<!-- push step=N -->` 包住的片段、以及 `db/<库>.md` 的惯例卡片，
-都会被 `brief` 推到决策点、并在 `answer` 成功时自动回放。
+`references/*.md` 里 `<!-- push step=N -->` 包住的片段、以及 `db/<库>.md` 的**整份档案**，
+都会被 `brief` 推到决策点、并在 `answer` 成功时回放（必查全部 + 惯例卡片）。
+
+### 回归测试（改完必跑，共 124 项断言）
+
+```bash
+"D:/python/python" tools/tests/check_docs.py          # 13 项：文档一致性（条数/手抄数字/与代码相反/死链）
+"D:/python/python" tools/tests/check_brief_p4.py      # 46 项：库档案整份送达、投毒、卡片 n
+"D:/python/python" tools/tests/check_write_card.py    # 16 项：卡片能被工具刷新且与工具同源（BIRD_REFS 隔离）
+"D:/python/python" tools/tests/make_fixture.py >/dev/null
+node tools/tests/extension_smoke.cjs                  # 49 项：真加载扩展 + 真跑后端，两道闸门/参数隔离
+```
+
+- `make_fixture.py` 生成隔离 fixture（3 题 / demo.sqlite），**绝不碰真答案**；
+  `extension_smoke.cjs` 靠它的 `BIRD_DATA_DIR` / `BIRD_WORK_DIR`（以及 `BIRD_REFS` 覆盖档案目录）跑。
+- 判定标准：**不会失败的测试等于没测** —— 新增守卫时用“投毒→看它报错→按字节还原”验证过。
 
 ## 硬性规则
 
