@@ -176,8 +176,23 @@ def main() -> int:
           len(act_rows) >= 1 or "（无）" in act, f"rows={len(act_rows)}")
     bad_act = [r[:50] for r in act_rows if "`rg" not in r and "wc -c" not in r]
     check("每条未修缺陷都带可复现的证据命令", not bad_act, " ｜ ".join(bad_act))
-    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 13, 14) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
-    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P8/P9/P10/P11/P13/P14）", not stale, str(stale))
+    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
+    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P8/P9/P10/P11/P13/P14/P15）", not stale, str(stale))
+
+    print("\n── P15 金标形状是「提交后」产物（讲反推手法的地方必须写明前提）")
+    SENT_SHAPE = "<!-- canon:shape-after-submit"
+    diag = txt(REF / "diagnosis.md")
+    scor = txt(REF / "scoring.md")
+    check("diagnosis.md 写了前提声明哨兵（唯一出处）", SENT_SHAPE in diag)
+    check("scoring.md 讲金标行数约束时也带同一哨兵（指路）", SENT_SHAPE in scor)
+    check(
+        "诊断文档明确写了「提交并评分之后」+「做题前没有任何逐题通道」",
+        "提交并评分之后" in diag and "做题前没有任何逐题通道" in diag,
+    )
+    check(
+        "诊断文档提醒了这招不许回头改已看过的题（指回重交白名单）",
+        "绝不许拿已看到的形状回头改那道题" in diag and "重交白名单" in diag,
+    )
 
     print("\n── P3 作废索引：旧结论不许被当成现行规则")
     SENT_DEP = "<!-- canon:deprecated"
