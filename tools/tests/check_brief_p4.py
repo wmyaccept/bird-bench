@@ -166,6 +166,8 @@ def main() -> int:
             shutil.rmtree(refs2)
         (refs2 / "db").mkdir(parents=True)
         (refs2 / "db" / "demo.md").write_text(REPLAY_PROFILE, encoding="utf-8")
+        # ⭐ 闸门 3 要现场解析 checklist.md 的条目号（fail-closed）—— fixture refs 也得有它
+        shutil.copy(REAL_DB.parent / "checklist.md", refs2 / "checklist.md")
         env = {
             **os.environ, "PYTHONIOENCODING": "utf-8",
             "BIRD_DATA_DIR": str(fx), "BIRD_WORK_DIR": str(fx / "work"), "BIRD_REFS": str(refs2),
@@ -178,7 +180,8 @@ def main() -> int:
         )
         r = subprocess.run(
             [PY, str(ROOT / "tools" / "bird.py"), "--dataset", "minidev", "answer", "2",
-             "/* shape: 1x1 */ SELECT COUNT(*) FROM customers"],
+             "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+             "--checks", "1,1b,2,2b,8,12,13"],
             cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
         )
         out = (r.stdout or "") + (r.stderr or "")

@@ -55,6 +55,7 @@ def main() -> int:
     check("标题不再写死条数（推荐形态）", m is None, f"仍在写死：{head}")
 
     live_docs = [AGENTS, SKILL / "SKILL.md", *sorted(REF.glob("*.md"))]
+    bird_src = txt(ROOT / "tools" / "bird.py")
     stale = []
     for f in live_docs:
         if f.name == "casebook.md":       # 历史账本，允许出现"当时那 12 条"这类叙述
@@ -92,6 +93,29 @@ def main() -> int:
                 hard.append(f"{f.name}:{i}: {ln.strip()[:80]}")
     check("AGENTS/SKILL 不写死测试断言数（让 run_all.py 打印）", not hard, " ｜ ".join(hard))
 
+    print("\n── P10 勾选留痕：闸门 3 与核心条目标记必须真存在")
+    core = re.findall(r"^-\s*\[ \]\s*\*\*([0-9]+[a-z]?)\..*<!-- core -->", cl, re.M)
+    check(
+        f"checklist.md 里有 `<!-- core -->` 标记的核心条目（{len(core)} 条：{','.join(core)}）",
+        len(core) >= 3,
+        str(core),
+    )
+    check(
+        "闸门 3 会把勾选写进 probe_log（kind=checks）",
+        'record(args.idx, db_id, "checks"' in bird_src,
+    )
+    check(
+        "条目号由 checklist.md 现场解析（工具里不另存条目表）",
+        "def checklist_items(" in bird_src and 'REFS / "checklist.md"' in bird_src,
+    )
+    check(
+        "checks 记录不算探针（否则失败的提交能给闸门 1 发假通行证）",
+        'p.get("kind") != "checks"' in bird_src,
+    )
+    for f in (AGENTS, SKILL / "SKILL.md"):
+        t = txt(f)
+        check(f"{f.name} 已改成「三道闸门」（与代码一致）", "三道" in t and "两道机器闸门" not in t)
+
     print("\n── P12 未修缺陷清单：待修的东西必须落盘，不许只活在会话里")
     SENT_ACT = "<!-- canon:active-defects"
     cb_txt = txt(REF / "casebook.md")
@@ -104,8 +128,8 @@ def main() -> int:
           len(act_rows) >= 1 or "（无）" in act, f"rows={len(act_rows)}")
     bad_act = [r[:50] for r in act_rows if "`rg" not in r and "wc -c" not in r]
     check("每条未修缺陷都带可复现的证据命令", not bad_act, " ｜ ".join(bad_act))
-    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 9, 11, 13) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
-    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P9/P11/P13）", not stale, str(stale))
+    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 9, 10, 11, 13) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
+    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P9/P10/P11/P13）", not stale, str(stale))
 
     print("\n── P3 作废索引：旧结论不许被当成现行规则")
     SENT_DEP = "<!-- canon:deprecated"

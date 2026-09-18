@@ -806,6 +806,14 @@ def cmd_audit(args):
     print()
     answered_sql = {i: answers[str(i)].split("\t")[0] for i in ids}
     probes_log = load_probes()
+    # ⭐ P10：每条答案「最近一次提交勾了哪些条目」的留痕（来自 --checks）
+    ticked: dict = {}
+    for i in ids:
+        recs = [p for p in probes_log.get(i, []) if p.get("kind") == "checks"]
+        if recs:
+            ticked[i] = [x.strip() for x in (recs[-1].get("detail") or "").split(",") if x.strip()]
+    # ⭐ 勾选记录（kind=checks）不算探针（否则失败提交留下的 checks 会让「探针覆盖」假通过）
+    probes_log = {k: [p for p in v if p.get("kind") != "checks"] for k, v in probes_log.items()}
     no_probe = [i for i in ids if not probes_log.get(i)]
     concept_cov = [i for i in ids if any(is_concept_probe(p) for p in probes_log.get(i, []))]
     forced = [i for i in ids if any(p.get("kind") == "force" for p in probes_log.get(i, []))]
@@ -813,9 +821,31 @@ def cmd_audit(args):
     print(
         f"合规：探针覆盖 {len(ids) - len(no_probe)}/{len(ids)}"
         f" ｜ 概念探针 {len(concept_cov)}/{len(ids)}"
+        f" ｜ 勾选留痕 {len(ticked)}/{len(ids)}"
         f" ｜ --force {len(forced)}"
         f" ｜ 写了形状声明 {len(shaped)}/{len(ids)}"
     )
+    items = checklist_items()
+    item_ids = [i for i, _ in items]
+    core = [i for i, is_core in items if is_core]
+    if ticked:
+        counts = [len(v) for v in ticked.values()]
+        miss: dict = {}
+        for v in ticked.values():
+            for it in item_ids:
+                if it not in v:
+                    miss[it] = miss.get(it, 0) + 1
+        worst = sorted(miss.items(), key=lambda kv: (-kv[1], item_ids.index(kv[0])))[:5]
+        print(
+            f"  勾选条数：平均 {sum(counts) / len(counts):.1f}/{len(item_ids)}"
+            f" ｜ 最少 {min(counts)} ｜ 最多 {max(counts)}"
+        )
+        print("  最常被漏掉的条目（留痕里没出现的次数）：" + " ".join(f"{k}×{v}" for k, v in worst))
+        missing_core = [i for i, v in ticked.items() if any(c not in v for c in core)]
+        if missing_core:
+            print(f"  ⚠️ 核心条目没勾齐就交的 idx（{len(missing_core)} 条）：{missing_core[:12]}")
+    else:
+        print("  勾选留痕：0 条 —— 这批答案没有一条走过 checklist（或都是 --force 交的）")
     if no_probe:
         print(f"  无探针 idx：{no_probe[:20]}{' …' if len(no_probe) > 20 else ''}")
     if not shaped:
@@ -973,6 +1003,22 @@ def _probe_ids(args) -> list[int]:
     if not raw:
         return []
     return [int(x) for x in re.split(r"[,\s]+", str(raw)) if x.strip().isdigit()]
+
+
+CHECK_ITEM_RE = re.compile(r"^\s*-\s*\[ \]\s*\*\*([0-9]+[a-z]?)\.\s*(.*)$", re.M)
+
+
+def checklist_items() -> list:
+    """⭐ P10：从 `checklist.md` **现场解析**条目号与「核心」标记。
+
+    单一出处 = 文档自身（工具里不另存一份条目表，否则两边必然漂移）。
+    返回 `[(id, is_core), …]`（按文档顺序）；带 `<!-- core -->` 的是**无条件适用**的核心条目。
+    """
+    path = REFS / "checklist.md"
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8", errors="replace")
+    return [(m.group(1), "<!-- core -->" in m.group(2)) for m in CHECK_ITEM_RE.finditer(text)]
 
 
 def _probe_record(idx: int, db_id: str, kind: str, detail: str):
@@ -1134,7 +1180,8 @@ def cmd_answer(args):
     sql = guard_sql(args.sql)
 
     probes = load_probes()
-    mine = probes.get(args.idx, [])
+    # ⭐ 勾选记录（kind=checks）不算探针：否则一次失败的提交留下的 checks 会让闸门 1 假通过
+    mine = [p for p in probes.get(args.idx, []) if p.get("kind") != "checks"]
 
     # ══ 闸门 1：探针覆盖 —— “我查过了”必须有工具日志作证 ══
     if not mine and not args.force:
@@ -1208,6 +1255,48 @@ def cmd_answer(args):
     if len(rows) > args.max_rows:
         print(f"\n... 预览只显示前 {args.max_rows} 行（形状校验用的是完整结果，不受 --max-rows 影响）")
     print()
+
+    # ══ 闸门 3：勾选留痕 —— 20 条人肉清单必须有痕迹（P10）══
+    items = checklist_items()
+    item_ids = [i for i, _ in items]
+    core = [i for i, is_core in items if is_core]
+    picked = [x.strip() for x in (args.checks or "").split(",") if x.strip()]
+    unknown = [x for x in picked if x not in item_ids]
+    missing_core = [c for c in core if c not in picked]
+    if not items and not args.force:
+        # 失败关闭（fail-closed）：宁可不让交，也不静默放行一个没法校验的凭据
+        fail(
+            f"拒绝记录（闸门 3：勾选留痕）：找不到任何 checklist 条目 —— {REFS / 'checklist.md'}\n"
+            "  文件缺失或格式变了；别绕过它，先修仓库 / BIRD_REFS。"
+            "确实要硬交用 --force（会留痕）。"
+        )
+    ids_str = ",".join(item_ids)
+    core_str = ",".join(core)
+    if not args.force:
+        if unknown:
+            fail(
+                f"拒绝记录（闸门 3：勾选留痕）：这些条目号在 checklist.md 里不存在：{unknown}\n"
+                f"  现有条目号（{len(item_ids)} 条）：{ids_str}"
+            )
+        if not picked:
+            fail(
+                "拒绝记录（闸门 3：勾选留痕）：没有写 --checks。\n"
+                "  把这次真正走（或明确不适用）的条目号带上，例如：\n"
+                f'    answer {args.idx} "<SQL>" --checks "{core_str}"\n'
+                f"  checklist.md 现有条目号：{ids_str}\n"
+                f"  ⭐ 无条件适用的核心条目（{len(core)} 条）必须出现：{core_str}\n"
+                "  确实整份清单都没用上 → 加 --force（会留痕，audit 会统计强制率）。"
+            )
+        if missing_core:
+            fail(
+                f"拒绝记录（闸门 3：勾选留痕）：核心条目没勾齐 —— 缺 {missing_core}。\n"
+                f"  核心条目（无条件适用）：{core_str}\n"
+                "  它们各自检查什么见 checklist.md；确实本题不适用才用 --force。"
+            )
+    if picked:
+        _probe_record(args.idx, db_id, "checks", ",".join(picked))
+        loose = [i for i in item_ids if i not in picked and i not in core]
+        print(f"✅ 勾选留痕：{len(picked)}/{len(item_ids)} 条（核心条目齐；按题意略过：{','.join(loose) if loose else '无'}）")
 
     if args.force:
         _probe_record(args.idx, db_id, "force", f"expected={expected} kinds={[p.get('kind') for p in mine]}")
@@ -1571,7 +1660,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=20,
         help="预览只打印这么多行；形状校验用完整结果，不受它影响（P13）",
     )
-    p.add_argument("--force", action="store_true", help="跳过闸门 1/2（会在 probe_log 留痕）")
+    p.add_argument(
+        "--checks",
+        help='闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目必须出现',
+    )
+    p.add_argument("--force", action="store_true", help="跳过闸门 1/2/3（会在 probe_log 留痕）")
     p.set_defaults(func=cmd_answer)
 
     p = sub.add_parser("answers", help="查看已作答")

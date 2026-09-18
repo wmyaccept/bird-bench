@@ -401,23 +401,31 @@ export default function (pi: ExtensionAPI) {
     label: "BIRD Answer",
     description:
       "提交第 idx 题的最终 SQL。会先真的在数据库上跑一遍：跑不通会拒绝记录并回报错误，跑得通则把 SQL 记入 answers 文件。" +
-      "两道机器闸门：① 本题必须已有带 for_idx 的真实探测；② SQL 最前面必须写 /* shape: 行数x列数 */。",
+      "三道机器闸门：① 本题必须已有带 for_idx 的真实探测；② SQL 最前面必须写 /* shape: 行数x列数 */；③ 必须带 checks 列出这次真正勾过的 checklist 条目号（核心条目一条不能少）。",
     promptSnippet: "提交 BIRD 第 idx 题的最终 SQL（先试跑，失败会拒绝记录）",
     promptGuidelines: [
       "bird_answer 的闸门 1：本题在 probe_log 里必须已有记录（只有带 for_idx 的 bird_query/bird_cols/bird_find/bird_schema 才会写入）—— 不能凭空声称'我查过了'。",
       "bird_answer 的闸门 2：SQL 最前面必须写 /* shape: 行数x列数 */，与实测形状不符会被拒绝（列表题不知几行可写 /* shape: ?x2 */ 只校验列数；计数题/极值题必须写数字）。",
+      "bird_answer 的闸门 3：checks 里列出的条目号必须都存在于 checklist.md；标了 core 的核心条目（1 / 1b / 2 / 2b / 8 / 12 / 13）无条件适用、少一个就交不上。留痕进 probe_log，bird_audit 会统计勾选率与最常被漏掉的条目。",
       "确属一目了然、不必探测的题用 force=true 跳过闸门 —— 会记进 probe_log 并被 bird_audit 统计（强制率本身是要盯的指标）。",
     ],
     parameters: Type.Object({
       idx: Type.Number({ description: IDX_DESC }),
       sql: Type.String({ description: "你为该题定稿的只读 SQL" }),
+      checks: Type.Optional(
+        Type.String({
+          description:
+            '闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目 1/1b/2/2b/8/12/13 必须出现',
+        }),
+      ),
       force: Type.Optional(
-        Type.Boolean({ description: "true = 跳过两道闸门（会记进 probe_log，bird_audit 会统计强制率）" }),
+        Type.Boolean({ description: "true = 跳过三道闸门（会记进 probe_log，bird_audit 会统计强制率）" }),
       ),
       dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["answer", String(params.idx), params.sql];
+      if (params.checks) args.push("--checks", params.checks);
       if (params.force) args.push("--force");
       const result = await getBackend(ctx).call(
         ctx,

@@ -97,6 +97,7 @@ function check(name, cond, detail = "") {
 
   fs.rmSync(PROBE_LOG, { force: true }); // 探针日志从零开始
   const answersBefore = fs.readFileSync(ANSWERS, "utf8");
+  const CHECKS_CORE = "1,1b,2,2b,8,12,13";
 
   console.log("\n── 1. 新工具真的能跑（不是只有名字）");
   let r = await call("bird_brief", { db_id: "demo", dataset: "minidev" });
@@ -146,7 +147,11 @@ function check(name, cond, detail = "") {
   r = await call("bird_answer", { idx: 1, sql: "/* shape: 9x9 */ SELECT COUNT(*) FROM customers" });
   check("形状不符被拒绝", !r.ok && /形状预演不符|拒绝记录/.test(r.text), r.text.slice(0, 200));
 
-  r = await call("bird_answer", { idx: 1, sql: "/* shape: ?x1 */ SELECT COUNT(*) FROM customers" });
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: ?x1 */ SELECT COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+  });
   check("? 行数 → 只校验列数，通过", r.ok && /已记录第 1 题/.test(r.text), r.text.slice(0, 200));
 
   r = await call("bird_answer", { idx: 2, sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers" });
@@ -159,7 +164,7 @@ function check(name, cond, detail = "") {
   console.log("\n── 3c. P13：形状校验必须用完整结果，--max-rows 只管预览");
   const rowsCTE = (n) =>
     `WITH RECURSIVE s(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM s WHERE x<${n}) SELECT x FROM s`;
-  r = await call("bird_answer", { idx: 1, sql: `/* shape: 21x1 */ ${rowsCTE(21)}` });
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 21x1 */ ${rowsCTE(21)}`, checks: CHECKS_CORE });
   check(
     "真 21 行按 21 声明能通过（修前会被截断成「实测 20 行」而误拒）",
     r.ok && /执行通过：21 行/.test(r.text),
@@ -167,7 +172,7 @@ function check(name, cond, detail = "") {
   );
   r = await call("bird_answer", { idx: 1, sql: `/* shape: 20x1 */ ${rowsCTE(21)}` });
   check("反向守卫：真 21 行却声明 20 行仍被拒（闸门没被削弱）", !r.ok, r.text.slice(0, 200));
-  r = await call("bird_answer", { idx: 1, sql: `/* shape: 50001x1 */ ${rowsCTE(50001)}` });
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 50001x1 */ ${rowsCTE(50001)}`, checks: CHECKS_CORE });
   check(
     "超过一次取回的上限时用 COUNT(*) 把真实行数数准（50001 行按 50001 声明通过）",
     r.ok && /50001 行/.test(r.text),
@@ -175,6 +180,52 @@ function check(name, cond, detail = "") {
   );
   r = await call("bird_answer", { idx: 1, sql: `/* shape: 50000x1 */ ${rowsCTE(50001)}` });
   check("超上限时行数也照样校验（真 50001 行声明 50000 仍被拒）", !r.ok, r.text.slice(0, 220));
+
+  console.log("\n── 3d. P10：闸门 3（勾选留痕）");
+  r = await call("bird_answer", { idx: 1, sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers" });
+  check("不写 checks → 闸门 3 拒绝", !r.ok && /闸门 3/.test(r.text), r.text.slice(0, 200));
+
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: "1,1b,2,8,12,13",
+  });
+  check("核心条目缺一个（少 2b）→ 拒绝", !r.ok && /核心条目没勾齐/.test(r.text), r.text.slice(0, 200));
+
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: `0,${CHECKS_CORE},4,5,10`,
+  });
+  check("勾齐核心条目即通过", r.ok && /已记录第 1 题/.test(r.text), r.text.slice(0, 200));
+  check(
+    "勾选写进了 probe_log（kind=checks，audit 可统计）",
+    /"kind": "checks"/.test(fs.readFileSync(PROBE_LOG, "utf8")),
+  );
+
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: `${CHECKS_CORE},99`,
+  });
+  check(
+    "编造条目号 → 拒绝（条目表由 checklist.md 现场解析，不是工具里写死的）",
+    !r.ok && /不存在/.test(r.text),
+    r.text.slice(0, 200),
+  );
+
+  // ⭐ 反向：checks 记录本身不能当探针用（否则一次失败的提交会给闸门 1 发假通行证）
+  //   用 2 号题：它在本次跑里还没有任何真实探针（1 号题在 §2 就被 bird_find 留过痕了）
+  fs.appendFileSync(
+    PROBE_LOG,
+    JSON.stringify({ idx: 2, db: "demo", ds: "minidev", kind: "checks", detail: CHECKS_CORE, ts: "2000-01-01 00:00:00" }) + "\n",
+  );
+  r = await call("bird_answer", {
+    idx: 2,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+  });
+  check("checks 记录不算探针（2 号题仍被闸门 1 拦住）", !r.ok && /闸门 1/.test(r.text), r.text.slice(0, 200));
 
   console.log("\n── 4. force 逃生口");
   r = await call("bird_answer", {

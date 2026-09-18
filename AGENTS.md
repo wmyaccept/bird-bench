@@ -97,7 +97,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 "D:/python/python" tools/bird.py --dataset dev score --list-wrong 12
 ```
 
-### 元工具与两道闸门（写 SQL 前 / 提交时 / 复盘时必须用）
+### 元工具与三道闸门（写 SQL 前 / 提交时 / 复盘时必须用）
 
 ```bash
 # ① 知识推送：把 references 知识库与当前库档案推到决策点（换库跑一次）
@@ -109,17 +109,19 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 # ③ 概念反查：按列名（cols）与按取值（find）两个方向都要查
 "D:/python/python" tools/bird.py --dataset dev2025 cols <db_id> "type|code|option"
 # ④ 探针留痕：给这些 idx 记下“我真的查过”（answer 的闸门 1 凭据）
+#   ⑤ 勾选留痕：answer --checks "1,1b,2,2b,8,12,13,…"（闸门 3 凭据，条目号来自 checklist.md）
 "D:/python/python" tools/bird.py --dataset dev2025 run <db_id> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for 344
 # ⑤ 复盘：EX + 各库正确率 + 失败类型分布 + 结构特征差异频次 + 闸门合规率
 "D:/python/python" tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 ```
 
-⭐ **两道机器闸门（`answer` 会真的拒绝）**：
+⭐ **三道机器闸门（`answer` 会真的拒绝）**：
 
 | 闸门 | 规则 |
 |---|---|
 | 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（只有工具真跑过才写得进去），**且按数据集隔离**（dev2025 的 344 ≠ minidev 的 344） |
-| 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致（行数可写 `?`，那就只校验列数） |
+| 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致（行数可写 `?`，只校验列数；**比对用完整结果**，`--max-rows` 只管预览）
+| 3 勾选留痕 | `--checks "0,1,1b,…"`：条目号必须都是 `checklist.md` 里真实存在的，核心条目（`1`/`1b`/`2`/`2b`/`8`/`12`/`13`）缺一不可；留痕进 `probe_log`，`audit` 统计勾选率与最常被漏的条目 |
 
 ### ⭐ pi 里的工具与上面的命令一一对应（同一套后端，同一套闸门）
 
@@ -132,7 +134,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 | `bird_query` | `run <db> <sql>` | **`for_idx`**（留痕）+ `max_rows` |
 | `bird_find` | `find <db> <词>` | **`for_idx`** |
 | `bird_schema` | `tables` / `schema` / `desc` | **`for_idx`** |
-| `bird_answer` | `answer <idx> <sql>` | `force`（跳过闸门，会留痕） |
+| `bird_answer` | `answer <idx> <sql> --checks "0,1,1b,…"` | `checks` / `force`（跳过闸门，会留痕） |
 | 所有工具 | — | `dataset`：`minidev`（默认）/ `dev` / `dev2025` |
 
 > 2026-09-16 修：此前扩展里根本没有 `brief/cols/conventions/audit`，`bird_query` 也无法带 `--for`、
@@ -157,7 +159,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 四个套件各管一类：`check_docs.py` 文档一致性（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
 `check_brief_p4.py` 库档案整份送达（含投毒）、`check_write_card.py` 惯例卡片可刷新且与工具同源、
-`extension_smoke.cjs` 真加载扩展 + 真跑后端（两道闸门 / 参数 / 数据集隔离）。
+`extension_smoke.cjs` 真加载扩展 + 真跑后端（三道闸门 / 参数 / 数据集隔离）。
 **断言数只由 `run_all.py` 打印，不写进文档**（手抄数字必然过期 —— 见 casebook 第 29/30/31 轮）。
 
 - `make_fixture.py` 生成隔离 fixture（3 题 / demo.sqlite），**绝不碰真答案**；

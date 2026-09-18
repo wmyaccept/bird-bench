@@ -107,7 +107,7 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反�
 ### 第 3.5 步｜⭐ **两个概念先定位（列名靠猜是最贵的错）**
 
 题干里的**概念名词**（办学类型、资助类型、区号、职务、地名…）必须**查出**它对应哪一列，不许用英文语感猜。
-两道闸门，看概念是"值"还是"列名"：
+两个方向都查：概念是"值"还是"列名"？
 
 | 概念形态 | 用什么查 | 例 |
 |---|---|---|
@@ -160,7 +160,7 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 📖 **读**：`checklist.md` —— **逐条勾**，不许跳。
 📤 **产出**：提交 or 改（勾不过就改，一次改完直接交，不要反复）
 
-### 第 6 步｜**提交（两道机器闸门，过不去交不上）**
+### 第 6 步｜**提交（三道机器闸门，过不去交不上）**
 
 ```bash
 # pi 会话里用工具（推荐）：bird_query / bird_find / bird_cols / bird_schema 传 for_idx=<idx>
@@ -168,13 +168,15 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 # ① 探针留痕：任何 run / find / cols / schema 带 --for <idx>，就为这题记下“我真的查过”
 python tools/bird.py --dataset dev2025 run <db> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for <idx>
 # ② SQL 最前面写形状声明（预测的结果集形状）
-python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ..."
+# ③ --checks 带上这次真正勾过的 checklist 条目号（核心条目 1,1b,2,2b,8,12,13 一条不能少）
+python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ..." \n    --checks "0,1,1b,2,2b,4,5,5b,8,10,12,13"
 ```
 
 | 闸门 | 规则 | 不过会怎样 |
 |---|---|---|
 | **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有记录（**只有工具真跑过才写得进去**，人无法凭空声明），且**按数据集隔离**（minidev 的 344 ≠ dev2025 的 344） | `answer` 拒绝记录并告诉你该跑哪条 |
-| **闸门 2 形状预演** | SQL 里必须有 `/* shape: 行数x列数 */`，且必须与实测一致 | 拒绝记录（不符时告诉你差几行几列） |
+| **闸门 2 形状预演** | SQL 里必须有 `/* shape: 行数x列数 */`，且必须与实测一致（**拿完整结果比**，`--max-rows` 只管预览） |
+| **闸门 3 勾选留痕** | `--checks` 必须给出真实条目号（`checklist.md` 里带 `<!-- core -->` 的核心条目缺一不可） | 拒绝记录（不符时告诉你差几行几列） |
 
 确属一目了然的题可以用 `--force` 跳过，但会记进 probe_log、`audit` 会统计 ——
 **强制率本身就是要盯的指标**（高了说明流程没真走）。
