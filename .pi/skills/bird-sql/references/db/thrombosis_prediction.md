@@ -1,6 +1,6 @@
 # thrombosis_prediction （3 表） · simple EX 60.0% (30/50)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **`Examination.ID` 与 `Patient.ID` 是两套编号** —— 806 行里**只有 70 行**能 JOIN 上 Patient。
    涉及诊断/症状的题**先用 `Examination` 单表**，不要顺手 JOIN Patient（会得到 0 行或极少行）。
@@ -107,10 +107,12 @@ WHERE <T1 上的条件> AND <T2/T3 上的条件>
 - ⭐ **诊断名一律 `=` 精确**（1264 `='APS'`、1289 `='SJS'` 金标；用 `LIKE '%X%'` 会吃进组合诊断行）；
   唯一例外是 `SLE` 有时写 `LIKE '%SLE%'`（1279）——两种在无组合行时结果相同。
 
-## 惯例卡片（实测统计，n=142 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=135 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 20 / DISTINCT 30 / `COUNT(*)` 6 / 无 86　⇒ 本库**偏 DISTINCT**（30 vs col 20）⇒ 计数写 `COUNT(DISTINCT 实体id)`
-- 主表（FROM 第一张）：Patient 120 / Examination 12 / Laboratory 10　⇒ 主表几乎总是 **Patient**（120/142）
-- `SELECT DISTINCT`：28/142　|　`*100`：8　|　`BETWEEN`：12
-- 输出列数分布：1列×111 / 2列×17 / 3列×12 / 4列×2
-- JOIN 数分布：0:22, 1:106, 2:13, 4:1
+- 计数形态：COUNT(DISTINCT) 29 / COUNT(列) 19 / COUNT(*) 6 / 无 81　⇒ 本库偏去重（29/54 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：Patient 113 / Examination 12 / Laboratory 10　⇒ 主表几乎总是 **Patient**（113/135）
+- `SELECT DISTINCT`：25/135　|　`*100`：8　|　`BETWEEN`：12
+- 输出列数分布：1列×109 / 2列×15 / 3列×9 / 4列×2
+- JOIN 数分布：0:21, 1:101, 2:12, 4:1
+
+> 由 `bird_conventions db=thrombosis_prediction write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

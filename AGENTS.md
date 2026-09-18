@@ -103,6 +103,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 "D:/python/python" tools/bird.py --dataset dev2025 brief --step 4      # 只推“写 SQL/口径”那一段
 # ② 库惯例：查这个库自己的写法（只统计已提交题，不污染未做的题）
 "D:/python/python" tools/bird.py --dataset dev2025 conventions --db <db_id>
+"D:/python/python" tools/bird.py --dataset dev2025 conventions --db <db_id> --write-card  # ★ 写回惯例卡片（同一份统计，卡片=工具输出）
 # ③ 概念反查：按列名（cols）与按取值（find）两个方向都要查
 "D:/python/python" tools/bird.py --dataset dev2025 cols <db_id> "type|code|option"
 # ④ 探针留痕：给这些 idx 记下“我真的查过”（answer 的闸门 1 凭据）
@@ -124,7 +125,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 |---|---|---|
 | `bird_brief` | `brief [db] [--step N]` | `db_id` / `step` |
 | `bird_cols` | `cols <db> <正则>` | `for_idx` |
-| `bird_conventions` | `conventions --db <db>` | `db` / `examples` |
+| `bird_conventions` | `conventions --db <db> [--write-card] [--all]` | `db` / `examples` / `write_card` / `all` |
 | `bird_audit` | `audit [--difficulty D] [--db X]` | `difficulty` / `db` / `list` |
 | `bird_query` | `run <db> <sql>` | **`for_idx`**（留痕）+ `max_rows` |
 | `bird_find` | `find <db> <词>` | **`for_idx`** |

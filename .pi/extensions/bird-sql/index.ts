@@ -518,20 +518,31 @@ export default function (pi: ExtensionAPI) {
     label: "BIRD Conventions",
     description:
       "用**已提交题的金标**统计这个库的写作惯例：计数形态（COUNT(列)/DISTINCT/COUNT(*)）、主表（FROM 第一张）、SELECT DISTINCT 比例、*100、输出列数分布、JOIN 数分布。" +
-      "换库第 0.5 步必跑 —— 惯例是分布问题，只能用统计回答，不能靠回忆猜。只统计已提交题，不会把未做的题漏进来。",
+      "换库第 0.5 步必跑 —— 惯例是分布问题，只能用统计回答，不能靠回忆猜。只统计已提交题，不会把未做的题漏进来。" +
+      "write_card=true 时把**同一份统计**写回 db/<库>.md 的惯例卡片（卡片 = 工具输出，改一处不会漂移）。",
     promptSnippet: "查这个库自己的写法惯例（计数形态 / 主表 / DISTINCT 比例），只统计已提交题",
     promptGuidelines: [
       "结论写进 db/<库>.md 的惯例卡片；主表'几乎总是 X'就直接照用，'主表不固定'说明本库是错题重灾区，写 SQL 前必须单独确认主表。",
+      "卡片数字会随做题漂移 —— 每批题做完用 write_card=true（配 all=true 刷全部库）刷新，不要手改卡片里的数字。",
     ],
     parameters: Type.Object({
       db: Type.Optional(Type.String({ description: "只看某个库，例如 card_games" })),
       examples: Type.Optional(Type.Number({ description: "每个库打印几条计数题金标作形状示范，默认 2" })),
+      write_card: Type.Optional(
+        Type.Boolean({
+          description:
+            "把同一份统计写回 db/<库>.md 的惯例卡片（替换从『## 惯例卡片』到下一个二级标题之间的内容）。需配 db 或 all。",
+        }),
+      ),
+      all: Type.Optional(Type.Boolean({ description: "配合 write_card：刷新所有已有档案的库" })),
       dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["conventions"];
       if (params.db) args.push("--db", params.db);
       if (params.examples !== undefined) args.push("--examples", String(params.examples));
+      if (params.write_card) args.push("--write-card");
+      if (params.all) args.push("--all");
       return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
     },
   });

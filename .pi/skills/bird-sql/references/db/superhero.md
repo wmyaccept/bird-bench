@@ -1,6 +1,6 @@
 # superhero （10 表） · simple EX 92.6% (75/81)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **`full_name` 的 NULL 和 `'-'` 都表示「没有全名」**。问"full name"时要留意。
 2. **`superpower.power_name` 首字母大写**（`'Cryokinesis'`，写小写=0 行）；
@@ -26,10 +26,12 @@ superhero ──id── hero_power ──power_id── superpower
   `720`（“over 15 powers”：金标 71 行 vs 我 102 行，已确认 `hero_power` 无重复行 —— 仍未解释）、
   `741`/`767`/`791`（极值/均值口径）。
 
-## 惯例卡片（实测统计，n=95 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=81 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 25 / DISTINCT 0 / `COUNT(*)` 3 / 无 67　⇒ 本库以 `COUNT(列)` 为主（col 25 / DISTINCT 0 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：superhero 78 / hero_power 10 / hero_attribute 4 / publisher 2 / superpower 1　⇒ 主表几乎总是 **superhero**（78/95）
-- `SELECT DISTINCT`：5/95　|　`*100`：0　|　`BETWEEN`：1
-- 输出列数分布：1列×90 / 2列×5
-- JOIN 数分布：0:16, 1:58, 2:19, 3:2
+- 计数形态：COUNT(列) 21 / COUNT(*) 3 / 无 57　⇒ 本库以 `COUNT(列)` 为主（21/24 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：superhero 68 / hero_power 7 / hero_attribute 4 / publisher 1 / superpower 1　⇒ 主表几乎总是 **superhero**（68/81）
+- `SELECT DISTINCT`：4/81　|　`*100`：0　|　`BETWEEN`：1
+- 输出列数分布：1列×76 / 2列×5
+- JOIN 数分布：0:13, 1:50, 2:16, 3:2
+
+> 由 `bird_conventions db=superhero write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

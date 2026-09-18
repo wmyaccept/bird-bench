@@ -1,6 +1,6 @@
 # financial （8 表） · simple EX 83.9% (52/62)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. ⚠️ **日期全是 `'YYYY-MM-DD'`**（`'1995-03-24'`）—— playbooks 旧笔记里的 `'930101'` 是 **Mini-Dev 版**。
    
@@ -28,10 +28,12 @@ card ──disp_id── disp
   `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
 - 实测全量：**62 道 52 对 / 10 错（83.9%）**。
 
-## 惯例卡片（实测统计，n=65 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=62 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 13 / DISTINCT 24 / `COUNT(*)` 6 / 无 22　⇒ 本库**偏 DISTINCT**（24 vs col 13）⇒ 计数写 `COUNT(DISTINCT 实体id)`
-- 主表（FROM 第一张）：client 18 / account 14 / district 10 / disp 7 / loan 7　⇒ 主表**不固定**（client 最多也只占 18/65）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：3/65　|　`*100`：15　|　`BETWEEN`：8
-- 输出列数分布：1列×22 / 7列×7 / 5列×7 / 4列×7 / 2列×6 / 8列×5
-- JOIN 数分布：0:3, 1:11, 2:6, 3:8, 6:1, 7:3, 8:2, 9:8, 10:6, 11:8, 12:1, 13:5, 14:2, 15:1
+- 计数形态：COUNT(DISTINCT) 23 / COUNT(列) 13 / COUNT(*) 6 / 无 20　⇒ 本库偏去重（23/42 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：client 16 / account 14 / district 9 / disp 7 / loan 7 / trans 6 / card 3　⇒ 主表**不固定**（最大是 client 也只占 16/62）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：3/62　|　`*100`：15　|　`BETWEEN`：7
+- 输出列数分布：1列×19 / 2列×6 / 3列×3 / 4列×7 / 5列×7 / 6列×2 / 7列×7 / 8列×5 / 9列×2 / 13列×2 / 14列×1 / 15列×1
+- JOIN 数分布：0:3, 1:9, 2:6, 3:7, 6:1, 7:3, 8:2, 9:8, 10:6, 11:8, 12:1, 13:5, 14:2, 15:1
+
+> 由 `bird_conventions db=financial write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

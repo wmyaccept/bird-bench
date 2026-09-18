@@ -1,6 +1,6 @@
 # debit_card_specializing （5 表） · simple EX 79.1% (34/43)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **时间条件可能落两张表**：`yearmonth.Date` 是 `'YYYYMM'`（2011–2013 月度）、
    `transactions_1k.Date` 是 `'YYYY-MM-DD'`（只有 2012-08 四天）。两者范围不重叠，
@@ -30,10 +30,12 @@ yearmonth ──CustomerID──── customers（Date 'YYYYMM'，覆盖 2011-2
 - 我写 `FROM transactions` 直接 `no such table`，用 `yearmonth` 查某天 → **0 行**（空集是硬触发器）
 - `gasstations.Segment` 取值只有：`Value for money` / `Premium` / `Other` / `Noname` / `Discount`
 
-## 惯例卡片（实测统计，n=81 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=60 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 13 / DISTINCT 2 / `COUNT(*)` 2 / 无 64　⇒ 本库以 `COUNT(列)` 为主（col 13 / DISTINCT 2 / star 2）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：transactions_1k 40 / customers 23 / yearmonth 11 / gasstations 7　⇒ 主表**不固定**（transactions_1k 最多也只占 40/81）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：10/81　|　`*100`：10　|　`BETWEEN`：4
-- 输出列数分布：1列×75 / 2列×3 / 3列×3
-- JOIN 数分布：0:22, 1:47, 2:12
+- 计数形态：COUNT(列) 9 / COUNT(*) 2 / COUNT(DISTINCT) 2 / 无 47　⇒ 本库以 `COUNT(列)` 为主（9/13 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：transactions_1k 30 / customers 18 / yearmonth 7 / gasstations 5　⇒ 主表以 **transactions_1k** 为主但**不固定**（30/60）⇒ 按题干主语选
+- `SELECT DISTINCT`：6/60　|　`*100`：6　|　`BETWEEN`：3
+- 输出列数分布：1列×55 / 2列×2 / 3列×3
+- JOIN 数分布：0:15, 1:39, 2:6
+
+> 由 `bird_conventions db=debit_card_specializing write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

@@ -1,6 +1,6 @@
 # european_football_2 （7 表） · simple EX 73.8% (48/65)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. ⚠️ **「某球员的某属性」不要 `LIMIT 1`！** 金标给**全部历史快照**：
    1063=26 行、1086=24 行、1140=9 行（我都只给了 1 行）。
@@ -49,10 +49,12 @@ Team   ──team_api_id─── Team_Attributes
 另：“2010 年最高分”实测有 **两个球员并列**（90 分），金标却只回 1 行 —— 这类并列同样不可控。
 （`1051` “highest potential 的所有球员”金标 6 行，说明**并不是所有题都去重**，还是得看题干用词。）
 
-## 惯例卡片（实测统计，n=79 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=65 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 16 / DISTINCT 1 / `COUNT(*)` 0 / 无 62　⇒ 本库以 `COUNT(列)` 为主（col 16 / DISTINCT 1 / star 0）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：Player 45 / Player_Attributes 11 / Country 8 / League 7 / Team 6　⇒ 主表**不固定**（Player 最多也只占 45/79）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：14/79　|　`*100`：1　|　`BETWEEN`：1
-- 输出列数分布：1列×74 / 3列×3 / 2列×2
-- JOIN 数分布：0:30, 1:41, 2:8
+- 计数形态：COUNT(列) 12 / COUNT(DISTINCT) 1 / 无 52　⇒ 本库以 `COUNT(列)` 为主（12/13 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：Player 36 / Player_Attributes 9 / Country 8 / Team 6 / League 5 / Team_Attributes 1　⇒ 主表以 **Player** 为主但**不固定**（36/65）⇒ 按题干主语选
+- `SELECT DISTINCT`：11/65　|　`*100`：1　|　`BETWEEN`：1
+- 输出列数分布：1列×61 / 2列×2 / 3列×2
+- JOIN 数分布：0:23, 1:37, 2:5
+
+> 由 `bird_conventions db=european_football_2 write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

@@ -589,48 +589,150 @@ def _answered_gold(only_db: str | None = None) -> list[tuple[int, dict, str]]:
     return rows
 
 
+def _convention_stats(only_db: str | None = None) -> dict[str, dict]:
+    """按库统计已提交题金标的写法惯例。
+
+    ⭐ 单一数据源：控制台输出（cmd_conventions）与写回 db/<库>.md 的惯例卡片
+    （write_card）都由这一份统计渲染 —— 不再出现“工具一套数、卡片另一套数”。
+    """
+    from collections import Counter
+
+    groups: dict[str, list[str]] = {}
+    for _, q, gold_sql in _answered_gold(only_db):
+        groups.setdefault(q["db_id"], []).append(gold_sql)
+    stats: dict[str, dict] = {}
+    for db, sqls in groups.items():
+        profs = [_sql_profile(s) for s in sqls]
+        stats[db] = {
+            "n": len(sqls),
+            "sqls": sqls,
+            "profs": profs,
+            "ncol": Counter(p["ncol"] for p in profs),
+            "count": Counter(p["count"] for p in profs),
+            "distinct": sum(p["distinct"] for p in profs),
+            "x100": sum(p["x100"] for p in profs),
+            "between": sum(p["between"] for p in profs),
+            "main": Counter(p["main"] for p in profs),
+            "njoin": Counter(p["njoin"] for p in profs),
+        }
+    return stats
+
+
+def _count_advice(st: dict) -> str:
+    forms = {k: st["count"].get(k, 0) for k in ("COUNT(列)", "COUNT(DISTINCT)", "COUNT(*)")}
+    total = sum(forms.values())
+    if total == 0:
+        return "已提交题里几乎没有计数题"
+    best = max(forms, key=lambda k: forms[k])
+    if best == "COUNT(DISTINCT)":
+        return f"本库偏去重（{forms[best]}/{total} 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`"
+    if best == "COUNT(*)":
+        return f"本库偏 `COUNT(*)`（{forms[best]}/{total} 计数题）⇒ 计数写 `COUNT(*)`"
+    return f"本库以 `COUNT(列)` 为主（{forms[best]}/{total} 计数题）⇒ 计数写 `COUNT(主表.主键列)`"
+
+
+def _main_advice(st: dict) -> str:
+    n = st["n"]
+    top, top_n = st["main"].most_common(1)[0]
+    share = top_n / n if n else 0
+    if share >= 0.6:
+        return f"主表几乎总是 **{top}**（{top_n}/{n}）"
+    if share >= 0.35:
+        return f"主表以 **{top}** 为主但**不固定**（{top_n}/{n}）⇒ 按题干主语选"
+    return f"主表**不固定**（最大是 {top} 也只占 {top_n}/{n}）⇒ 按题干主语选，此处是错题重灾区"
+
+
+def render_conventions(db: str, st: dict, examples: int = 0) -> str:
+    out = [f"### {db}   (n={st['n']} 道已提交题的金标)"]
+    out.append(f"  输出列数: {dict(st['ncol'].most_common())}")
+    out.append(
+        f"  计数形态: {dict(st['count'].most_common())}"
+        f"   |  SELECT DISTINCT: {st['distinct']}/{st['n']}"
+        f"   |  *100: {st['x100']}   |  BETWEEN: {st['between']}"
+    )
+    out.append(f"  主表(FROM 第一张): {dict(st['main'].most_common())}")
+    out.append(f"  JOIN 数: {dict(sorted(st['njoin'].items()))}")
+    if examples:
+        shown = set()
+        for sql, prof in zip(st["sqls"], st["profs"]):
+            if prof["count"] == "无":
+                continue
+            shape = (prof["count"], prof["main"], prof["ncol"], prof["distinct"])
+            if shape in shown:
+                continue
+            shown.add(shape)
+            out.append(f"    计数例 {shape} -> {sql[:160]}")
+            if len(shown) >= examples:
+                break
+    return "\n".join(out)
+
+
+def render_card(db: str, st: dict) -> str:
+    """惯例卡片：写回 db/<库>.md 的那一段（与 render_conventions 同一份统计）。"""
+    n = st["n"]
+    ncol = " / ".join(f"{k}列×{v}" for k, v in sorted(st["ncol"].items()))
+    njoin = ", ".join(f"{k}:{v}" for k, v in sorted(st["njoin"].items()))
+    cnt = {k: v for k, v in st["count"].most_common()}
+    forms = " / ".join(f"{k} {v}" for k, v in cnt.items() if k != "无")
+    return "\n".join(
+        [
+            f"{CARD_MARK}（实测统计，n={n} 道已提交题的金标；数据集 {DATASET_KEY}）",
+            "",
+            f"- 计数形态：{forms} / 无 {cnt.get('无', 0)}　⇒ {_count_advice(st)}",
+            f"- 主表（FROM 第一张）：{' / '.join(f'{k} {v}' for k, v in st['main'].most_common())}"
+            f"　⇒ {_main_advice(st)}",
+            f"- `SELECT DISTINCT`：{st['distinct']}/{n}　|　`*100`：{st['x100']}"
+            f"　|　`BETWEEN`：{st['between']}",
+            f"- 输出列数分布：{ncol}",
+            f"- JOIN 数分布：{njoin}",
+            "",
+            f"> 由 `bird_conventions db={db} write_card=true` 生成（与工具输出同源），重跑即刷新；"
+            f"数字不要手改。",
+        ]
+    )
+
+
+def write_card(db: str, st: dict) -> Path:
+    """把惯例卡片写回 db/<库>.md：替换从 `## 惯例卡片` 到下一个二级标题之间的内容。"""
+    path = REFS / "db" / f"{db}.md"
+    if not path.exists():
+        fail(
+            f"没有库档案 {path}（惯例卡片写在档案末尾）—— 先用 bird_schema 摸清库结构，"
+            f"按 references/db/ 里其它库的样子建一份，再刷新卡片"
+        )
+    text = path.read_text(encoding="utf-8", errors="replace")
+    card = render_card(db, st)
+    i = text.find(CARD_MARK)
+    if i < 0:
+        new = text.rstrip() + "\n\n" + card + "\n"          # 没卡片过 ⇒ 追加
+    else:
+        j = text.find("\n## ", i + len(CARD_MARK))
+        new = text[:i] + card + (text[j:] if j >= 0 else "\n")
+    if new != text:
+        path.write_text(new, encoding="utf-8")
+    return path
+
+
 def cmd_conventions(args):
     """换库第 0.5 步：用**已提交题的金标**统计本库的写作惯例（把猜惯例换成查惯例）。
 
     只统计形状/口径（计数形态、主表、DISTINCT、*100、区间写法…），不产出答案。
+    `--write-card` 把**同一份统计**写回 db/<库>.md 的惯例卡片（卡片 = 工具输出）。
     """
-    from collections import Counter
-
-    rows = _answered_gold(args.db)
-    if not rows:
+    stats = _convention_stats(args.db)
+    if not stats:
         fail("没有可统计的已提交题（conventions 只看已提交题的金标，避免污染未做的题）")
-    groups: dict[str, list[str]] = {}
-    for _, q, gold_sql in rows:
-        groups.setdefault(q["db_id"], []).append(gold_sql)
-    for db in sorted(groups, key=lambda d: -len(groups[d])):
-        sqls = groups[db]
-        profs = [_sql_profile(s) for s in sqls]
-        print(f"### {db}   (n={len(sqls)} 道已提交题的金标)")
-        cols = Counter(p["ncol"] for p in profs).most_common()
-        print(f"  输出列数: {dict(cols)}")
-        print(
-            f"  计数形态: {dict(Counter(p['count'] for p in profs).most_common())}"
-            f"   |  SELECT DISTINCT: {sum(p['distinct'] for p in profs)}/{len(profs)}"
-            f"   |  *100: {sum(p['x100'] for p in profs)}"
-            f"   |  BETWEEN: {sum(p['between'] for p in profs)}"
-        )
-        print(f"  主表(FROM 第一张): {dict(Counter(p['main'] for p in profs).most_common())}")
-        print(f"  JOIN 数: {dict(sorted(Counter(p['njoin'] for p in profs).items()))}")
-        if args.examples:
-            shown = set()
-            for sql, p in zip(sqls, profs):
-                if p["count"] == "无":
-                    continue
-                shape = (p["count"], p["main"], p["ncol"], p["distinct"])
-                if shape in shown:
-                    continue
-                shown.add(shape)
-                print(f"    计数例 {shape} -> {sql[:160]}")
-                if len(shown) >= args.examples:
-                    break
+    if args.write_card and not (args.db or args.all):
+        fail("--write-card 需要指定 --db <库> 或 --all")
+    for db in sorted(stats, key=lambda d: -stats[d]["n"]):
+        print(render_conventions(db, stats[db], args.examples))
         print()
+        if args.write_card:
+            path = write_card(db, stats[db])
+            print(f"  ✎ 惯例卡片已刷新 -> {path}（n={stats[db]['n']}）")
     print("读法：COUNT(列) 多 → 默认 `COUNT(主表.主键列)`；COUNT(DISTINCT) 多 → 这个库习惯去重；")
     print("      主表分布决定『FROM 第一张表』选谁；JOIN 数大 → 金标常用 WITH 多步聚合。")
+    print("      卡片与这里同源：`conventions --db <库> --write-card` 刷新后数字必然一致。")
 
 
 def cmd_audit(args):
@@ -930,7 +1032,9 @@ def is_concept_probe(p: dict) -> bool:
     return p.get("kind") == "run" and "DISTINCT" in (p.get("detail") or "").upper()
 
 
-REFS = ROOT / ".pi" / "skills" / "bird-sql" / "references"
+REFS = Path(os.environ["BIRD_REFS"]) if os.environ.get("BIRD_REFS") else (
+    ROOT / ".pi" / "skills" / "bird-sql" / "references"
+)  # 覆盖点给测试用（tools/tests/*）：把惯例卡片写进临时目录，不动真档案
 PUSH_RE = re.compile(r"<!--\s*push\s+step=([0-9.]+)\s*-->(.*?)<!--\s*/push\s*-->", re.S)
 
 
@@ -952,32 +1056,50 @@ def push_blocks(step: str | None = None):
     return blocks
 
 
-def brief_for_db(db_id: str):
-    """当前库档案里的『交题前必查』与『惯例卡片』。"""
-    card = REFS / "db" / f"{db_id}.md"
-    if not card.exists():
+CARD_MARK = "## 惯例卡片"
+
+
+def brief_for_db(db_id: str) -> tuple[str | None, str | None]:
+    """当前库档案：返回 (必查小节, **整个档案文本**)。
+
+    ⭐ 不再按小节名“猜”要推什么：整份档案都推，新增小节会自动送到眼前。
+    位置猜测正是缺陷源头 —— 曾经夹在必查与惯例卡片之间的『值域陷阱』（card_games）、
+    『补充（第 24 轮实测 40 道 moderate）』（thrombosis，53 行）**永远不会被送达**。
+    """
+    path = REFS / "db" / f"{db_id}.md"
+    if not path.exists():
         return None, None
-    text = card.read_text(encoding="utf-8", errors="replace")
-    must = None
+    text = path.read_text(encoding="utf-8", errors="replace").strip()
+    return _must_section(text), text
+
+
+def _must_section(text: str) -> str | None:
+    """档案里的『交题前必查』小节（交题瞬间要回放的那几条）。"""
     m = re.search(r"##\s*[^\n]*交题前必查[^\n]*\n(.*?)(?=\n##\s|\Z)", text, re.S)
-    if m:
-        must = m.group(1).strip()
-    i = text.find("## 惯例卡片")
-    return must, (text[i:].strip() if i >= 0 else None)
+    return m.group(1).strip() if m else None
+
+
+def _card_section(text: str) -> str | None:
+    """档案里的『惯例卡片』小节。"""
+    i = text.find(CARD_MARK)
+    if i < 0:
+        return None
+    j = text.find("\n## ", i + len(CARD_MARK))
+    return text[i : j if j >= 0 else len(text)].strip()
 
 
 def cmd_brief(args):
     """决策点推送：把知识库真正递到我眼前，而不是指望我“主动去读”。"""
     step = None if args.step in (None, "all") else str(args.step)
     if args.db_id:
-        must, card = brief_for_db(args.db_id)
+        _, profile = brief_for_db(args.db_id)
         print(f"╔══ 库档案 {args.db_id} ══")
-        if must:
-            print("## ⚠️ 交题前必查")
-            print(must)
-        if card:
-            print()
-            print(card)
+        if profile:
+            print(f"（整份档案 {len(profile.splitlines())} 行，全文送上 —— 不按小节名筛，"
+                  f"避免中间新增的小节静默丢失）")
+            print(profile)
+        else:
+            print(f"⚠️ 还没有 db/{args.db_id}.md 档案：先用 bird_schema 摸清库结构，再建一份")
         print()
     blocks = push_blocks(step)
     print(f"╔══ 知识库推送（step={step or 'all'}，共 {len(blocks)} 段）══")
@@ -1061,16 +1183,20 @@ def cmd_answer(args):
         total = len(answers)
     print(f"已记录第 {args.idx} 题（{db_id}），当前完成 {total} 题 -> {ANSWERS_FILE}")
 
-    # ══ 知识推送的最后一环：交题瞬间回放本库惯例与必查 ══
-    must, card = brief_for_db(db_id)
-    if card:
-        lines = [ln for ln in card.splitlines() if ln.startswith("- ")][:2]
-        if lines:
-            print("📌 惯例回放：" + " ｜ ".join(ln[2:].strip() for ln in lines))
+    # ══ 知识推送的最后一环：交题瞬间回放本库必查与惯例 ══
+    must, profile = brief_for_db(db_id)
+    if profile:
+        card = _card_section(profile)
+        if card:
+            lines = [ln for ln in card.splitlines() if ln.startswith("- ")]
+            if lines:
+                print("📌 惯例回放：" + " ｜ ".join(ln[2:].strip() for ln in lines[:2]))
     if must:
-        first = [ln.strip() for ln in must.splitlines() if ln.strip().startswith("- ")]
-        if first:
-            print("📌 必查第一条：" + first[0][2:].strip()[:120])
+        items = [ln.strip() for ln in must.splitlines() if re.match(r"^\d+\.", ln.strip())]
+        if items:
+            print(f"📌 必查回放（{len(items)} 条，下一题前过一眼）：")
+            for it in items:
+                print("   " + it[:150])
     db_probes = [p for ps in probes.values() for p in ps if p.get("db") == db_id]
     if not any(is_concept_probe(p) for p in db_probes):
         print(
@@ -1357,6 +1483,13 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("conventions", help="用已提交题的金标统计本库写作惯例（换库第 0.5 步）")
     p.add_argument("--db", help="只看某个库")
     p.add_argument("--examples", type=int, default=2, help="每个库打印几条计数题金标作形状示范")
+    p.add_argument(
+        "--write-card",
+        dest="write_card",
+        action="store_true",
+        help="把同一份统计写回 db/<库>.md 的惯例卡片（卡片 = 工具输出，单一数据源）",
+    )
+    p.add_argument("--all", action="store_true", help="配合 --write-card：刷新所有库的卡片")
     p.set_defaults(func=cmd_conventions)
 
     p = sub.add_parser("audit", help="复盘：按失败类型与结构特征差异归因已提交的错题")

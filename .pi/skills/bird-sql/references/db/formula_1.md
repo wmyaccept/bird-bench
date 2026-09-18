@@ -1,6 +1,6 @@
 # formula_1 （13 表） · simple EX 75.2% (88/117)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **粒度是混合的，别无脑 DISTINCT**：851(657→18) 要去重，而 956(**224 行**)/974(**5268**)/1010(**11340**)
    是行级；849/855/921 的 url 类金标只有 **1 行**。先按去重写，detail 说行数差很多再改行级。
@@ -63,10 +63,12 @@ races ──circuitId── circuits
     `driverStandings`、`lapTimes`、`pitStops`。写 SQL 前先用 `bird_schema formula_1` 确认表名，
     不要凭直觉写 `constructor_standings` / `lap_times`（会直接 `no such table`）。
 
-## 惯例卡片（实测统计，n=145 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=117 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 18 / DISTINCT 3 / `COUNT(*)` 3 / 无 121　⇒ 本库以 `COUNT(列)` 为主（col 18 / DISTINCT 3 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：circuits 41 / races 26 / drivers 26 / results 15 / qualifying 11　⇒ 主表**不固定**（circuits 最多也只占 41/145）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：24/145　|　`*100`：0　|　`BETWEEN`：2
-- 输出列数分布：1列×110 / 2列×21 / 3列×12 / 4列×2
-- JOIN 数分布：0:43, 1:82, 2:19, 3:1
+- 计数形态：COUNT(列) 15 / COUNT(DISTINCT) 3 / COUNT(*) 2 / 无 97　⇒ 本库以 `COUNT(列)` 为主（15/20 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：circuits 32 / races 22 / drivers 21 / results 12 / qualifying 7 / lapTimes 7 / constructorStandings 5 / pitStops 5 / driverStandings 3 / constructors 2 / constructorResults 1　⇒ 主表**不固定**（最大是 circuits 也只占 32/117）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：18/117　|　`*100`：0　|　`BETWEEN`：2
+- 输出列数分布：1列×89 / 2列×17 / 3列×9 / 4列×2
+- JOIN 数分布：0:33, 1:67, 2:16, 3:1
+
+> 由 `bird_conventions db=formula_1 write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

@@ -206,6 +206,26 @@ function check(name, cond, detail = "") {
   check("fixture 原有键数 2，现在 3", Object.keys(JSON.parse(answersBefore)).length === 2);
   check("SQL 里保留了形状声明（导出时可剥）", /shape:/.test(answersAfter["1"]));
 
+  console.log(String.fromCharCode(10) + "── 7. P4 回归：库档案整份送达（不再按小节名丢内容）");
+  r = await call("bird_brief", { db_id: "card_games" });
+  check("brief 声明推的是整份档案", r.ok && /整份档案/.test(r.text), r.text.slice(0, 200));
+  check("之前永远送不到的『值域陷阱』现在送达", r.ok && /值域陷阱/.test(r.text));
+  check("『交题前必查』小节照旧在", r.ok && /交题前必查/.test(r.text));
+  check("『惯例卡片』小节照旧在", r.ok && /惯例卡片/.test(r.text));
+  r = await call("bird_brief", { db_id: "thrombosis_prediction" });
+  check("thrombosis 的『补充（第 24 轮…）』也送达", r.ok && /补充（第 24 轮/.test(r.text), r.text.slice(0, 200));
+
+  console.log(String.fromCharCode(10) + "── 8. P2 回归：卡片能被工具刷新（参数真的接通）");
+  const cSchema = JSON.stringify(tools.get("bird_conventions").parameters);
+  check("bird_conventions schema 含 write_card", /write_card/.test(cSchema));
+  check("bird_conventions schema 含 all", /"all"/.test(cSchema));
+  r = await call("bird_conventions", { dataset: "minidev", db: "demo", write_card: true });
+  check(
+    "fixture 没有 db/demo.md 时报错清楚（证明 --write-card 传到了后端）",
+    !r.ok && /档案/.test(r.text),
+    r.text.slice(0, 300),
+  );
+
   console.log(`\n════ 通过 ${pass} / 失败 ${fail} ════`);
   if (fail) process.exit(1);
 })();

@@ -1,6 +1,6 @@
 # card_games （6 表） · simple EX 62.4% (78/125)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **输出列加 `DISTINCT` 了吗？** `cards` 是「一卡一印刷版本一行」（同 `name` 多行），
    金标给的是**去重集合**：387(187→10)、444(1052→95)、448(480→47)。
@@ -97,10 +97,12 @@ cards ──uuid── legalities / rulings / foreign_data
 - **`id` 是整数、`uuid` 是字符串**：题干 "card id" → `cards.id`（整数）；JOIN 一律用 `uuid`。
 - 实测 idx 349「名称+画师+是否 promo」：列序换过一次仍不对 ⇒ 挂起，归因"值/列语义不可判"（1 行 3 列）。
 
-## 惯例卡片（实测统计，n=138 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=132 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 21 / DISTINCT 4 / `COUNT(*)` 6 / 无 107　⇒ 本库以 `COUNT(列)` 为主（col 21 / DISTINCT 4 / star 6）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：cards 102 / sets 26 / foreign_data 5 / set_translations 4 / legalities 1　⇒ 主表几乎总是 **cards**（102/138）
-- `SELECT DISTINCT`：32/138　|　`*100`：5　|　`BETWEEN`：1
-- 输出列数分布：1列×120 / 2列×15 / 3列×3
-- JOIN 数分布：0:76, 1:60, 2:1, 3:1
+- 计数形态：COUNT(列) 20 / COUNT(*) 4 / COUNT(DISTINCT) 4 / 无 104　⇒ 本库以 `COUNT(列)` 为主（20/28 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：cards 99 / sets 25 / set_translations 4 / foreign_data 3 / legalities 1　⇒ 主表几乎总是 **cards**（99/132）
+- `SELECT DISTINCT`：33/132　|　`*100`：4　|　`BETWEEN`：1
+- 输出列数分布：1列×111 / 2列×16 / 3列×5
+- JOIN 数分布：0:66, 1:64, 2:1, 3:1
+
+> 由 `bird_conventions db=card_games write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

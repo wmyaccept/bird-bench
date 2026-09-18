@@ -1,6 +1,6 @@
 # toxicology （4 表） · simple EX 82.9% (63/76)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. ⚠️ **`connected` 是双向存储**：每个 bond 存两行（`A→B` 与 `B→A`）。
    全库 10882 行 = 5441 个连接（**正好一倍**）。`WHERE bond_id=X` 会返回 **2 行**。
@@ -48,10 +48,12 @@ molecule ──molecule_id── atom / bond / connected
 
 ---
 
-## 惯例卡片（实测统计，n=81 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=76 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 19 / DISTINCT 21 / `COUNT(*)` 1 / 无 40　⇒ 本库**偏 DISTINCT**（21 vs col 19）⇒ 计数写 `COUNT(DISTINCT 实体id)`
-- 主表（FROM 第一张）：atom 33 / bond 24 / molecule 18 / connected 6　⇒ 主表**不固定**（atom 最多也只占 33/81）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：18/81　|　`*100`：4　|　`BETWEEN`：4
-- 输出列数分布：1列×61 / 2列×11 / 3列×5 / 4列×2 / 7列×1 / 11列×1
-- JOIN 数分布：0:31, 1:35, 2:6, 7:1, 8:5, 9:3
+- 计数形态：COUNT(DISTINCT) 21 / COUNT(列) 16 / COUNT(*) 1 / 无 38　⇒ 本库偏去重（21/38 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：atom 32 / bond 22 / molecule 17 / connected 5　⇒ 主表以 **atom** 为主但**不固定**（32/76）⇒ 按题干主语选
+- `SELECT DISTINCT`：17/76　|　`*100`：3　|　`BETWEEN`：4
+- 输出列数分布：1列×57 / 2列×10 / 3列×5 / 4列×2 / 7列×1 / 11列×1
+- JOIN 数分布：0:28, 1:34, 2:5, 7:1, 8:5, 9:3
+
+> 由 `bird_conventions db=toxicology write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

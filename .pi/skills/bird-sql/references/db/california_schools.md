@@ -1,6 +1,6 @@
 # california_schools （3 表） · simple EX 94.4% (51/54)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. ⭐ **概念→列**（moderate 的命门，猜错直接 0 分；下表是复盘挂起题后改对的）：
 
@@ -72,10 +72,12 @@ satscores ──cds ───┘
 - "type of education offered" → `EdOpsName`（实测 `idx 42` 命中，值为 `'Traditional'`）。
 - 考试优秀率：`Excellence rate = NumGE1500 / NumTstTakr`。
 
-## 惯例卡片（实测统计，n=85 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=77 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 12 / DISTINCT 5 / `COUNT(*)` 3 / 无 65　⇒ 本库以 `COUNT(列)` 为主（col 12 / DISTINCT 5 / star 3）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：schools 35 / satscores 26 / frpm 24　⇒ 主表**不固定**（schools 最多也只占 35/85）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：3/85　|　`*100`：13　|　`BETWEEN`：6
-- 输出列数分布：1列×41 / 2列×15 / 3列×8 / 12列×4 / 13列×3 / 6列×3
-- JOIN 数分布：0:17, 1:50, 3:3, 4:6, 5:6, 7:1, 8:1, 9:1
+- 计数形态：COUNT(列) 12 / COUNT(DISTINCT) 4 / COUNT(*) 3 / 无 58　⇒ 本库以 `COUNT(列)` 为主（12/19 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：schools 32 / frpm 23 / satscores 22　⇒ 主表以 **schools** 为主但**不固定**（32/77）⇒ 按题干主语选
+- `SELECT DISTINCT`：3/77　|　`*100`：13　|　`BETWEEN`：6
+- 输出列数分布：1列×35 / 2列×14 / 3列×7 / 4列×3 / 5列×1 / 6列×3 / 7列×2 / 9列×1 / 12列×4 / 13列×3 / 14列×1 / 15列×1 / 17列×1 / 18列×1
+- JOIN 数分布：0:16, 1:43, 3:3, 4:6, 5:6, 7:1, 8:1, 9:1
+
+> 由 `bird_conventions db=california_schools write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。

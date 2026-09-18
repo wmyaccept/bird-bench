@@ -53,10 +53,14 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 # 在 pi 会话里直接调工具（等价，推荐）：
 #   bird_brief db_id=<库>            bird_brief db_id=<库> step="4"
 #   bird_conventions db=<库>          bird_cols db_id=<库> pattern="type|option"
+#   bird_conventions db=<库> write_card=true      # ★ 把同一份统计写回惯例卡片
+#   bird_conventions write_card=true all=true     # 刷全部库的卡片
 # 在 bash 里批量做（dev/dev2025）时用命令行：
 python tools/bird.py --dataset dev2025 brief <db_id>          # ★ 知识库推送到决策点（换库跑一次，~100 行）
 python tools/bird.py --dataset dev2025 brief --step 4          # 只推“写 SQL / 口径”这一步的片段
 python tools/bird.py --dataset dev2025 conventions --db <db_id>  # 已提交题的金标统计
+python tools/bird.py --dataset dev2025 conventions --db <db_id> --write-card  # ★ 写回惯例卡片（同一份统计）
+python tools/bird.py --dataset dev2025 conventions --write-card --all         # 刷全部库
 python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反查
 ```
 
@@ -72,10 +76,13 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"  # 列名反�
 `conventions` **只统计已提交题**的金标（绝不碰未做的题），给的是**这个库自己**的写法分布：
 计数形态、主表（`FROM` 第一张表是谁）、`SELECT DISTINCT` 比例、`*100`、JOIN 数。
 
-实测（1057 道已提交题）：`COUNT(列)` 是绝对主流；`COUNT(DISTINCT)` 只在 `financial`(23/62)
-和 `thrombosis_prediction`(29/135) 常见；主表分布很集中（`superhero` 68/81 是 `superhero`、
-`thrombosis` 113/135 是 `Patient`、`california_schools` 则 schools 32 / frpm 23 / satscores 22 三分天下
-——**没有单一主表的库就是错题重灾区**）。
+**这里不抄数字**（手抄的数字必然过期，实测踩过：SKILL 里写着 1057 道/29/135，实际早就是别的值）：
+直接跑 `bird_conventions`（或读 `db/<库>.md` 的惯例卡片，两者同源）。
+大体规律：`COUNT(列)` 是绝对主流；`COUNT(DISTINCT)` 只在 `financial`、`thrombosis_prediction` 常见；
+`california_schools` 那类 schools/frpm/satscores 三分天下的库 ——**没有单一主表的库就是错题重灾区**。
+
+⭐ **卡片由工具写、不手改**：`bird_conventions db=<库> write_card=true`（配 `all=true` 刷全部）。
+卡片和 `conventions` 的输出是同一次统计渲染的 ⇒ 不会出现“工具一套数、卡片另一套数”。
 
 📤 **产出**：本库“惯例卡片”，直接追加进 `db/<db_id>.md`（例：`db/thrombosis_prediction.md` 末尾）。
 

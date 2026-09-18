@@ -1,6 +1,6 @@
 # student_club （8 表） · simple EX 91.1% (92/101)
 
-## ⚠️ 交题前必查（本库最容易翻车的 3 条）
+## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **四条主干连接，背下来就不会错**：
    `member.link_to_major=major.major_id`（学院/专业）、`member.zip=zip_code.zip_code`（城市/县/州）、
@@ -53,10 +53,12 @@ event.event_id            = attendance.link_to_event
 题干说 “budget more than forty” → 用 `budget.amount > 40`（**不是** `spent`，也不是 `planned_amount`）。
 `expense.cost` 才是“花了多少钱”（`incurred less than 50USD` → `expense.cost < 50`）。
 
-## 惯例卡片（实测统计，n=146 道已提交题的金标；重跑 `bird.py conventions` 可刷新）
+## 惯例卡片（实测统计，n=113 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：col 32 / DISTINCT 1 / `COUNT(*)` 1 / 无 112　⇒ 本库以 `COUNT(列)` 为主（col 32 / DISTINCT 1 / star 1）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：member 61 / event 35 / budget 19 / expense 10 / major 10　⇒ 主表**不固定**（member 最多也只占 61/146）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：9/146　|　`*100`：4　|　`BETWEEN`：3
-- 输出列数分布：1列×119 / 2列×21 / 3列×6
-- JOIN 数分布：0:38, 1:93, 2:13, 3:2
+- 计数形态：COUNT(列) 25 / COUNT(*) 1 / COUNT(DISTINCT) 1 / 无 86　⇒ 本库以 `COUNT(列)` 为主（25/27 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：member 48 / event 26 / budget 14 / major 9 / expense 8 / zip_code 5 / income 3　⇒ 主表以 **member** 为主但**不固定**（48/113）⇒ 按题干主语选
+- `SELECT DISTINCT`：8/113　|　`*100`：3　|　`BETWEEN`：2
+- 输出列数分布：1列×91 / 2列×17 / 3列×5
+- JOIN 数分布：0:30, 1:74, 2:8, 3:1
+
+> 由 `bird_conventions db=student_club write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
