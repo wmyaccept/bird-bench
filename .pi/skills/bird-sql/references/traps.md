@@ -107,6 +107,10 @@
 
 - [ ] **`GROUP BY` 忘了吗？** `SUM(...)` 旁边只要还有非聚合列就必须 `GROUP BY`
       （`student_club` 1467：1 行 vs 金标 7 行）。
+- [ ] ⭐ **题干的实体名词是复数（"how many students/schools…"、`school/s`）？**
+      先算两种：`SUM` 一把 vs **每个实体一行**。实测 `california_schools` `53`（How many test takers
+      at the school/s）金标是 **每校一行、32 行**，不是 `SUM`。
+      （只有 1 个样本 ⇒ 这是**触发你去两种都算**的检查项，不是定论；攒到第 2 例再升级成规则。）
 - [ ] **分母是"行数"还是"去重实体数"？** 先试行数（`COUNT(*)`）；evidence 写
       `DIVIDE(SUM(x), COUNT(all ...))` 就按它抄。
 - [ ] **是不是要"先按实体/月份汇总再取极值"？** 触发词：「某年的最高月 X」、
