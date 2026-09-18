@@ -16,6 +16,7 @@
     db/<db_id>.md                  ★ 11 个库各一个短档案（顶部"交题前必查 3 条"+ 连接图）
     diagnosis.md / gold-style.md / scoring.md  出错反推 / 金标写法 / EX 判定
     sqlite-and-data.md / naming-traps.md / calibration.md  细节展开（卡住再看）
+    maintaining.md                    改 skill 时的维护原则（做题不用读）
     casebook.md                    复盘账本（只记账，不放规则）
 tools/bird.py                      后端：唯一直接操作 SQLite 的地方
 tools/setup_data.py                数据准备：下载 + 选择性解压 + 嵌套 zip

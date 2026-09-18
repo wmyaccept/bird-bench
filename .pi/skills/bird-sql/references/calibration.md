@@ -125,3 +125,24 @@ SELECT CAST(SUM(CASE WHEN c.Currency='EUR' THEN 1 ELSE 0 END) AS FLOAT)*100 / CO
 3. 聚合函数：MIN / MAX / COUNT / SUM 有没有选错？
 4. 列归属：这个列是不是该用**另一张表**的同名列？（→ `naming-traps.md`）
 5. 值是否参与排序的 NULL：见 `gold-style.md` 第 3 条。
+
+<!-- push step=7 -->
+## ⭐ 口径实验：一批里 ≥30% 的错题是「形状对、值不同」时做（一轮看清，别逐题猜）
+
+触发条件：`bird_score` / `audit` 显示**同一批里 ≥30% 的错题都是"形状对、值不同"**
+⇒ 这已经不是单题问题，而是我对这个库的**口径**理解错了。
+
+做法：写**一条** SQL，把候选口径并排输出一次，和挂起题一起看：
+
+```sql
+SELECT (SELECT COUNT(*)                     FROM ... ) AS c_all,
+       (SELECT COUNT(DISTINCT 实体id)        FROM ... ) AS c_dist,
+       (SELECT COUNT(*) FROM ... JOIN 额外表  ON ... ) AS c_join,
+       (SELECT COUNT(*) FROM ... WHERE 候选条件 ) AS c_cond;
+```
+
+实测：`thrombosis_prediction` 就是这么定位到 **ID 体系问题**的
+（`Patient` 1238 行 / `Examination` 302 / 能 JOIN 上的只有 70 —— 见 `traps.md` ②）。
+
+⚠️ 它属于**批末**动作：不要在一道题上试第二种口径（那是漫游，硬规则 6）。
+<!-- /push -->

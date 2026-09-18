@@ -292,6 +292,12 @@ function check(name, cond, detail = "") {
   r = await call("bird_brief", { db_id: "thrombosis_prediction" });
   check("thrombosis 的『补充（第 24 轮…）』也送达", r.ok && /补充（第 24 轮/.test(r.text), r.text.slice(0, 200));
 
+  console.log(String.fromCharCode(10) + "── 9. P8 回归：从 SKILL.md 搬进 references 的知识仍被推到决策点");
+  r = await call("bird_brief", { step: "7" });
+  check("brief --step 7 仍推得到「口径实验」", r.ok && /口径实验/.test(r.text), r.text.slice(0, 160));
+  check("brief --step 7 仍推得到「挂起清单」集中复盘", r.ok && /挂起清单/.test(r.text));
+  check("brief --step 7 仍推得到按类归因（≥2 道才毕业）", r.ok && /同一类 ≥2 道/.test(r.text));
+
   console.log(String.fromCharCode(10) + "── 8. P2 回归：卡片能被工具刷新（参数真的接通）");
   const cSchema = JSON.stringify(tools.get("bird_conventions").parameters);
   check("bird_conventions schema 含 write_card", /write_card/.test(cSchema));

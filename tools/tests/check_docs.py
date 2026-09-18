@@ -116,6 +116,33 @@ def main() -> int:
         t = txt(f)
         check(f"{f.name} 已改成「三道闸门」（与代码一致）", "三道" in t and "两道机器闸门" not in t)
 
+    print("\n── P8 SKILL.md 常驻预算（搬出去的知识必须还有落点）")
+    budget = 14500  # 常驻上下文上限：SKILL.md 实测 18.3KB 时启用（P8），改小要先搬东西出去
+    size = (SKILL / "SKILL.md").stat().st_size
+    check(
+        f"SKILL.md ≤ {budget} 字节（现 {size}；超了就搬进 references/ 再指路）",
+        size <= budget,
+        f"超 {size - budget} 字节",
+    )
+    landed = {
+        "calibration.md 里有「口径实验」（从 SKILL.md 搬过去的）": (REF / "calibration.md"),
+        "diagnosis.md 里有「挂起清单」集中复盘（从 SKILL.md 搬过去的）": (REF / "diagnosis.md"),
+        "maintaining.md 存在且含「维护约定」（从 SKILL.md 搬过去的）": (REF / "maintaining.md"),
+        "maintaining.md 含「下次又漏了规则」自查": (REF / "maintaining.md"),
+    }
+    for name, path in landed.items():
+        t = txt(path) if path.exists() else ""
+        key = {
+            0: "口径实验",
+            1: "挂起清单",
+            2: "维护约定",
+            3: "下次又漏了规则",
+        }[list(landed).index(name)]
+        check(name, key in t, f"{path.name} 里找不到「{key}」")
+    sk = txt(SKILL / "SKILL.md")
+    check("SKILL.md 指路到 maintaining.md（不是把维护规则又抄回来）", "maintaining.md" in sk)
+    check("SKILL.md 指路到 calibration.md（口径实验）", "calibration.md" in sk)
+
     print("\n── P12 未修缺陷清单：待修的东西必须落盘，不许只活在会话里")
     SENT_ACT = "<!-- canon:active-defects"
     cb_txt = txt(REF / "casebook.md")
@@ -128,8 +155,8 @@ def main() -> int:
           len(act_rows) >= 1 or "（无）" in act, f"rows={len(act_rows)}")
     bad_act = [r[:50] for r in act_rows if "`rg" not in r and "wc -c" not in r]
     check("每条未修缺陷都带可复现的证据命令", not bad_act, " ｜ ".join(bad_act))
-    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 9, 10, 11, 13) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
-    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P9/P10/P11/P13）", not stale, str(stale))
+    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 13) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
+    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P8/P9/P10/P11/P13）", not stale, str(stale))
 
     print("\n── P3 作废索引：旧结论不许被当成现行规则")
     SENT_DEP = "<!-- canon:deprecated"
