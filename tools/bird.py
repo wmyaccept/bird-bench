@@ -1142,35 +1142,34 @@ def cmd_answer(args):
             "  这是防『列数 / 列序 / 行数』类错误的硬闸门：声明与实测不符会被拒绝。"
         )
 
-    if not args.no_check:
-        try:
-            columns, rows, truncated, _ = run_sql(db_id, sql, max_rows=args.max_rows)
-        except sqlite3.Error as exc:
-            fail(f"SQL 在 {db_id} 上执行失败，未记录：{exc}")
-        print(f"执行通过：{len(rows)}{'+' if truncated else ''} 行，{len(columns)} 列")
-        if expected and (expected[0], expected[1]) != (len(rows), len(columns)):
-            if expected[0] is None:
-                if expected[1] != len(columns):
-                    if not args.force:
-                        fail(
-                            f"拒绝记录（闸门 2）：列数不符 —— 声明 {expected[1]} 列，实测 {len(columns)} 列。"
-                        )
-                else:
-                    print(f"📐 形状：声明 ? 行（未预判）× {expected[1]} 列，实测 {len(rows)} 行 —— 列数对上了；行数请自己对着题面再核一眼。")
-            else:
-                msg = (
-                    f"形状预演不符：声明 {expected[0]} 行 × {expected[1]} 列，"
-                    f"实测 {len(rows)} 行 × {len(columns)} 列。"
-                )
+    try:
+        columns, rows, truncated, _ = run_sql(db_id, sql, max_rows=args.max_rows)
+    except sqlite3.Error as exc:
+        fail(f"SQL 在 {db_id} 上执行失败，未记录：{exc}")
+    print(f"执行通过：{len(rows)}{'+' if truncated else ''} 行，{len(columns)} 列")
+    if expected and (expected[0], expected[1]) != (len(rows), len(columns)):
+        if expected[0] is None:
+            if expected[1] != len(columns):
                 if not args.force:
                     fail(
-                        f"拒绝记录（闸门 2）：{msg}\n"
-                        "  先弄清差在哪里（题干漏列/多列？条件过严过松？主表选错？），改好再交。"
+                        f"拒绝记录（闸门 2）：列数不符 —— 声明 {expected[1]} 列，实测 {len(columns)} 列。"
                     )
-                print(f"⚠️ {msg} 已用 --force 放行")
-        print()
-        print(fmt_rows(columns, rows))
-        print()
+            else:
+                print(f"📐 形状：声明 ? 行（未预判）× {expected[1]} 列，实测 {len(rows)} 行 —— 列数对上了；行数请自己对着题面再核一眼。")
+        else:
+            msg = (
+                f"形状预演不符：声明 {expected[0]} 行 × {expected[1]} 列，"
+                f"实测 {len(rows)} 行 × {len(columns)} 列。"
+            )
+            if not args.force:
+                fail(
+                    f"拒绝记录（闸门 2）：{msg}\n"
+                    "  先弄清差在哪里（题干漏列/多列？条件过严过松？主表选错？），改好再交。"
+                )
+            print(f"⚠️ {msg} 已用 --force 放行")
+    print()
+    print(fmt_rows(columns, rows))
+    print()
 
     if args.force:
         _probe_record(args.idx, db_id, "force", f"expected={expected} kinds={[p.get('kind') for p in mine]}")
@@ -1528,7 +1527,6 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("answer", help="记录第 idx 题的最终 SQL（有探针覆盖 + 形状预演两道闸门）")
     p.add_argument("idx", type=int)
     p.add_argument("sql")
-    p.add_argument("--no-check", action="store_true", help="跳过执行前检查")
     p.add_argument("--max-rows", type=int, default=20)
     p.add_argument("--force", action="store_true", help="跳过闸门 1/2（会在 probe_log 留痕）")
     p.set_defaults(func=cmd_answer)

@@ -92,6 +92,21 @@ def main() -> int:
                 hard.append(f"{f.name}:{i}: {ln.strip()[:80]}")
     check("AGENTS/SKILL 不写死测试断言数（让 run_all.py 打印）", not hard, " ｜ ".join(hard))
 
+    print("\n── P12 未修缺陷清单：待修的东西必须落盘，不许只活在会话里")
+    SENT_ACT = "<!-- canon:active-defects"
+    cb_txt = txt(REF / "casebook.md")
+    act_holders = [f.name for f in live_docs if SENT_ACT in txt(f)]
+    check(f"未修缺陷清单哨兵只在 casebook.md（实际：{act_holders}）",
+          act_holders == ["casebook.md"], str(act_holders))
+    act = cb_txt.split(SENT_ACT)[-1].split("\n## ")[1] if SENT_ACT in cb_txt else ""
+    act_rows = [l for l in act.splitlines() if re.match(r"^\|\s*P\d+\s*\|", l)]
+    check(f"未修缺陷清单有形如 `| P<n> |` 的行（{len(act_rows)} 条）或写『（无）』",
+          len(act_rows) >= 1 or "（无）" in act, f"rows={len(act_rows)}")
+    bad_act = [r[:50] for r in act_rows if "`rg" not in r and "wc -c" not in r]
+    check("每条未修缺陷都带可复现的证据命令", not bad_act, " ｜ ".join(bad_act))
+    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 9, 11) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
+    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P9/P11）", not stale, str(stale))
+
     print("\n── P3 作废索引：旧结论不许被当成现行规则")
     SENT_DEP = "<!-- canon:deprecated"
     live_docs = [SKILL / "SKILL.md", *sorted(REF.glob("*.md")), *sorted((REF / "db").glob("*.md"))]

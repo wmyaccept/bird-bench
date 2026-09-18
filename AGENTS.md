@@ -144,7 +144,8 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 "D:/python/python" tools/bird.py --dataset dev2025 answer 344 "/* shape: 1x1 */ SELECT COUNT(...) FROM ..."
 ```
 
-跳过闸门用 `--force`，但会留在 probe_log 里、`audit` 会统计强制率。
+绕过闸门**只有一个出口**：`--force`（会留在 probe_log 里、`audit` 统计强制率）。
+（历史上还有个 `--no-check`，它跳过执行与形状校验且**不留痕** —— P11 已删除，别再往回加。）
 `references/*.md` 里 `<!-- push step=N -->` 包住的片段、以及 `db/<库>.md` 的**整份档案**，
 都会被 `brief` 推到决策点、并在 `answer` 成功时回放（必查全部 + 惯例卡片）。
 
