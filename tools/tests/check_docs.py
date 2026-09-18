@@ -104,8 +104,8 @@ def main() -> int:
           len(act_rows) >= 1 or "（无）" in act, f"rows={len(act_rows)}")
     bad_act = [r[:50] for r in act_rows if "`rg" not in r and "wc -c" not in r]
     check("每条未修缺陷都带可复现的证据命令", not bad_act, " ｜ ".join(bad_act))
-    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 9, 11) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
-    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P9/P11）", not stale, str(stale))
+    stale = [f"P{n}" for n in (0, 1, 3, 5, 6, 7, 9, 11, 13) if re.search(rf"^\|\s*P{n}\s*\|", act, re.M)]
+    check("已修完的缺陷没有滞留在未修表里（P0/P1/P3/P5/P6/P7/P9/P11/P13）", not stale, str(stale))
 
     print("\n── P3 作废索引：旧结论不许被当成现行规则")
     SENT_DEP = "<!-- canon:deprecated"

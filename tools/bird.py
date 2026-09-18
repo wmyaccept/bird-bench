@@ -213,6 +213,22 @@ def run_sql(db_id: str, sql: str, max_rows: int = 50, timeout: float = 30.0):
         con.close()
 
 
+def _exact_rows(db_id: str, sql: str, fallback=None):
+    """⭐ P13：把真实行数**数准**（包一层 COUNT(*)）。包不上就返回 fallback。
+
+    用途：结果比一次取回的上限还大时，形状校验不能拿被截断的数字去比。
+    """
+    inner = sql.rstrip().rstrip(";").strip()
+    wrapped = f"SELECT COUNT(*) FROM (\n{inner}\n) AS _shape_count"
+    try:
+        _cols, r, _tr, _n = run_sql(db_id, wrapped, max_rows=1)
+    except (sqlite3.Error, SystemExit):
+        return fallback
+    if r and r[0] and r[0][0] is not None:
+        return int(r[0][0])
+    return fallback
+
+
 def fmt_rows(columns, rows, max_col: int = 40) -> str:
     def cell(value) -> str:
         text = "NULL" if value is None else str(value)
@@ -1142,33 +1158,55 @@ def cmd_answer(args):
             "  这是防『列数 / 列序 / 行数』类错误的硬闸门：声明与实测不符会被拒绝。"
         )
 
+    # ⭐ P13 修复：形状校验必须基于**完整结果**，不能拿被截断的数字去比行数。
+    #   ① 先按大上限取一次（VERIFY_LIMIT，与 --max-rows 无关）；
+    #   ② 若仍被截断，用 COUNT(*) 把真实行数数准；
+    #   ③ 连数都数不出来，才退化为「只校验列数」并**明确说出来**。
+    #   `--max-rows` 从此只影响**预览打印**。
+    VERIFY_LIMIT = 50000
     try:
-        columns, rows, truncated, _ = run_sql(db_id, sql, max_rows=args.max_rows)
+        columns, rows, truncated, _ = run_sql(db_id, sql, max_rows=VERIFY_LIMIT)
     except sqlite3.Error as exc:
         fail(f"SQL 在 {db_id} 上执行失败，未记录：{exc}")
-    print(f"执行通过：{len(rows)}{'+' if truncated else ''} 行，{len(columns)} 列")
-    if expected and (expected[0], expected[1]) != (len(rows), len(columns)):
-        if expected[0] is None:
-            if expected[1] != len(columns):
-                if not args.force:
-                    fail(
-                        f"拒绝记录（闸门 2）：列数不符 —— 声明 {expected[1]} 列，实测 {len(columns)} 列。"
-                    )
-            else:
-                print(f"📐 形状：声明 ? 行（未预判）× {expected[1]} 列，实测 {len(rows)} 行 —— 列数对上了；行数请自己对着题面再核一眼。")
+
+    n_rows = len(rows)
+    if truncated:
+        n_rows = _exact_rows(db_id, sql, fallback=None)
+        if n_rows is None:
+            print(f"⚠️ 结果超过 {VERIFY_LIMIT} 行且数不出准确行数 ⇒ 本次**只校验列数，不校验行数**。")
         else:
-            msg = (
-                f"形状预演不符：声明 {expected[0]} 行 × {expected[1]} 列，"
-                f"实测 {len(rows)} 行 × {len(columns)} 列。"
-            )
-            if not args.force:
-                fail(
-                    f"拒绝记录（闸门 2）：{msg}\n"
-                    "  先弄清差在哪里（题干漏列/多列？条件过严过松？主表选错？），改好再交。"
-                )
+            print(f"ℹ️ 结果 {n_rows} 行（超过一次取回的上限 {VERIFY_LIMIT}，已用 COUNT(*) 数准）")
+    print(f"执行通过：{n_rows if n_rows is not None else str(len(rows)) + '+'} 行，{len(columns)} 列")
+
+    def _shape_fail(msg: str):
+        if args.force:
             print(f"⚠️ {msg} 已用 --force 放行")
+        else:
+            fail(
+                f"拒绝记录（闸门 2）：{msg}\n"
+                "  先弄清差在哪里（题干漏列/多列？条件过严过松？主表选错？），改好再交。"
+            )
+
+    if expected and expected[1] != len(columns):
+        _shape_fail(f"列数不符 —— 声明 {expected[1]} 列，实测 {len(columns)} 列。")
+    elif expected and expected[0] is None:
+        print(
+            f"📐 形状：声明 ? 行（未预判）× {expected[1]} 列，实测 "
+            f"{n_rows if n_rows is not None else '未知'} 行 —— 列数对上了；行数请自己对着题面再核一眼。"
+        )
+    elif expected and n_rows is None:
+        print(f"📐 形状：声明 {expected[0]} 行 —— 结果太大数不出准确行数，**这一项没校验**（列数已对上）。")
+    elif expected and expected[0] != n_rows:
+        _shape_fail(
+            f"形状预演不符：声明 {expected[0]} 行 × {expected[1]} 列，"
+            f"实测 {n_rows} 行 × {len(columns)} 列。"
+        )
+
+    preview = rows[: args.max_rows]
     print()
-    print(fmt_rows(columns, rows))
+    print(fmt_rows(columns, preview))
+    if len(rows) > args.max_rows:
+        print(f"\n... 预览只显示前 {args.max_rows} 行（形状校验用的是完整结果，不受 --max-rows 影响）")
     print()
 
     if args.force:
@@ -1527,7 +1565,12 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("answer", help="记录第 idx 题的最终 SQL（有探针覆盖 + 形状预演两道闸门）")
     p.add_argument("idx", type=int)
     p.add_argument("sql")
-    p.add_argument("--max-rows", type=int, default=20)
+    p.add_argument(
+        "--max-rows",
+        type=int,
+        default=20,
+        help="预览只打印这么多行；形状校验用完整结果，不受它影响（P13）",
+    )
     p.add_argument("--force", action="store_true", help="跳过闸门 1/2（会在 probe_log 留痕）")
     p.set_defaults(func=cmd_answer)
 

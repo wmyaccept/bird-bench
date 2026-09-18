@@ -156,6 +156,26 @@ function check(name, cond, detail = "") {
     r.text.slice(0, 200),
   );
 
+  console.log("\n── 3c. P13：形状校验必须用完整结果，--max-rows 只管预览");
+  const rowsCTE = (n) =>
+    `WITH RECURSIVE s(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM s WHERE x<${n}) SELECT x FROM s`;
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 21x1 */ ${rowsCTE(21)}` });
+  check(
+    "真 21 行按 21 声明能通过（修前会被截断成「实测 20 行」而误拒）",
+    r.ok && /执行通过：21 行/.test(r.text),
+    r.text.slice(0, 200),
+  );
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 20x1 */ ${rowsCTE(21)}` });
+  check("反向守卫：真 21 行却声明 20 行仍被拒（闸门没被削弱）", !r.ok, r.text.slice(0, 200));
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 50001x1 */ ${rowsCTE(50001)}` });
+  check(
+    "超过一次取回的上限时用 COUNT(*) 把真实行数数准（50001 行按 50001 声明通过）",
+    r.ok && /50001 行/.test(r.text),
+    r.text.slice(0, 220),
+  );
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 50000x1 */ ${rowsCTE(50001)}` });
+  check("超上限时行数也照样校验（真 50001 行声明 50000 仍被拒）", !r.ok, r.text.slice(0, 220));
+
   console.log("\n── 4. force 逃生口");
   r = await call("bird_answer", {
     idx: 2,
