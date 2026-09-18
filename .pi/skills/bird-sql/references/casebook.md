@@ -3,7 +3,8 @@
 > ⚠️ **本文件是「账本」，不是「方法」——做题时不要指望读它。**
 > 从复盘里得到的规则必须**毕业**到能被读到的地方（`db/<库>.md` / `traps.md` / `checklist.md`），
 > 这里只记录「当时发生了什么」。
-> （历史条目里提到的 `playbooks.md` = 现在拆分后的 `shapes.md` + `db/*.md`。）
+> （第 1–20 轮里的那份 playbooks 手册 = 今天的 `shapes.md`（通用题型骨架）+ `db/<库>.md`（库级连接图与坑）；
+> 本文已把这些名字全部改成现行文件名，所以你不该再看到它。见末轮「第 27 轮」的拆分。）
 
 ## 轮次索引（快速定位）
 
@@ -102,7 +103,7 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 目标：先做完 Dev 的全部 **925 道 simple**（可对标主榜模型 Dev 列）。
 方法（解决"写了一堆东西但不成体系"的问题）：
 
-1. 把方法整理成 [`playbooks.md`](../references/playbooks.md)（**题型骨架 + 11 个库的连接图**），
+1. 把方法整理成 [`shapes.md`](../references/shapes.md) + [`db/*.md`](../references/db)（**题型骨架 + 11 个库的连接图**），
    做题时先查手册再写 SQL。
 2. **按数据库为单位推进**（题目天然按库聚集），用 bash 批量读写：
    `batch.py`（heredoc 传参，避开引号问题）+ `qshow.py`（一行一题紧凑读题）。
@@ -118,7 +119,7 @@ Dev 共 1534 题，现在完成 170 题（11.1%）⇒ **全量 EX = 161/1534 = 1
 
 累计：Dev 已答 **204/1534**（全量 EX 12.58%），simple **180/925**。
 
-### 本批新学到的套路（已写回 `playbooks.md`）
+### 本批新学到的套路（已写回 `shapes.md`）
 
 1. ⚠️ **SQLite 双引号包一个不存在的列名不会报错**，而是当字符串字面量返回。
    实测：以为 `Low Grade` 在 `schools`，结果是 17686 行全是字符串 `'Low Grade'`。
@@ -388,7 +389,7 @@ student_club 8 表四条主干）。做得差的是两类：
 
 ### 最重要的修正
 
-`playbooks.md` 原先写着：“问某球员的属性时通常要多一步取一条：
+`db/european_football_2.md` 原先写着：“问某球员的属性时通常要多一步取一条：
 `WHERE player_api_id = (SELECT ... ORDER BY ... LIMIT 1)`” —— **实测表明这是反的**：
 
 | idx | 题干 | 我（LIMIT 1） | 金标 |
@@ -397,7 +398,7 @@ student_club 8 表四条主干）。做得差的是两类：
 | 1086 | Ariel Borysiuk 的 heading_accuracy | 1 行 | **24 行** |
 | 1140 | Alexis Blin 的 sprint/agility/acceleration | 1 行 | **9 行** |
 
-金标就是要**全部历史快照**。已把 `playbooks.md` 改成“**不要 `LIMIT 1`**”。
+金标就是要**全部历史快照**。已把 `db/european_football_2.md` 改成“**不要 `LIMIT 1`**”。
 
 ⇒ **教训升级版：不只是“值格式”会过时，“怎么取行”这类结构性笔记也会写反——
 而且只会在真正做题时才暴露。** 只要有 2–3 道同类题同时错，就要回头质疑手册里的写法。
@@ -416,15 +417,15 @@ student_club 8 表四条主干）。做得差的是两类：
 
 结果：**52 对 / 10 错（83.9%）**。
 
-### 最有价值的发现：playbooks 里的日期格式已经过时
+### 最有价值的发现：库档案里的日期格式已经过时
 
-`playbooks.md` 记的是（来自 Mini-Dev）：“`account.date` 是 `'930101'`（YYMMDD）”。
+`db/financial.md` 记的是（来自 Mini-Dev）：“`account.date` 是 `'930101'`（YYMMDD）”。
 **Dev 版实际全是 `'YYYY-MM-DD'`**（实测 `trans.date='1995-03-24'`、`loan.date='1994-01-05'`、
 `card.issued='1998-10-16'`）。首批 13 道里好几道都在日期上踩了坑，probe 一次就全部解决。
 
 ⇒ **教训：Mini-Dev 时代写下的“值格式”笔记在 Dev 上不一定成立。**
 换库/换版本时，跑一句 `SELECT 列 FROM 表 LIMIT 1` 比翻笔记可靠。
-（已把这条写进 `playbooks.md` 的 financial 段，并加上了“动手前先探一句”的提醒。）
+（已把这条写进 `db/financial.md`，并加上了“动手前先探一句”的提醒。）
 
 ### 10 道错题的根因
 
@@ -475,7 +476,7 @@ financial 这两道是“**题干里的副词性描述不算输出列**”（“
 | 行数 | 1 | 221（双向存储导致 2 行 vs 1 行） |
 
 ⇒ **这个库的失分模式是“金标爱多给列”**，与 card_games 的“金标爱少给列”相反：
-“for TR000, TR001 and TR002”类题干，金标会把实体 id 也输出成一列。已写回 `playbooks.md`。
+“for TR000, TR001 and TR002”类题干，金标会把实体 id 也输出成一列。已写回 `db/toxicology.md`。
 
 ### 流程观察
 
@@ -489,7 +490,7 @@ financial 这两道是“**题干里的副词性描述不算输出列**”（“
 
 ### 为什么这一个库做得好
 
-首批 13 道就 12 对，因为**这个库的主干连接只有四条**（已写进 `playbooks.md`）：
+首批 13 道就 12 对，因为**这个库的主干连接只有四条**（已写进 `db/student_club.md`）：
 `member.link_to_major=major.major_id`、`member.zip=zip_code.zip_code`、
 `attendance.link_to_member=member.member_id`、`attendance.link_to_event=event.event_id`。
 “哪个学院/什么专业/哪个城市”类题几乎是模板题。
@@ -530,7 +531,7 @@ financial 这两道是“**题干里的副词性描述不算输出列**”（“
 | 964 | `nationality='America'` → `'American'` | ✅ |
 | 922 | `'Abu Dhabi Circuit'` → `'Yas Marina Circuit'` | ❌（列对了但值不同） |
 
-（skill 硬规则第 6 条允许这个例外：“skill 里有明确依据”时可以重交。）
+（见 `checklist.md` 末尾的「⛔ 重交白名单（唯一出处）」：“skill 里有明确依据”时可以重交。）
 
 ### 最大的教训：通则不能“从小样本推”
 
@@ -570,11 +571,11 @@ formula_1 是**混合粒度**：有的题去重、有的题行级、有的题只
 
 | 模式 | 道数 | 例子 | 已写回 |
 |---|---|---|---|
-| **没加 `DISTINCT`** | ~10 | 387 (187→**10**)、399 (999→**46**)、444 (1052→**95**)、448 (480→**47**)、442 (9→**3**) | `playbooks.md` 第 7 条 |
+| **没加 `DISTINCT`** | ~10 | 387 (187→**10**)、399 (999→**46**)、444 (1052→**95**)、448 (480→**47**)、442 (9→**3**) | `db/card_games.md` + `checklist.md` |
 | **多值串列用了 `LIKE`** | 1+ | 376：`keywords='Flying'` = **3088**（金标） vs `LIKE '%flying%'` = 5039 | `naming-traps.md` |
-| **多给了列** | 5 | 435/436（`How many X? List out the id` → 金标只要 id）；445 (3列→2列)；403 (1列→金标 28639 行 2 列) | `playbooks.md` 第 9 条 |
-| **`set_translations` 盖不全** | 4 | 428/429/438/519 全 0 行（只覆盖 121/551 个 set） | `playbooks.md` 第 10 条 |
-| **并列导致排序不稳定** | 3 | 342（`faceConvertedManaCost` 最大值 **22 张并列**）、514、392 | `playbooks.md` 第 12 条 |
+| **多给了列** | 5 | 435/436（`How many X? List out the id` → 金标只要 id）；445 (3列→2列)；403 (1列→金标 28639 行 2 列) | `db/card_games.md` |
+| **`set_translations` 盖不全** | 4 | 428/429/438/519 全 0 行（只覆盖 121/551 个 set） | `db/card_games.md` |
+| **并列导致排序不稳定** | 3 | 342（`faceConvertedManaCost` 最大值 **22 张并列**）、514、392 | `db/card_games.md` |
 
 ### 这一轮真正值得记的教训
 
@@ -584,7 +585,7 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 结果后面 99 道题里至少 10 道又倒在同一个坑上。
 
 ⇒ **规则要从“个案”及时升级为“库级通则”**：只要在同一库看到 2 次同样的错因，
-就应该写进 `playbooks.md` 该库段的顶部，而不是留在 casebook。
+就应该写进 `db/<库>.md` 的顶部，而不是留在 casebook。
 
 ⇒ 由此得出一个流程建议：**在 BIRD 这种“按库聚集”的数据集上，“一轮”的天然单位应该是一个库，
 而不是 99 道题。** 一个库的第一批（10–15 道）跑完就应复盘一次，把通则固定下来，
@@ -598,7 +599,7 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 
 | idx | 题干要点 | 我写的 | 根因 |
 |---|---|---|---|
-| **343** | 2015 帧且 EDHRec<100 的卡 | `cards.EDHRec` → 直接报错；重交 `edhrecRank` 后 654 行 | 行数对了但**集合不对**，疑似金标输出 `cards.id` 而非 `name`（playbooks 早就写了“which cards 常返回 id”，**我没照做**） |
+| **343** | 2015 帧且 EDHRec<100 的卡 | `cards.EDHRec` → 直接报错；重交 `edhrecRank` 后 654 行 | 行数对了但**集合不对**，疑似金标输出 `cards.id` 而非 `name`（`db/card_games.md` 早就写了“which cards 常返回 id”，**我没照做**） |
 | **350** | card Annul（number 29）的替代语言 | `name='annul'`（全小写） → **0 行** | 实际值是 `'Annul'`，SQLite 的 `=` 大小写敏感 |
 | **361** | status=restricted 且有文本框 | `status='restricted'` | 实际值是 **`'Restricted'`**（636 行 vs 0 行）；正确值 = **634** |
 | **363** | status=restricted 且在 starter deck | 同上 | 同上；正确值 = **205** |
@@ -609,20 +610,20 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 
 ### 真正的教训（这一批最值钱的东西）
 
-1. **playbooks 里已经写过的规则，我没执行。** `343` 就是典型：
+1. **`db/<库>.md` 里已经写过的规则，我没执行。** `343` 就是典型：
    “which cards 的金标常返回 `cards.id`” 早就写在 B 部分的 card_games 段里，
    我写 SQL 时直接输出了 `name`。⇒ **读 B 部分不能只读“连接图”，要把坑逐条当约束用。**
 2. **每换一个库，先 `SELECT DISTINCT` 看关键列的取值。**
    本批 3 道（`350/361/363`）纯粹输在大小写上 —— 而 california_schools 那边
-   恰好相反（`'Directly funded'` 小写 f）。⇒ 已写进 playbooks 的 A 部分。
+   恰好相反（`'Directly funded'` 小写 f）。⇒ 已写进 `shapes.md` 的 A 部分。
 3. **evidence 里的名字是“概念名”，不是列名**：EDHRec → `edhrecRank`。
    写之前用 `pragma_table_info` 核对，成本 5 秒，能挡掉硬错。
 
 ### 已写回
 
-- `playbooks.md` ▸ B 部分 card_games：新增 6 条实测坑（camelCase 列名 / 值首字母大写 /
+- `db/card_games.md`：新增 6 条实测坑（camelCase 列名 / 值首字母大写 /
   同名卡多版本用 DISTINCT / 连接键 / 22 张并列 / “Name all cards” 也可能返回 id）
-- `playbooks.md` ▸ A 部分：新增“换库先 `SELECT DISTINCT` 看真值”的固定动作
+- `shapes.md`：新增“换库先 `SELECT DISTINCT` 看真值”的固定动作
 
 ## 第 7 轮：codebase_community 收尾（676–715，27 道）
 
@@ -635,7 +636,7 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 
 | idx | 题干要点 | 我写的 | 根因 → 已写回哪份手册 |
 |---|---|---|---|
-| 689 | last to edit 帖 183 的用户 | `posts.LastEditorUserId` JOIN → **0 行** | 该列 **47361 行是 NULL**；必须走 `postHistory` 按 `CreationDate` 倒序 → `playbooks.md` |
+| 689 | last to edit 帖 183 的用户 | `posts.LastEditorUserId` JOIN → **0 行** | 该列 **47361 行是 NULL**；必须走 `postHistory` 按 `CreationDate` 倒序 → `db/codebase_community.md` |
 | 696 | tag='careers' 的帖数 | `posts.Tags LIKE '%<careers>%'` = 22 | evidence 点名 `TagName` → 金标在 `tags` 表上数 = **1** → `naming-traps.md` |
 | 709 | score=0 的评论里 ViewCount<5 的**帖**数 | `COUNT(*)` = 4 | 题干主语是**实体** → `COUNT(DISTINCT posts.Id)` = **2** → `calibration.md` |
 | 686 | views above average 的帖数（“total number”） | `COUNT(*)`（1 行） | 金标 **7689 行**（直接列出帖子，**不聚合**）→ 见下 |
@@ -643,7 +644,7 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 | 693 | 最新用户的 posts 和 comments 数 | 2 列 | 金标 **1 列** → 见下 |
 
 另：`700` 因把 `BountyAmount` 写到 `posts` 表上而**执行失败被拒**（在 `votes` 表），
-重交即过 —— 这类“列名不存在”是硬错，不算 EX 错。已写回 `playbooks.md` / `naming-traps.md`。
+重交即过 —— 这类“列名不存在”是硬错，不算 EX 错。已写回 `db/codebase_community.md` / `naming-traps.md`。
 
 ### 三条“金标反直觉”样本（**不**提炼成规则，只留档）
 
@@ -660,7 +661,7 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 
 ### 本轮验证有效的 skill 条款（做题时能直接套）
 
-- `playbooks.md` A2 的极值骨架（`ORDER BY 指标 DESC LIMIT 1`）：`677/679/681/690` 一稿命中
+- `shapes.md` A2 的极值骨架（`ORDER BY 指标 DESC LIMIT 1`）：`677/679/681/690` 一稿命中
 - `sqlite-and-data.md` 的 NULL 规则（上一轮 `663` 的经验）：`684/691/711` 年龄段题一次对
 - `calibration.md` 的百分比子查询写法：`684` 一次对
 - **“evidence 给的口径先照抄”**：`699/700/702/703/706/715` 全部命中
@@ -702,7 +703,7 @@ casebook 里的一个个案（“这一题要 DISTINCT”），**没有升级成
 
 从“一题一探、错了再猜”改成**先定套路再批量做题**：
 
-1. 产出 [`playbooks.md`](../references/playbooks.md)：**A 部分 = 通用题型 10 种骨架**，
+1. 产出 [`shapes.md`](../references/shapes.md) + [`db/*.md`](../references/db)：**A 部分 = 通用题型 10 种骨架**，
    **B 部分 = 11 个库的连接图与坑**。做题时先查手册，不再从零推理。
 2. **以“库”为单位推进**（题目天然按库聚集），每批 12–14 题：
    批量读题 → 一次探关键取值 → 批量提交 → 一次评分。
@@ -1238,3 +1239,64 @@ AGENTS.md 对照表、SKILL.md 都可能引到）。
 **代码改了，提这件事的文字没跟着改**）。
 ⇒ 新纪律：**改语义时，把"提到这件事的每一处文字"当成同一个改动的一部分**；
 能机器查的就别靠记性（本项目已有 124 项断言，覆盖闸门/推送/卡片/文档四类）。
+
+---
+
+## 第 31 轮（2026-09-16）｜P5+P7：找回一条被重构删掉的规则 + 清死链
+
+### P5 的真根因（与"散在多处"完全不是一回事）
+
+审计时我以为是"白名单散在 5 处、没有单一出处"。用 `git log -S` 查完才发现真相更严重：
+
+```
+f0aa505  加入"做题时不许思考"的执行纪律   → SKILL.md 里第一次写进
+         「**不重交**（除非 skill 里有明确依据）」
+211480b  重构 skill 成 7 步工作流          → 这一条 **被删掉了**
+         之后只剩 casebook（历史账本，做题时不读）里一句引用，
+         而且引用指错了方向（写"skill 硬规则第 6 条允许这个例外"，那里其实没有）
+```
+
+⇒ **规则本体已经不在 skill 里了**，做题时不可能读到；唯一"记得它"的地方是账本里一句错引。
+本条修复 = **把丢掉的规则正式写回**（`checklist.md` 末尾「⛔ 重交白名单（唯一出处）」，
+六类依据：列名硬错 / 值大小写 / 闸门 2 拒绝 / 执行失败 / 返回空集 / skill 已写明的修法；
+外加两条禁止：纯猜、复盘看过金标），其余四处（`SKILL.md` 硬规则 6、`AGENTS.md`、`traps.md`、
+`casebook.md`）**只许指路**。
+
+### P7：24 处死链 → 现行文件名
+
+`casebook.md` 里 24 处对那份已删手册的点名（它的正文早已拆成 `shapes.md` + `db/*.md`），其中
+`:105/:121/:200` 是**毕业指令**（“已写回 playbooks 手册”）—— 复盘时照着做会写到一个不存在的文件。
+逐处按语义改成现行目标（题型骨架 → `shapes.md`；库级坑 → `db/<那一轮那个库>.md`），
+并保留顶部一句"当年那份手册就是今天的 shapes.md + db/*.md"作为历史说明（**故意不写 `.md` 全名**，
+以免又变成一条死链）。
+
+### 机器守卫（`check_docs.py` 13 → 20 项）
+
+- 白名单正文带唯一哨兵（形如 `canon:resubmit` 的注释标记），**只许出现在一处**（标题被别处引用不算）；
+  另查四处是否都"指路"、六类依据是否齐全、"看过金标不重交"是否写着；
+- **链接检查取消对 casebook 的豁免**：所有 `.md` 引用（含 `db/*.md`）必须真实存在；
+- 投毒验证：把白名单抄进 `traps.md` ⇒ 判“两处”；往 casebook 插一条指向不存在的库档案的引用 ⇒ 判死链；
+  两次都**按字节还原**。还原后 20/20 通过。
+
+### 教训
+
+**"重构时顺手删掉了规则"比"规则写错"隐蔽得多**：删掉不留痕，几轮之后谁都记不起它存在过，
+直到有人（这次是审计）去 `git log -S` 才现形。
+⇒ 新纪律：**重构/搬运时，凡是从旧文本里消失的东西，要么在 commit message 里写明"删了什么、为什么"，
+要么用哨兵（`<!-- canon:xxx -->`）把"必须存在的规则"钉住**，让 `check_docs.py` 能发现它不见了。
+
+### 第 31 轮附带：`run_all.py` 一上来就抓出三个"测试自身"的毛病
+
+新加的一键跑测脚本（`tools/tests/run_all.py`，打印真实断言数）第一次运行就红了三处 ——
+**全是我自己的测试写得不对**，不是被测代码的问题：
+
+1. **顺序依赖**：`check_brief_p4.py` 第⑦节（验证"必查回放"）假定 *别的套件先跑过、已给 idx 2 留了探针* ——
+   单独跑没事，`run_all` 里一换顺序就被闸门 1 拒。⇒ 改成**自己先留一条探针**，自给自足。
+2. **顺序依赖（第二处）**：`extension_smoke.cjs` 断言"fixture 原有 2 个键 → 现在 3" ——
+   别的套件答过同一题后变成"3 → 3"。⇒ 改成只断言"**我这道题确实落盘**"，不假设进来时的状态。
+3. **文档手抄数字又过期**：`AGENTS.md` 里写着"41 项断言"（实际已 49）——被本轮刚加的
+   P6b 守卫当场逮到。⇒ 删掉数字，改成"跑 `run_all.py` 看当前断言数"。
+
+⭐ 教训：**测试也会犯"顺序依赖 + 手抄数字"这两个病**，而且它们只在"按另一条顺序/整批跑"时才暴露。
+⇒ 新纪律：**每个测试自己造状态（fixture/探针），不许依赖别人留下的痕迹**；一键脚本 `run_all.py`
+是唯一"按真实顺序整体跑"的地方，改完必须跑它、而不是挑单个脚本跑。

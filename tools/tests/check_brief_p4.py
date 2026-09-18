@@ -170,6 +170,12 @@ def main() -> int:
             **os.environ, "PYTHONIOENCODING": "utf-8",
             "BIRD_DATA_DIR": str(fx), "BIRD_WORK_DIR": str(fx / "work"), "BIRD_REFS": str(refs2),
         }
+        # ⭐ 先自己留一条探针（闸门 1）：不许依赖"别的测试刚好跑过"这类环境状态
+        subprocess.run(
+            [PY, str(ROOT / "tools" / "bird.py"), "--dataset", "minidev", "run", "demo",
+             "SELECT COUNT(*) FROM customers", "--for", "2"],
+            cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
         r = subprocess.run(
             [PY, str(ROOT / "tools" / "bird.py"), "--dataset", "minidev", "answer", "2",
              "/* shape: 1x1 */ SELECT COUNT(*) FROM customers"],

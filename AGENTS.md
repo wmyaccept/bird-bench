@@ -137,7 +137,8 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 > 2026-09-16 修：此前扩展里根本没有 `brief/cols/conventions/audit`，`bird_query` 也无法带 `--for`、
 > `bird_answer` 没有 `--force` —— 后果是在 pi 里做题会被自己的闸门 1 100% 拦住（只能退回 bash）。
-> 现已补齐，并用 `D:/tmp/bird/p0_smoke.cjs`（41 项断言，真实调用每个工具）逐条验证。
+> 现已补齐，并有**仓库内**的端到端冒烟测试逐条验证（`tools/tests/extension_smoke.cjs`，
+> 真加载扩展 + 真跑后端；跑 `python tools/tests/run_all.py` 看当前断言数）。
 
 ```bash
 "D:/python/python" tools/bird.py --dataset dev2025 answer 344 "/* shape: 1x1 */ SELECT COUNT(...) FROM ..."
@@ -147,15 +148,16 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 `references/*.md` 里 `<!-- push step=N -->` 包住的片段、以及 `db/<库>.md` 的**整份档案**，
 都会被 `brief` 推到决策点、并在 `answer` 成功时回放（必查全部 + 惯例卡片）。
 
-### 回归测试（改完必跑，共 124 项断言）
+### 回归测试（改完必跑）
 
 ```bash
-"D:/python/python" tools/tests/check_docs.py          # 13 项：文档一致性（条数/手抄数字/与代码相反/死链）
-"D:/python/python" tools/tests/check_brief_p4.py      # 46 项：库档案整份送达、投毒、卡片 n
-"D:/python/python" tools/tests/check_write_card.py    # 16 项：卡片能被工具刷新且与工具同源（BIRD_REFS 隔离）
-"D:/python/python" tools/tests/make_fixture.py >/dev/null
-node tools/tests/extension_smoke.cjs                  # 49 项：真加载扩展 + 真跑后端，两道闸门/参数隔离
+"D:/python/python" tools/tests/run_all.py     # ★ 一键跑完四个套件，并打印真实断言数
 ```
+
+四个套件各管一类：`check_docs.py` 文档一致性（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
+`check_brief_p4.py` 库档案整份送达（含投毒）、`check_write_card.py` 惯例卡片可刷新且与工具同源、
+`extension_smoke.cjs` 真加载扩展 + 真跑后端（两道闸门 / 参数 / 数据集隔离）。
+**断言数只由 `run_all.py` 打印，不写进文档**（手抄数字必然过期 —— 见 casebook 第 29/30/31 轮）。
 
 - `make_fixture.py` 生成隔离 fixture（3 题 / demo.sqlite），**绝不碰真答案**；
   `extension_smoke.cjs` 靠它的 `BIRD_DATA_DIR` / `BIRD_WORK_DIR`（以及 `BIRD_REFS` 覆盖档案目录）跑。
@@ -167,6 +169,8 @@ node tools/tests/extension_smoke.cjs                  # 49 项：真加载扩展
   **不要左右为难、不要穷举候选、不要“再试一种看看”**。错了就错了，错了再总结
   （错误的价值是写回 skill，不是当场救回来）。同一题想到第 2 种写法或卡住 ~1 分钟 →
   立刻提交手上最好的一条，记进挂起清单，做下一题。详见 `.pi/skills/bird-sql/SKILL.md` 硬规则第 6 条。
+- **重交**：什么情况允许重交、什么情况不允许，**单口径**在 `.pi/skills/bird-sql/references/checklist.md`
+  末尾的「⛔ 重交白名单（唯一出处）」，这里不重复（抄两份必然漂移，`tools/tests/check_docs.py` 会查）。
 - **禁止**读 `data/MINIDEV/mini_dev_sqlite.json` 或 `mini_dev_sqlite_gold.sql` 去抄答案，
   **禁止**用 `bird_question --reveal`。抄答案就失去做题意义了。
 - 只写只读 SQL。`bird_query` 和 `bird_answer` 都只接受 `SELECT / WITH / EXPLAIN`，

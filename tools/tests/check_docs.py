@@ -84,22 +84,38 @@ def main() -> int:
     for tool in ["brief", "cols", "conventions", "audit", "force", "for_idx"]:
         check(f"AGENTS.md 的 pi 工具对照表提到 {tool}", tool in ag)
 
-    print("\n── 链接有效性")
-    broken_skill, broken_legacy = [], []
-    for f in [SKILL / "SKILL.md", *sorted((REF / "db").glob("*.md"))]:
-        for target in re.findall(r"`([a-z0-9_./-]+\.md)`", txt(f)):
-            name = target.split("/")[-1]
-            cands = [REF / name, REF / target, REF / "db" / name]
-            if not any(c.exists() for c in cands):
-                broken_skill.append(f"{f.name} -> {target}")
-    check("SKILL.md / db/*.md 里的 .md 引用都存在", not broken_skill, "; ".join(broken_skill))
+    print("\n── P6b 文档里不许写死“断言数”（手抄数字必然过期）")
+    hard = []
+    for f in [AGENTS, SKILL / "SKILL.md"]:
+        for i, ln in enumerate(txt(f).splitlines(), 1):
+            if re.search(r"\d+\s*项断言|共\s*\d+\s*项|\d+\s*项：", ln):
+                hard.append(f"{f.name}:{i}: {ln.strip()[:80]}")
+    check("AGENTS/SKILL 不写死测试断言数（让 run_all.py 打印）", not hard, " ｜ ".join(hard))
 
-    for f in sorted(REF.glob("*.md")):
-        for target in re.findall(r"playbooks\.md", txt(f)):
-            broken_legacy.append(f"{f.name}")
-            break
-    if broken_legacy:
-        warn.append(f"待办 P7：{broken_legacy} 仍引用已删除的 playbooks.md（历史账本，不判失败）")
+    print("\n── P5 重交白名单：正文只准有一处，别处只能指路")
+    SENTINEL = "<!-- canon:resubmit"        # 只许出现在正文那一处；别处引用标题不算
+    live = [AGENTS, SKILL / "SKILL.md", *sorted(REF.glob("*.md"))]
+    holders = [f.name for f in live if SENTINEL in txt(f)]
+    check(f"白名单正文哨兵只在 checklist.md（实际：{holders}）", holders == ["checklist.md"], str(holders))
+    for f, who in [(SKILL / "SKILL.md", "SKILL.md"), (REF / "traps.md", "traps.md"),
+                   (REF / "casebook.md", "casebook.md"), (AGENTS, "AGENTS.md")]:
+        check(f"{who} 指路到白名单", "重交白名单" in txt(f))
+    canon_txt = txt(REF / "checklist.md")
+    missing = [k for k in ["no such column", "空集", "执行失败", "大小写", "闸门 2", "挂起清单"]
+               if k not in canon_txt]
+    check("白名单覆盖六类依据", not missing, f"缺：{missing}")
+    check("白名单写明“看过金标不重交”", "看过金标" in canon_txt)
+
+    print("\n── 链接有效性（含 casebook —— P7 修完后不再有豁免）")
+    broken = []
+    for f in [SKILL / "SKILL.md", *sorted(REF.glob("*.md")), *sorted((REF / "db").glob("*.md"))]:
+        for target in re.findall(r"`([a-zA-Z0-9_./-]+\.md)`", txt(f)):
+            name = target.split("/")[-1]
+            cands = [REF / name, REF / target, REF / "db" / name,
+                     SKILL / name, ROOT / name, ROOT / "tools" / name, ROOT / "data" / name]
+            if not any(c.exists() for c in cands):
+                broken.append(f"{f.name} -> {target}")
+    check("所有 .md 引用都真实存在（不许指向已删文件）", not broken, "; ".join(broken))
 
     if warn:
         print("\n⚠️ 提醒（不影响通过）")

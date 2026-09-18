@@ -203,7 +203,13 @@ function check(name, cond, detail = "") {
     JSON.stringify(Object.keys(answersAfter).sort()) === JSON.stringify(["0", "1", "2"]),
     JSON.stringify(Object.keys(answersAfter)),
   );
-  check("fixture 原有键数 2，现在 3", Object.keys(JSON.parse(answersBefore)).length === 2);
+  // ⭐ 不许假设"进来时 fixture 恰好有几个键"（run_all 里别的套件可能先跑过、
+  //    甚至已经答过同一题）——只断言"我这道题确实落盘了"
+  check(
+    "本套件作答的 idx 2 确实落盘",
+    Object.prototype.hasOwnProperty.call(answersAfter, "2"),
+    JSON.stringify(Object.keys(answersAfter)),
+  );
   check("SQL 里保留了形状声明（导出时可剥）", /shape:/.test(answersAfter["1"]));
 
   console.log(String.fromCharCode(10) + "── 7. P4 回归：库档案整份送达（不再按小节名丢内容）");
