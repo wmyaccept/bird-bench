@@ -18,7 +18,9 @@ Team   ──team_api_id─── Team_Attributes
 ```
 - **两套 ID**：`Player.id`（内部）vs `Player.player_api_id`（FIFA API）。
   `Player_Attributes.id` 又是属性表自己的主键。金标常用 `player_api_id` 连。
-- 问“某球员的属性”时：⚠️ **不要 `ORDER BY date DESC LIMIT 1`**（这条旧笔记是错的，见下）。
+- ⛔ **已作废（第 15 轮推翻）**：曾按旧笔记写「问某球员的属性要 `ORDER BY date DESC LIMIT 1` 取一条」——
+  **那条是错的**（`1063` 金标 26 行 = 全部历史快照）。
+- 问“某球员的属性”时：⚠️ **不要 `ORDER BY date DESC LIMIT 1`**，也不要去重（见下）。
 - `Player.birthday` 是 TEXT；`height/weight` 是 INTEGER；⚠️ **`Player` 表没有国籍/国家列**
   （“哪个国家的球员”只能绕 `Match` → `League` → `Country`，别硬 JOIN `Country`）。
 

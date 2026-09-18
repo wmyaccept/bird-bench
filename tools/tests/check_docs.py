@@ -92,6 +92,38 @@ def main() -> int:
                 hard.append(f"{f.name}:{i}: {ln.strip()[:80]}")
     check("AGENTS/SKILL 不写死测试断言数（让 run_all.py 打印）", not hard, " ｜ ".join(hard))
 
+    print("\n── P3 作废索引：旧结论不许被当成现行规则")
+    SENT_DEP = "<!-- canon:deprecated"
+    live_docs = [SKILL / "SKILL.md", *sorted(REF.glob("*.md")), *sorted((REF / "db").glob("*.md"))]
+    dep_holders = [f.name for f in live_docs if SENT_DEP in txt(f)]
+    check(f"作废索引哨兵只在 casebook.md（实际：{dep_holders}）",
+          dep_holders == ["casebook.md"], str(dep_holders))
+    cb_txt = txt(REF / "casebook.md")
+    idx = cb_txt.split(SENT_DEP)[-1].split("## 轮次索引")[0] if SENT_DEP in cb_txt else ""
+    rows = [l for l in idx.splitlines() if l.strip().startswith("|") and "第" in l]
+    check(f"作废索引有 {len(rows)} 条（≥5）", len(rows) >= 5, str(len(rows)))
+    missing_kw = [k for k in ["T1", "DISTINCT", "mk_cards", "LIMIT 1", "930101"] if k not in idx]
+    check("索引覆盖五个已知被推翻的旧结论（T1 / formula_1 DISTINCT / mk_cards / LIMIT 1 / 930101）",
+          not missing_kw, f"缺：{missing_kw}")
+    bad_rows = [r[:60] for r in rows
+                if not re.search(r"第\s*\d+\s*轮", r)
+                or not any((c / n).exists() for n in re.findall(r"([a-zA-Z0-9_./-]+\.md)", r)
+                           for c in (REF, REF / "db", SKILL, ROOT))]
+    check("索引每行都有『第 N 轮』+ 一个真实存在的目标文件", not bad_rows, " ｜ ".join(bad_rows))
+
+    # 现场文件提到“上一版/写反了…”时，同一处必须打 ⛔（否则读者会把旧结论当现行）
+    TRIG = re.compile(r"上一版|写反了|曾写错|原先写的是|曾经写错|已过时"
+                      r"|旧笔记|旧结论|旧规则|旧口径|原来那条|原规则")
+    naked = []
+    for f in [*sorted((REF / "db").glob("*.md")), REF / "traps.md", REF / "checklist.md", REF / "shapes.md"]:
+        lines = txt(f).splitlines()
+        for i, ln in enumerate(lines):
+            win = lines[max(0, i - 4):i + 5]
+            marked = any("⛔" in x and "已作废" in x for x in win)
+            if TRIG.search(ln) and not marked:
+                naked.append(f"{f.name}:{i + 1}")
+    check("现役文件提到旧版本时同一处有『⛔ 已作废』标记", not naked, "，".join(naked))
+
     print("\n── P5 重交白名单：正文只准有一处，别处只能指路")
     SENTINEL = "<!-- canon:resubmit"        # 只许出现在正文那一处；别处引用标题不算
     live = [AGENTS, SKILL / "SKILL.md", *sorted(REF.glob("*.md"))]

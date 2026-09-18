@@ -44,7 +44,7 @@
       （`california_schools` 12 道挂起题里 6 道如此；本轮 42 道错题里 `main` 差 20 道）。
       命中多列时：evidence 点名 > 只有一列命中 > 行集合相同则任选 > 选更专门那列（写回库档案）。
 - [ ] **6. 日期是哪种格式？** `'YYYY-MM-DD'` / `'YYYYMM'` / `'YYYY-MM-DD HH:MM:SS.0'` 都出现过。
-      **动手前 `SELECT 该列 FROM 表 LIMIT 1`。**（`financial` 的旧笔记是 Mini-Dev 的 `'930101'`，Dev 已改）
+      **动手前 `SELECT 该列 FROM 表 LIMIT 1`。**（⛔ **已作废**：`financial` 的旧笔记是 Mini-Dev 的 `'930101'`，Dev 已改）
 - [ ] **7. 多值串列用 `=` 还是 `LIKE`？** 先试精确匹配：
       `card_games` 376 `keywords='Flying'`=**3088**（金标）vs `LIKE '%flying%'`=5039。
 

@@ -2,6 +2,8 @@
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
+1. ⛔ **已作废（第 14 轮推翻）**：Mini-Dev 时代的笔记写「`date` 是 `'930101'`（YYMMDD）」，
+   在 dev 版**不成立**（下面是现行事实）。
 1. ⚠️ **日期全是 `'YYYY-MM-DD'`**（`'1995-03-24'`）—— playbooks 旧笔记里的 `'930101'` 是 **Mini-Dev 版**。
    
    **动手前先探一句**：`SELECT date FROM trans LIMIT 1`。
@@ -22,7 +24,7 @@ card ──disp_id── disp
   `'VYBER'`=现金取款、`'VKLAD'`=存款；`trans.type` 里 `'PRIJEM'`=贷方、`'VYDAJ'`=借方。
 - `client.birth_date` 是 `'1976-01-29'`；account.date 是 `'930101'`（YYMMDD）。
   ⚠️ **这条是 Mini-Dev 版的写法，Dev 版已经全部改成 `'YYYY-MM-DD'`**（实测 trans/loan/card/account 都是）。
-  ⇒ **动手前先跑一句 `SELECT date FROM trans LIMIT 1` 确认，不要照抄旧笔记。**
+  ⇒ **动手前先跑一句 `SELECT date FROM trans LIMIT 1` 确认，不要照抄 Mini-Dev 时代那份笔记。**
 - ⚠️ **“list all the transactions …” 金标只给 1 列**（`idx 165`：我 `SELECT *` 给了 10 列 15140 行，金标是 **1 列** 15140 行）。
 - ⚠️ **“how many X **and** Y” 可能是 1 行 2 列**（`idx 172`：owner/disponent 数，金标用
   `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
