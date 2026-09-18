@@ -48,12 +48,58 @@ molecule ──molecule_id── atom / bond / connected
 
 ---
 
-## 惯例卡片（实测统计，n=76 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=112 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(DISTINCT) 21 / COUNT(列) 16 / COUNT(*) 1 / 无 38　⇒ 本库偏去重（21/38 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
-- 主表（FROM 第一张）：atom 32 / bond 22 / molecule 17 / connected 5　⇒ 主表以 **atom** 为主但**不固定**（32/76）⇒ 按题干主语选
-- `SELECT DISTINCT`：17/76　|　`*100`：3　|　`BETWEEN`：4
-- 输出列数分布：1列×57 / 2列×10 / 3列×5 / 4列×2 / 7列×1 / 11列×1
-- JOIN 数分布：0:28, 1:34, 2:5, 7:1, 8:5, 9:3
+- 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 26 / COUNT(*) 2 / 无 52　⇒ 本库以 `COUNT(列)` 为主（32/60 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：atom 50 / bond 34 / molecule 22 / connected 6　⇒ 主表以 **atom** 为主但**不固定**（50/112）⇒ 按题干主语选
+- `SELECT DISTINCT`：22/112　|　`*100`：12　|　`BETWEEN`：6
+- 输出列数分布：1列×86 / 2列×16 / 3列×6 / 4列×2 / 7列×1 / 11列×1
+- JOIN 数分布：0:32, 1:59, 2:10, 3:2, 7:1, 8:5, 9:3
 
 > 由 `bird_conventions db=toxicology write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ moderate 全组实测（36 道，23 对 = 63.9%）—— 本库错在「列数/口径」
+
+**13 道错里 3 道列数、1 道行数、9 道「形状对、值不同」。**
+
+### ⚠️ 先修正两条过时事实（本库档案顶部旧数字作废）
+
+- `connected` **24,758 行**（不是 10,882）= `bond` **12,379 行** × 2（双向存储）✓ 仍成立。
+- `bond` 表**只有 3 列**：`bond_id / molecule_id / bond_type` —— **没有 atom_id 列**！
+  原子只能从 `bond_id`（形如 `TR000_1_2`）解析，或 JOIN `connected`（`atom_id / atom_id2 / bond_id`）。
+  ⇒ 「某 bond 的原子」必须过 `connected`，且 **按行结构会是 2 行**（两个方向），
+  实测 236（"bond 类型 + 原子"）金标 = **2 行 × 3 列** ✓（我给对）；223 金标 = 2 行 1 列 ✓。
+
+### ❌ 实测错的（按类）
+
+1. **`bond_type` 有第 4 个取值 = `NULL`**：`SELECT DISTINCT bond_type FROM bond` → `- , = , # , NULL`（4 个）。
+   ⇒ 284（"含 carbon 的化合物形成的 bond 类型"）金标 **4 行 1 列**（我一开始声明 3 行被闸门 2 拦下，改成 4 行才过 ✓）。
+2. **「List down X for molecules from TR000 to TR050」金标给 2 列 + 行级**：267 金标 = **1153 行 2 列**
+   （我 `SELECT DISTINCT bond_type` 3 行 1 列 ✗）。⇒ 本库的 "List down" 仍是**行级 + 带实体 id**。
+3. **「the least common element」金标给 4 行**（251：金标 4 行 1 列，我给 1 行 ✗）——
+   并列要**全部保留**，不是 `LIMIT 1`。本库的"最少/最高"倾向**保留并列**（与 244/250/329 的单行形成对照，
+   说明**单行还是并列要按题面试**：题面说 "the most/the least" 也可能给并列）。
+4. **「percentage of A in B」的方向和分母**（本库最高频的口径错）：
+   - 273（"percentage of element chlorine **in** carcinogenic molecules"）金标 = `cl 的分子数 / 致癌分子数 *100` ✓ 我对了；
+   - 317（"percentage of **carcinogenic molecules which contain** chlorine"）**同值却错** ⇒ 金标的分子/分母换了边
+     （分母很可能是**全体分子**，或分子是"含 cl 的致癌分子 / 含 cl 的分子"）。
+   - 298（"percentage of molecules containing carcinogenic compounds that element is hydrogen"）✗ 同理。
+   ⇒ 本库同义句式的百分比题**方向不同、答案不同**，不能套用同一分子/分母。
+5. **197（"average number of oxygen atoms in single-bonded molecules"）**：我按「原子级 `AVG(element='o')`」
+   （0.0846）✗ —— 实测各候选：分子子查询 0.0846 / connected 0.0570 / molecule_id 直连 0.0824 / **按分子计数再平均 2.3597**。
+   ⇒ "average **number** of X atoms" 更可能是**先按分子数、再平均**（2.3597 那条），不是原子级比例。
+6. **260（"total atoms with triple-bond molecules containing p or br"）**：我数了整个分子的原子（4）✗ ⇒ 金标是 **1**
+   （只数**含 p/br 的那些原子**）。
+7. **338（"atom ID of double bonded carbon in TR012"）金标 12 行**（我只给 2 个碳原子 ✗）⇒ 口径是**整分子/全部相关原子**。
+8. **246（"bond type and bond ID of atom 45"）我 78 行 / 金标 77 行** ⇒ `LIKE '%_45'` 多匹配了一个
+   （金标用 `SUBSTR(atom_id,7,2)+0 = 45` 这种**位置解析**，不是后缀匹配）。
+9. **255（"proportion of single bonds are carcinogenic"）**：我 = 3078/10528×100 = 29.23632（ROUND 5）✗ ⇒
+   分母或"单键"的定义不同（金标可能按 `connected` 行级算，或分母是全部 bond）。
+
+### ✅ 已证实对得稳的
+
+- 分子属性查询：`atom JOIN molecule`（237 金标 1 行 2 列 = molecule_id + label，**列序是 molecule_id 在前**……但 detail 说"整行元组不同"，本库此项存疑）；
+- 「某元素的键类型」→ `connected JOIN atom JOIN bond`（258 `sn`→`-`；320 `TR000_1_2` 的 bond_type=`-`）；
+- 「含 Ca 是否致癌」→ 287/270 之外：283 金标 `-` ✓（**本库 "is it carcinogenic" 就给 `label` 字符 `+`/`-`，不是 yes/no**）；
+- 计数/比例类里 **`ROUND(...,5)` / `ROUND(...,4)` 确实照题干小数位**（226 `3.84615`✓、228 `45.4545`✓）；
+- 「某分子双键占比」`SUM(bond_type='=')*100/COUNT(*)` ✓（287 = 21.42857…）；
+- 244/250/329「最多」单行能对上（同一 ORDER BY 形状）。

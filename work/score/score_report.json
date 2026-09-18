@@ -1,815 +1,794 @@
 {
   "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
   "dataset_key": "dev2025",
-  "answered": 115,
-  "unanswered": 372,
+  "answered": 112,
+  "unanswered": 293,
   "total_questions": 1534,
-  "correct": 87,
-  "ex_percent": 75.65,
-  "ex_percent_full_set": 5.67,
+  "correct": 78,
+  "ex_percent": 69.64,
+  "ex_percent_full_set": 5.08,
   "results": [
     {
-      "idx": 1020,
-      "db_id": "european_football_2",
+      "idx": 195,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 6 列）"
+    },
+    {
+      "idx": 196,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 6 列）"
+    },
+    {
+      "idx": 197,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 199,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1021,
-      "db_id": "european_football_2",
+      "idx": 200,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 2 行 1 列 / 金标 2 行 9 列）"
+    },
+    {
+      "idx": 201,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 202,
+      "db_id": "toxicology",
       "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 203,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 4 列）"
+    },
+    {
+      "idx": 204,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 7 列）"
+    },
+    {
+      "idx": 205,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 438 行 1 列 / 金标 340 行 9 列）"
+    },
+    {
+      "idx": 209,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 5 列）"
+    },
+    {
+      "idx": 210,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 211,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 10882 行 2 列 / 金标 5399 行 1 列）"
+    },
+    {
+      "idx": 214,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 216,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 217,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 221,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数不同（预测 2 行 2 列 / 金标 1 行 2 列）"
+    },
+    {
+      "idx": 222,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 223,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 2 列 / 金标 2 行 1 列）"
+    },
+    {
+      "idx": 224,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 4 行 1 列 / 金标 4 行 10 列）"
+    },
+    {
+      "idx": 225,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 226,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 227,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 228,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 229,
+      "db_id": "toxicology",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 5 列）"
+    },
+    {
+      "idx": 232,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 233,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 234,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 235,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 236,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 237,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同、首列也对得上，但整行元组不同（预测 1 行 2 列 / 金标 1 行 2 列，多出 1 组 / 少 1 组）—— 大概率是列顺序或多选了列"
+    },
+    {
+      "idx": 238,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 239,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 241,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 242,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 243,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 244,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 245,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 246,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 78 行 2 列 / 金标 77 行 2 列）"
+    },
+    {
+      "idx": 248,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 250,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 251,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 4 行 1 列）"
+    },
+    {
+      "idx": 252,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 4 行 1 列 / 金标 4 行 2 列）"
+    },
+    {
+      "idx": 254,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 255,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 256,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 257,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 258,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 259,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 260,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 261,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 262,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 264,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 3 行 1 列 / 金标 3 行 2 列）"
+    },
+    {
+      "idx": 265,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 266,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 267,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "列数不同（预测 3 行 1 列 / 金标 1153 行 2 列）"
+    },
+    {
+      "idx": 269,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 270,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 271,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 272,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 273,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 274,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 275,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 276,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 278,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 279,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 280,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 283,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 284,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 286,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 287,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 288,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 289,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 291,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 292,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 293,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 294,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 295,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 296,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 297,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 298,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 299,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 300,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 301,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 303,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 305,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 308,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 309,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 310,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
     },
     {
-      "idx": 1022,
-      "db_id": "european_football_2",
+      "idx": 311,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 1023,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1024,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
-    },
-    {
-      "idx": 1025,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1026,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1027,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
-    },
-    {
-      "idx": 1029,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 4 行 1 列 / 金标 4 行 1 列）"
-    },
-    {
-      "idx": 1030,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1032,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 2 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 1033,
-      "db_id": "european_football_2",
+      "idx": 312,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1034,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1035,
-      "db_id": "european_football_2",
+      "idx": 313,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1038,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "列数不同（预测 5 行 1 列 / 金标 5 行 2 列）"
-    },
-    {
-      "idx": 1039,
-      "db_id": "european_football_2",
+      "idx": 314,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1040,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1043,
-      "db_id": "european_football_2",
+      "idx": 315,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1044,
-      "db_id": "european_football_2",
+      "idx": 316,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1045,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1046,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1047,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1048,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1049,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1050,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1051,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1052,
-      "db_id": "european_football_2",
+      "idx": 317,
+      "db_id": "toxicology",
       "difficulty": "moderate",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 1053,
-      "db_id": "european_football_2",
+      "idx": 318,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 320,
+      "db_id": "toxicology",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1054,
-      "db_id": "european_football_2",
+      "idx": 321,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1055,
-      "db_id": "european_football_2",
+      "idx": 323,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1056,
-      "db_id": "european_football_2",
+      "idx": 324,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1057,
-      "db_id": "european_football_2",
+      "idx": 325,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 326,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 327,
+      "db_id": "toxicology",
       "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1059,
-      "db_id": "european_football_2",
+      "idx": 329,
+      "db_id": "toxicology",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 331,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1060,
-      "db_id": "european_football_2",
+      "idx": 332,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 333,
+      "db_id": "toxicology",
+      "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 335,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
-      "idx": 1061,
-      "db_id": "european_football_2",
+      "idx": 336,
+      "db_id": "toxicology",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
     },
     {
-      "idx": 1062,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1063,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 26 行 1 列）"
-    },
-    {
-      "idx": 1064,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "列数不同（预测 3184 行 1 列 / 金标 3202 行 2 列）"
-    },
-    {
-      "idx": 1065,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1066,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1067,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1068,
-      "db_id": "european_football_2",
+      "idx": 338,
+      "db_id": "toxicology",
       "difficulty": "moderate",
       "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+      "detail": "行数不同（预测 2 行 1 列 / 金标 12 行 1 列）"
     },
     {
-      "idx": 1069,
-      "db_id": "european_football_2",
+      "idx": 339,
+      "db_id": "toxicology",
       "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1070,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1072,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1073,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1074,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1075,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1077,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1078,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1079,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1080,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1081,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1082,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1083,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1085,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 2 列）"
-    },
-    {
-      "idx": 1086,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 24 行 1 列）"
-    },
-    {
-      "idx": 1087,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1088,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1089,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1090,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1091,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1092,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1093,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1095,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1096,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1097,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1098,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1099,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1100,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1101,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1102,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1103,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1104,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1105,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1106,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1107,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1108,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1109,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1110,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1111,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1112,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1113,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1116,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1117,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1118,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 8731 行 1 列 / 金标 8618 行 1 列）"
-    },
-    {
-      "idx": 1119,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1120,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1121,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1122,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 5 行 1 列）"
-    },
-    {
-      "idx": 1123,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1124,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1125,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1126,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1127,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1128,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1129,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1130,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1131,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
-    },
-    {
-      "idx": 1132,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1133,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1134,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1135,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 5 行 1 列 / 金标 5 行 1 列）"
-    },
-    {
-      "idx": 1136,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1137,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1138,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1140,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1141,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1142,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1143,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1144,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 3 列 / 金标 1 行 3 列）"
-    },
-    {
-      "idx": 1145,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1146,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 1147,
-      "db_id": "european_football_2",
-      "difficulty": "simple",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 1148,
-      "db_id": "european_football_2",
-      "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     }

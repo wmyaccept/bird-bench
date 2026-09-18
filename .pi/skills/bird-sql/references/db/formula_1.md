@@ -63,12 +63,53 @@ races ──circuitId── circuits
     `driverStandings`、`lapTimes`、`pitStops`。写 SQL 前先用 `bird_schema formula_1` 确认表名，
     不要凭直觉写 `constructor_standings` / `lap_times`（会直接 `no such table`）。
 
-## 惯例卡片（实测统计，n=117 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=160 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 15 / COUNT(DISTINCT) 3 / COUNT(*) 2 / 无 97　⇒ 本库以 `COUNT(列)` 为主（15/20 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：circuits 32 / races 22 / drivers 21 / results 12 / qualifying 7 / lapTimes 7 / constructorStandings 5 / pitStops 5 / driverStandings 3 / constructors 2 / constructorResults 1　⇒ 主表**不固定**（最大是 circuits 也只占 32/117）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：18/117　|　`*100`：0　|　`BETWEEN`：2
-- 输出列数分布：1列×89 / 2列×17 / 3列×9 / 4列×2
-- JOIN 数分布：0:33, 1:67, 2:16, 3:1
+- 计数形态：COUNT(列) 21 / COUNT(DISTINCT) 6 / COUNT(*) 3 / 无 130　⇒ 本库以 `COUNT(列)` 为主（21/30 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：circuits 35 / drivers 35 / races 32 / results 20 / qualifying 10 / lapTimes 10 / pitStops 6 / constructorStandings 5 / driverStandings 3 / constructorResults 2 / constructors 2　⇒ 主表**不固定**（最大是 circuits 也只占 35/160）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：21/160　|　`*100`：3　|　`BETWEEN`：5
+- 输出列数分布：1列×113 / 2列×24 / 3列×16 / 4列×7
+- JOIN 数分布：0:34, 1:90, 2:32, 3:3, 6:1
 
 > 由 `bird_conventions db=formula_1 write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ moderate 全组实测（43 道，29 对 = 67.4%）—— 输出列数/列序是本库最大失分源
+
+**14 道错里 8 道是「列数错」，2 道是「列序/取值错」，2 道是「口径错」。**
+
+### ✅ 输出列数的实测铁律（本库）
+
+| 题干写法 | 金标列 | 实测 |
+|---|---|---|
+| "Who is the champion/driver … and where can I learn more" | **3 列 = forename, surname, url** | 938（我 1 列 url ✗）、866（我 9 行 1 列，金标 **9 行 3 列** ✗） |
+| "who is the oldest/youngest" | **2 列 = forename, surname** | 865/877（我给 `driverRef` 1 列 ✗） |
+| "give his **reference name**" | **1 列 = `driverRef`** | 928 ✓（题面写 reference name 才是 1 列） |
+| "List the top N … with the fastest/latest lap time" | **3 列 = forename, surname, 该时间** | 970（我 2 列 ✗）；同 1038 的「名字 + 指标」 |
+| "List out top N 某属性的 drivers" | **1 列 = 那个属性本身**（不是名字！） | 973：金标 **10 行 1 列 = `lapTimes.time`**（我给 3 行 2 列名字 ✗） |
+| "Who is the champion … Indicate his finish time" | **1 列 = 只有 `results.time`** | 989（我 3 列 ✗） |
+| "What is X? List the driver and race" | **4 列**（含 `milliseconds` 本体） | 894（4 列但**列序**错） |
+
+⇒ 本库判断列数的唯一可靠办法：**看题干有几个"要你交出的东西"，而不是有几个实体**；
+"who is X … show his url" 这类是 **3 列**（名字 2 + url 1），除非题干明说 "reference name"。
+
+### ⚠️ 口径坑（值不同）
+
+- **「第一场比赛」要用 `ORDER BY 日期 LIMIT 1`，不是 `year = MIN(year)` 子查询**：906 我按最早年（2007）过滤 → **17 行**，金标 **1 行**（Hamilton 的澳大利亚站）。
+- **「in seconds」必须真换算**：942 我照 evidence 字面 `AVG(fastestLapTime)`（TEXT `'1:27.452'` → SQLite 取数值前缀 1 → **1.0**）✗；
+  正确是 `AVG（分*60+秒.毫秒）` ≈ **92.0167**。★ 凡是时间 TEXT 列 + 题干说"in seconds"，都换算。
+- **「rate of …」不带 `*100`，但「percentage of …」带**：943（rate → 0.2272…）与 909（percentage → 52.17）。
+- **points 有两套**：`results.points`（每站得分）vs `driverStandings.points`（赛季累计）。995 我 `AVG(results.points)`=9.8 ✗ ⇒ 题干没限"某一年"时优先 **`driverStandings`**。
+- ⚠️ 903（"How many times did Michael Schumacher **win** at Sepang"）我 `positionOrder=1` 得 3 ✗ ⇒ 本库 "win" 可能指 **`results.points` 取最大值**（evidence 原话：`win from races refers to max(points)`）。
+
+### ✅ 已证实对得稳的（可直接照用）
+
+- 计数器 / 极值器：939「British drivers 参加某站」= 4、940「完赛人数」= `COUNT(time IS NOT NULL)`、
+  931 `MAX(fastestLapSpeed)`、960 `AVG(fastestLapSpeed)`、1003「事故最多司机的次数」（`statusId=3` → `GROUP BY driverId` 取 `MAX(COUNT(*))`）。
+- 「passed the second qualifying lap」= `qualifying.q2 IS NOT NULL`（980 → 15 行 3 列 ✓）。
+- 赛道用 `circuits.country` 定位：**奥地利的赛道叫 `A1-Ring` / `Zeltweg` 等，没有叫 "Austrian Grand Prix Circuit" 的**（1015 用 `country='Austria'` + `MIN(milliseconds)` → `Austrian Grand Prix` ✓）；
+  1017 的「1:29.488 的 lap record」**没有赛道的最快圈 = 该值** ⇒ 金标口径是 `lt.time = '1:29.488'` 的行（7 条赛道）。
+
+### ⭐ 本库总账（dev2025）
+
+- `simple 88/117 = 75.2%`（旧答案迁移）、`moderate 29/43 = 67.4%`、合计 **117/160 = 73.1%**。
+- ⚠️ **输出列数是本库第一失分源**（moderate 14 道错里 8 道是列数）⇒ 走 A11「属性清单」时，
+  本库要额外回想上表「题干写法 → 金标列数」。

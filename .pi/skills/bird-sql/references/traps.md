@@ -139,7 +139,17 @@
 - [ ] ⭐ **“in set of <卡名>” 不一定是整张表的范围**：金标 `446` 直接用 `cards.name = '<卡名>'`
       限定**行本身**（分母 = 该卡自己的行数）；同族 `462` 用 `setCode IN (SELECT setCode FROM cards WHERE name=…） LIMIT 1` 只给 **1 行**。
 - [ ] ⭐ **“How many …”开头 ≠ 计数**：`card_games` **408**（How many unknown power cards contain info about the
-      triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）。先看 evidence 写的是 `COUNT` 还是列名。
+triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）。先看 evidence 写的是 `COUNT` 还是列名。
+- [ ] ⭐⭐ **同义句式的百分比题，方向可能相反 ⇒ 不许复用分子/分母**（`toxicology` 实测：273
+      “percentage of chlorine **in** carcinogenic molecules” 我算对；317 “percentage of carcinogenic molecules
+      **which contain** chlorine” 我用了**同一个值**却错 ⇒ 分母换了边，很可能是「全体分子」）。
+- [ ] ⭐ **“average number of X atoms in …” 多半要「先按实体计数、再平均」**，不是原子级 `AVG(标志位)`
+      （`toxicology` 197：原子级 0.0846 ✗；每分子氧原子数再 `AVG` = 2.3597 才是“number”的读法）。
+- [ ] ⭐ **“least / most common …” 可能要给全部并列**（`toxicology` 251 金标 **4 行**，不是 `LIMIT 1`）。
+- [ ] ⭐ **“List down <属性> for <实体> from A to B” 常是行级 + 带实体 id**（`formula_1` 267 金标 **1153 行 2 列**，
+      不是 `DISTINCT 属性` 的 3 行）。
+- [ ] ⭐ **“is it carcinogenic?” 这类二值判断题，金标给的是原始标签字符 `+`/`-`**，不是 `'yes'/'no'`
+      （`toxicology` 283/244 实测）。
 
 - [ ] ⭐⭐ **百分比/比例题的固定模板**（`thrombosis_prediction` 实测 1149/1150/1151/1160 四道全中）：
 

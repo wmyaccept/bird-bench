@@ -1705,3 +1705,48 @@ answer 2 "/* shape: 3x1 */ SELECT CustomerID FROM customers" --checks "<核心�
 - **惯例卡片会随已答数"自己过期"**：本库 65 → 115 之后卡片要 `--write-card` 刷新；
   `check_brief_p4.py` 会用**独立计数**把它抓出来（第 37 轮 card_games 就是这么红的）。
   ⇒ 每做完一组 moderate 就刷一次卡片，别等测试红。
+
+---
+
+## 第 39 轮（2026-09-18）｜formula_1 moderate 43 道（29 对 = 67.4%）+ toxicology moderate 36 道（23 对 = 63.9%）
+
+### ① formula_1：**输出列数是本库第一失分源**（14 道错里 8 道是列数）
+
+| 题干写法 | 金标列 | 我给的 |
+|---|---|---|
+| "Who is the champion … and where can I learn more" | **3 列**（forename, surname, url） | 1 列 url（938）、9 行 1 列（866） |
+| "who is the oldest/youngest" | **2 列**（forename, surname） | 1 列 `driverRef`（865/877） |
+| "give his **reference name**" | **1 列** `driverRef` | ✓ 928 |
+| "List the top N … with the fastest lap time" | **3 列**（名字 + 时间） | 2 列（970） |
+| "List out top N 属性的 drivers" | **1 列 = 那个属性**（10 行 `time`） | 3 行 2 列名字（973） |
+| "Who is the champion … Indicate his finish time" | **1 列**（只有 time） | 3 列（989） |
+
+⇒ 本库判列数的正确姿势：**数题干"要你交出的东西"，不是数实体**；"who is X … show his url" = 3 列。
+另外 894（4 列都对但**列序**错）说明本库列序也要照题干顺序。
+
+口径坑（写进档案）：**「第一场比赛」用 `ORDER BY 日期 LIMIT 1`，不是 `year=MIN(year)`**（906 我 17 行 / 金标 1 行）；
+**「in seconds」必须真换算**（942 照 evidence 字面 `AVG(文本时间)` = 1.0 ✗，换秒 ≈ 92.0167）；
+**points 有两套**（`results.points` vs `driverStandings.points`，995 就错在这）；
+**「rate of」不带 `*100`、但「percentage of」带**（943 vs 909）。
+
+### ② toxicology：**先修两条过时事实，再谈口径**
+
+- `connected` 现 **24,758 行** = `bond` **12,379 行** ×2（档案里的 10,882 已作废）；
+- ⚠️ **`bond` 只有 3 列（bond_id / molecule_id / bond_type），没有 atom_id** ⇒ 原子只能从 `bond_id` 解析或过 `connected`。
+
+错的 13 道里：**3 道列数**（含 `bond_type` 有 **NULL** 这第 4 个取值 —— 284 我先声明 3 行、
+被**闸门 2 当场拦下**，改成 4 行才对；这是闸门 2 第一次真正救回一道题）、**1 道行数**（267 金标 1153 行 2 列）、
+**9 道「形状对、值不同」**：
+- 同义句式的百分比**方向相反**（273 ✓ vs 317 ✗ 同值）；
+- `average number of X atoms` 该**先按分子计数再平均**（197：原子级 0.0846 ✗）；
+- `total atoms with … containing p or br` 只数**含该元素的原子的**（260：我 4 / 金标 1）；
+- `the least common element` 金标给**全部并列 4 行**（251）；
+- `atom ID of double bonded carbon in TR012` 金标 **12 行**（我只给 2）。
+
+### ③ 两条流程教训
+
+1. **闸门 2 真能救命**：284 若没被拦，会交出一个"少一列/少一行"的答案（NULL 是合法取值，肉眼想不到）。
+2. ⚠️ **答案 SQL 里别写重 CTE + 逐行相关子查询**：254 第一版用
+   `WITH pairs AS (SELECT b.bond_id, (SELECT GROUP_CONCAT(...) FROM ... WHERE c.bond_id=b.bond_id) …)`
+   把 `answer` 卡到 **900 秒超时**（`answer` 会为形状校验再跑一遍完整查询）。
+   改成 `connected` 上 `WHERE atom_id < atom_id2` + `GROUP BY MIN(el,el2)||MAX(...)` 后**秒出**。
