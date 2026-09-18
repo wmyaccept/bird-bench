@@ -53,12 +53,50 @@ event.event_id            = attendance.link_to_event
 题干说 “budget more than forty” → 用 `budget.amount > 40`（**不是** `spent`，也不是 `planned_amount`）。
 `expense.cost` 才是“花了多少钱”（`incurred less than 50USD` → `expense.cost < 50`）。
 
-## 惯例卡片（实测统计，n=113 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=149 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 25 / COUNT(*) 1 / COUNT(DISTINCT) 1 / 无 86　⇒ 本库以 `COUNT(列)` 为主（25/27 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：member 48 / event 26 / budget 14 / major 9 / expense 8 / zip_code 5 / income 3　⇒ 主表以 **member** 为主但**不固定**（48/113）⇒ 按题干主语选
-- `SELECT DISTINCT`：8/113　|　`*100`：3　|　`BETWEEN`：2
-- 输出列数分布：1列×91 / 2列×17 / 3列×5
-- JOIN 数分布：0:30, 1:74, 2:8, 3:1
+- 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 3 / COUNT(*) 1 / 无 113　⇒ 本库以 `COUNT(列)` 为主（32/36 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：member 61 / event 41 / budget 16 / expense 11 / major 11 / zip_code 5 / income 3 / attendance 1　⇒ 主表以 **member** 为主但**不固定**（61/149）⇒ 按题干主语选
+- `SELECT DISTINCT`：12/149　|　`*100`：9　|　`BETWEEN`：4
+- 输出列数分布：1列×115 / 2列×25 / 3列×9
+- JOIN 数分布：0:32, 1:95, 2:19, 3:3
 
 > 由 `bird_conventions db=student_club write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ moderate 全组实测（36 道，29 对 = 80.6%）—— 本库 89.2% 仍是最强库
+
+本批新答：1316/1317/1321/1324/1327/1332/1335/1360/1382/1388/1395/1399/1400/1401/1403/1404/1405/
+1421/1426/1427/1428/1430/1431/1432/1435/1439/1440/1441/1449/1452/1453/1454/1455/1456/1458/1469。
+
+### ❌ 实测错（7 道）—— 本库的坑几乎全在**口径**，不在列
+
+1. **「less than average <某类> cost」返回空集 ⇒ 一定是"平均"的算法不同**（1453：金标 **3 行**，我 0 行）。
+   我把平均算在 `expense.cost` 上（Parking 3 行的 `SUM/COUNT` = 6.0，于是"小于 6"没人满足）；
+   金标能返回**全部 3 行** ⇒ 它的阈值 > 最大单笔 ⇒ 平均的分子分母里至少有一个**不是 expense** ——
+   **优先怀疑金标用的是 `budget.amount` / `budget.spent`（钱有两套列：预算 vs 报销）**。
+2. **「percentage of the cost for <某类> events」= 该类成本 ÷ 全部成本 ×100**（1454 我按 evidence 的
+   `DIVIDE(SUM(cost), COUNT(event_id)) * 100` 算成 6686.3125 ✗；正确的读法是 1069.81/2086.05×100）。
+   ⚠️ **本题 evidence 的公式是误导的**：本库 money 题的 `DIVIDE(SUM(cost), COUNT(event_id))` 不能照抄。
+3. **「difference in the percentage」要 ×100**（1458：我 4/33-0/33 = 0.1212 ✗；金标要 12.1212）。
+   ⇒ 本库**题面说 percentage 就 ×100**，evidence 里没写 *100 也不能省。
+4. **「SUM(标志位)/COUNT(member_id)」的分母是 member 全表、不是 JOIN 后的行数**（1421：我 1/32×100 ✗；
+   金标 = **1/33×100**）⇒ 别用 JOIN 后的 `COUNT(*)`（JOIN 会掉掉没有 major 的那 1 个成员）。
+5. **evidence 说「'X' is the major name」就照字面用 `major_name = 'X'`**（1441：我用
+   `LIKE '%Education%' AND college = …` 得 3 ✗；金标照字面 `= 'Education'` ⇒ **0**）。
+   ⚠️ 即使这个取值在表里**不存在**（本库 `major_name` 里根本没有 "Education"）也要照字面 —— **答案可以是 0**。
+6. **「State his/her full name along with the income source」= 3 列**（1388 金标 1 行 3 列，我的列数对、
+   值不对 ⇒ 分组粒度问题：金标很可能是**按 (成员, source) 分组**取最大，而不是按成员 `SUM(amount)`）。
+7. **「What are the budget category of the events …」= 2 列**（1427 金标 **4 行 2 列**；我只给 `category` 1 列）。
+   ⇒ 本库并列两个名词（"the budget category **of the events**"）时，**事件名要一起给**。
+
+### ✅ 对得稳的（可直接照用）
+
+- **「List the full name …」= 2 列 `first_name, last_name`**（1327 20 行 ✓）；**没写 "full name" 的 "who/which member" ⇒ 2 列**（1382 ✓）；
+  而 **「List the last name …」= 1 列**（1431 12 行 ✓、1426 是 last+department+college = 3 列 ✓）。
+- **数钱题**：`SUM(budget.spent)`（1332 = 101.94 ✓ / 1335 = 54.25 ✓）、`SUM(expense.cost)`（1401 = 67.81 ✓）、
+  `SUM(budget.amount)` 算预算（1405 4 行 ✓）；**百分比 = 部分 ÷ 全部 ×100**（1360 = 3.846 ✓、1400 = 10.0 ✓）。
+- **`strftime('%Y', event_date)`**（本库 SQLite **没有 `YEAR()`**）；`event_date BETWEEN '2019-03-15' AND '2020-03-20'`
+  这种**字符串区间**够用（1435 3 行 ✓）。
+- **「Did …?」是否题 ⇒ `IIF(COUNT(*) > 0, 'YES', 'NO')`**（1399 本轮 ✓，全大写）。
+- **`attendance` 计数用 `COUNT(DISTINCT link_to_member)`**（1395 = 17 ✓、1317 = 7 ✓）。
+- ⚠️ **`bird_query` 的表格渲染偶尔会把长单元格显示乱**（我把 `100.0` 看成过 `1000`、把
+  `32|1|3.125` 看成过 `100`）⇒ **拿不准就换成分列 SELECT 再跑一次**，别在错数字上做判断。

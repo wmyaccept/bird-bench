@@ -150,6 +150,18 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       不是 `DISTINCT 属性` 的 3 行）。
 - [ ] ⭐ **“is it carcinogenic?” 这类二值判断题，金标给的是原始标签字符 `+`/`-`**，不是 `'yes'/'no'`
       （`toxicology` 283/244 实测）。
+- [ ] ⭐⭐ **evidence 里的公式不能照抄**，它只说明“用了哪些列”，不说明粒度：
+      `student_club` 1454 按 evidence 的 `DIVIDE(SUM(cost), COUNT(event_id)) * 100` 算出 6686 ✗；
+      正确读法是「这类成本 ÷ **全部**成本 × 100」。⚠️ 题面写了 percentage / percent 就**必须 ×100**
+      （1458 evidence 没写 `*100`，不写就是 0 分）。
+- [ ] ⭐ **“less than average <某类> cost” 返回**空集** ⇒ 一定是“平均”的算法不同**，
+      不是条件写错：最该先换的是**另一套钱列**（`expense.cost` 报销 vs `budget.amount/spent` 预算）。
+      （`student_club` 1453：金标回了 **3 行**，我 0 行。）
+- [ ] ⭐ **分母别用 JOIN 后的 `COUNT(*)`**（JOIN 会掉掉外键为空的行）：`student_club` 1421 的分母是
+      `member` **全表 33**，不是 JOIN 后的 32。
+- [ ] ⭐ **答案可以是 0**：evidence 写「'X' is the major/… name」就照字面写 `= 'X'`，
+      哪怕该取值在表里**根本不存在**（`student_club` 1441：`major_name='Education'` ⇒ 0，我改成
+      `LIKE '%Education%'` 得 3 ✗）。
 
 - [ ] ⭐⭐ **百分比/比例题的固定模板**（`thrombosis_prediction` 实测 1149/1150/1151/1160 四道全中）：
 
