@@ -15,3 +15,6 @@
 {"idx": 352, "db": "card_games", "kind": "run", "detail": "SELECT 'foreign_data' AS src, language, COUNT(*) AS n FROM foreign_data WHERE language LIKE '%hin%' GROUP BY language UNION ALL SELECT 'set_translations', language, COUNT(*) FROM set_translations WHER", "ts": "2026-09-16 19:33:13"}
 {"idx": 352, "db": "card_games", "kind": "run", "detail": "\nSELECT\n  (SELECT COUNT(*) FROM foreign_data WHERE language='Chinese Simplified')*100.0/(SELECT COUNT(*) FROM foreign_data) AS fd_row_level,\n  (SELECT COUNT(DISTINCT uuid) FROM foreign_data WHERE lang", "ts": "2026-09-16 19:33:21"}
 {"idx": 999, "db": "card_games", "ds": "dev2025", "kind": "tables", "detail": "", "ts": "2026-09-16 20:17:58"}
+{"idx": 5, "db": "card_games", "ds": "dev2025", "kind": "run", "detail": "SELECT DISTINCT language FROM foreign_data LIMIT 5", "ts": "2026-09-18 10:55:40"}
+{"idx": 5, "db": "card_games", "ds": "dev2025", "kind": "cols", "detail": "language", "ts": "2026-09-18 10:55:42"}
+{"idx": 0, "db": "debit_card_specializing", "ds": "minidev", "kind": "run", "detail": "SELECT CAST(COUNT(CASE WHEN Currency = 'EUR' THEN 1 END) AS FLOAT) / COUNT(CASE WHEN Currency = 'CZK' THEN 1 END) AS ratio FROM customers", "ts": "2026-09-18 10:56:04"}
