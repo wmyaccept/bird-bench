@@ -126,6 +126,21 @@
       金标用 `RANK()/DENSE_RANK() OVER (ORDER BY COUNT(...) DESC) … WHERE rank_num = 1`
       （实测 `california_schools` 68：金标 **3 行**，我 `LIMIT 1` → 1 行）。
 
+- [ ] ⭐⭐ **百分比题的两个条件，哪个进 `WHERE`、哪个进 `CASE`？先想“范围”再想“分子”** ——
+      本类题金标经常把**题面里作形容词的那个条件当范围（`WHERE`）**，把**题面主语当被数项（`CASE`）**，
+      **与语义直觉相反**。实测 `card_games` **417**（“percentage of **Japanese** translated sets are **expansion** sets”）：
+      金标 = `WHERE T1.type='expansion'` + `SUM(CASE WHEN T2.language='Japanese' THEN 1 END)*100/COUNT(T1.id)`
+      = 61/610 = **10.0**；我按语义收窄成 `WHERE language='Japanese'` → 50.41（错）。
+      同库 **433** 同理（分母是 `sets ⋈ set_translations` 的全体行数）。
+      ⇒ 两个条件都在时，**默认把“被问的那个属性”放进 `CASE`、另一个进 `WHERE`**，不要自己把 `WHERE` 收窄成题面主体。
+- [ ] ⭐ **“Is there / Did …” 类是否题：金标常用 `IIF(..., 'YES', 'NO')`（全大写）**
+      （实测 `card_games` 465 / 469；EX 大小写敏感，写 'Yes' 或返回实体列都算错）。
+      但同库 **410**（“Is there any card from …”）金标返回的是 `cards.id` ⇒ 用 evidence 里有没有 `EXISTS`/`IIF`/`YES` 字样判。
+- [ ] ⭐ **“in set of <卡名>” 不一定是整张表的范围**：金标 `446` 直接用 `cards.name = '<卡名>'`
+      限定**行本身**（分母 = 该卡自己的行数）；同族 `462` 用 `setCode IN (SELECT setCode FROM cards WHERE name=…） LIMIT 1` 只给 **1 行**。
+- [ ] ⭐ **“How many …”开头 ≠ 计数**：`card_games` **408**（How many unknown power cards contain info about the
+      triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）。先看 evidence 写的是 `COUNT` 还是列名。
+
 - [ ] ⭐⭐ **百分比/比例题的固定模板**（`thrombosis_prediction` 实测 1149/1150/1151/1160 四道全中）：
 
   ```sql

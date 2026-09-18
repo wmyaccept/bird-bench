@@ -1,12 +1,12 @@
 {
   "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
   "dataset_key": "dev2025",
-  "answered": 132,
-  "unanswered": 465,
+  "answered": 171,
+  "unanswered": 426,
   "total_questions": 1534,
-  "correct": 90,
-  "ex_percent": 68.18,
-  "ex_percent_full_set": 5.87,
+  "correct": 117,
+  "ex_percent": 68.42,
+  "ex_percent_full_set": 7.63,
   "results": [
     {
       "idx": 340,
@@ -359,6 +359,13 @@
       "detail": "ok"
     },
     {
+      "idx": 391,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 392,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -394,6 +401,13 @@
       "detail": "ok"
     },
     {
+      "idx": 397,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 398,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -415,6 +429,20 @@
       "detail": "行数不同（预测 28636 行 1 列 / 金标 121 行 1 列）"
     },
     {
+      "idx": 401,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 402,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 403,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -429,9 +457,37 @@
       "detail": "ok"
     },
     {
+      "idx": 405,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 406,
       "db_id": "card_games",
       "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 407,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 408,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 1 行 1 列 / 金标 2059 行 1 列）"
+    },
+    {
+      "idx": 409,
+      "db_id": "card_games",
+      "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
@@ -450,6 +506,13 @@
       "detail": "列数不同（预测 0 行 0 列 / 金标 1 行 1 列）"
     },
     {
+      "idx": 412,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 413,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -462,6 +525,13 @@
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 417,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 418,
@@ -527,6 +597,13 @@
       "detail": "列数不同（预测 3 行 2 列 / 金标 3 行 1 列）"
     },
     {
+      "idx": 427,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 428,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -546,6 +623,27 @@
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 2 行 2 列 / 金标 2 行 2 列）"
+    },
+    {
+      "idx": 432,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 3 列）"
+    },
+    {
+      "idx": 433,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 434,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
     },
     {
       "idx": 435,
@@ -625,6 +723,13 @@
       "detail": "ok"
     },
     {
+      "idx": 446,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 2 列）"
+    },
+    {
       "idx": 447,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -642,6 +747,13 @@
       "idx": 449,
       "db_id": "card_games",
       "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 450,
+      "db_id": "card_games",
+      "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
@@ -702,6 +814,13 @@
       "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
     },
     {
+      "idx": 459,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 460,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -714,6 +833,13 @@
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 462,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 463,
@@ -730,11 +856,39 @@
       "detail": "ok"
     },
     {
+      "idx": 465,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 3 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 466,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 467,
       "db_id": "card_games",
       "difficulty": "simple",
       "correct": true,
       "detail": "ok"
+    },
+    {
+      "idx": 468,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 469,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数不同（预测 6 行 1 列 / 金标 1 行 1 列）"
     },
     {
       "idx": 470,
@@ -747,6 +901,20 @@
       "idx": 471,
       "db_id": "card_games",
       "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 472,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 474,
+      "db_id": "card_games",
+      "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
@@ -772,6 +940,20 @@
       "detail": "ok"
     },
     {
+      "idx": 479,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 480,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 481,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -786,9 +968,30 @@
       "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
     },
     {
+      "idx": 483,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 484,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 155 行 1 列 / 金标 155 行 1 列）"
+    },
+    {
       "idx": 485,
       "db_id": "card_games",
       "difficulty": "simple",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 486,
+      "db_id": "card_games",
+      "difficulty": "moderate",
       "correct": true,
       "detail": "ok"
     },
@@ -856,6 +1059,27 @@
       "detail": "ok"
     },
     {
+      "idx": 498,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 499,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
+      "idx": 501,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 502,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -877,6 +1101,20 @@
       "detail": "ok"
     },
     {
+      "idx": 505,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 508,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
       "idx": 509,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -891,6 +1129,13 @@
       "detail": "ok"
     },
     {
+      "idx": 511,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
+    },
+    {
       "idx": 512,
       "db_id": "card_games",
       "difficulty": "simple",
@@ -903,6 +1148,34 @@
       "difficulty": "simple",
       "correct": false,
       "detail": "行数相同但取值不同（预测 10 行 1 列 / 金标 10 行 1 列）"
+    },
+    {
+      "idx": 515,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 516,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 517,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": true,
+      "detail": "ok"
+    },
+    {
+      "idx": 518,
+      "db_id": "card_games",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "金标 SQL 执行失败（题目本身可能有问题）: interrupted"
     },
     {
       "idx": 519,

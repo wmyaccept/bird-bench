@@ -1633,3 +1633,39 @@ answer 2 "/* shape: 3x1 */ SELECT CustomerID FROM customers" --checks "<核心�
 
 14 条（P0–P13）**全部真实修复**且各有机器守卫；本轮新增修复 **P14**。
 `run_all.py`：**178 项断言全绿**；未修表仍是「（无）」。
+
+---
+
+## 第 37 轮（2026-09-18）｜card_games moderate 43 道（对 31 = 72%）—— 三个"反直觉"口径
+
+### 数字
+
+- 本轮交 **43** 道（moderate），**对 31**（72%）；本库累计已答 **175** 道。
+- 本批错因分布：**列数/行数（形状）8 道**、**值/口径 6 道**、金标自身超时 1 道（518）。
+- 挂起 3 道 moderate（**473 / 500 / 520**）+ 旧挂起 2 道（349 / 352）。
+
+### ⭐ 三个反直觉口径（都有金标对照，已毕业进 `traps.md` ④ 与 `db/card_games.md` 第三批）
+
+1. **百分比题的两个条件：进 `WHERE` 的是"形容词"，进 `CASE` 的是"主语"** —— 与语义直觉相反。
+   `417`「percentage of **Japanese** translated sets are **expansion** sets」金标 =
+   `WHERE T1.type='expansion'` + `SUM(CASE WHEN T2.language='Japanese' …)*100/COUNT(T1.id)` = **61/610 = 10.0**；
+   我按语义把 `WHERE` 收窄成 Japanese → 50.41（错）。同库 433 同理（分母是 `sets ⋈ set_translations` 全体行数）。
+2. **是否题 → `IIF(..., 'YES','NO')` 全大写**（465 / 469）。反例 410（金标返回 `cards.id`）⇒ 判据是 evidence 里有没有 `EXISTS/IIF/YES`。
+3. **"the set of cards with X in it" → `setCode IN (SELECT …) … LIMIT 1`，只 1 行**（462）；JOIN `cards` 会给 3 行。
+
+### 其余毕业条目（详见 `db/card_games.md` 第三批 A–F）
+
+- `sets` 自己也有 `totalSetSize` / `baseSetSize` / `isOnlineOnly` / `isForeignOnly`（432 用 `totalSetSize` 而不是数 cards；433 的 `isOnlineOnly` 取自 **sets**）。
+- 「How many …」≠ 计数：408 金标返回 **`rulings.text` 本身**（2059 行）；499 金标是 **`COUNT(DISTINCT translation)`**。
+- translated-name 题金标可能给 **`cards.name`（英文名）**（484）。
+- `446`「in set of Abyssal Horror」金标用 `cards.name='Abyssal Horror'` 限定**行本身**，并且输出 **2 列**（百分比 + name）。
+
+### 流程教训
+
+- ⭐ **pi 的 `bird_query`/`bird_schema` 默认数据集是 minidev** —— 本轮两次因为忘了传 `dataset=dev2025`，
+  探针记进了 minidev，导致 `answer` 被闸门 1 连着拒了 11 次。**批量做题时一律用 CLI（`--dataset`）打探针**，
+  或给 pi 工具显式传 `dataset`。这是闸门**做对了**（数据集隔离真的生效），只是我忘了带上。
+- ⭐ **惯例卡片会随已答数漂移**：card_games 从 132 → 175 后 `check_brief_p4.py` 当场变红
+  （卡片里 `n=132` vs 独立计数 175）。修法 = `conventions --db card_games --write-card` 刷新（与工具同源），**不要手改数字**。
+- ⭐ **复盘扫金标必须按 `str(i) in answers` 过滤**（本轮照做；408/417/432/433/446/462/465/469/484/499 十条
+  都是**已经交过、已经评过分**的题才看的金标，看过就不再重交）。
