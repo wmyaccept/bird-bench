@@ -26,13 +26,13 @@ superhero ──id── hero_power ──power_id── superpower
   `720`（“over 15 powers”：金标 71 行 vs 我 102 行，已确认 `hero_power` 无重复行 —— 仍未解释）、
   `741`/`767`/`791`（极值/均值口径）。
 
-## 惯例卡片（实测统计，n=114 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=129 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 31 / COUNT(*) 3 / 无 80　⇒ 本库以 `COUNT(列)` 为主（31/34 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：superhero 100 / hero_power 7 / hero_attribute 5 / publisher 1 / superpower 1　⇒ 主表几乎总是 **superhero**（100/114）
-- `SELECT DISTINCT`：7/114　|　`*100`：3　|　`BETWEEN`：2
-- 输出列数分布：1列×106 / 2列×6 / 3列×2
-- JOIN 数分布：0:13, 1:57, 2:35, 3:9
+- 计数形态：COUNT(列) 37 / COUNT(*) 4 / 无 88　⇒ 本库以 `COUNT(列)` 为主（37/41 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：superhero 115 / hero_power 7 / hero_attribute 5 / publisher 1 / superpower 1　⇒ 主表几乎总是 **superhero**（115/129）
+- `SELECT DISTINCT`：7/129　|　`*100`：10　|　`BETWEEN`：3
+- 输出列数分布：1列×118 / 2列×8 / 3列×3
+- JOIN 数分布：0:13, 1:62, 2:42, 3:12
 
 > 由 `bird_conventions db=superhero write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（33 道，27 对 = 81.8%）—— 本库的两个"名字里没写但金标有"的规矩
@@ -77,3 +77,21 @@ superhero ──id── hero_power ──power_id── superpower
 - **是否/单值题**：820（Hulk 的 Strength = 100）、825（Phoenix Force → 'Female'）、827（Dark Horse 非人类平均身高 109.0）、
   800（蓝眼比例 31.2）、801（男女比 2.5566502463054186 = **真除**，不是整数除 2）全对。
 - **`798`「publisher for A, B and C」= 1 列 3 行**（重复值用 `DISTINCT` 也无妨，集合口径等价）。
+
+## ⚠️⚠️ challenging 实测（15 道，8 对 = 53%）—— **"给 id 还是给名字"是本库最大的坑**
+
+逐条对照金标 SQL 得到的硬事实（**都是"要不要 JOIN 去翻译"的问题**）：
+
+| 题 | 题干 | 金标给的是 | 我给的 |
+|---|---|---|---|
+| **772** | "List the eyes, hair and skin colour" | **`eye_colour_id, hair_colour_id, skin_colour_id`（数字 id！）** | JOIN `colour` 翻译成 'Blue' 等 ✗ |
+| **744 / 829** | "which publisher has published more? Find the difference" | **只有 1 列 = 差值本身**（744 = Marvel−DC，829 = DC−Marvel） | 我给 2 列 (名称, 差值) ✗ |
+| **1437 式** | （见 student_club）"which members …" | 给 **`link_to_member`** 外键，不给姓名 | 姓名 ✗ |
+
+- **分母必须用"没被 INNER JOIN 缩小"的行数**：
+  - **743** 金标 `COUNT(*) * 100 / (SELECT COUNT(*) FROM superhero)`（分母 = 全表 1518，不是 JOIN 后的行数）✗
+  - **835** 金标 **`LEFT JOIN alignment`**（`Good` 的占比要把 alignment 为 NULL 的也算进分母）✗
+  - **788** 金标 `COUNT(CASE WHEN publisher='Marvel Comics' THEN 1 END) * 100 / COUNT(T1.id)` 且 **WHERE gender='Female'**
+    ⇒ 分母 = **女性英雄数**，分子 = 其中 Marvel 的（不是我写的"Marvel 里女性占比"——**两个方向别搞反**）✗
+- 对得稳的：724（蓝眼金发名单）、730、760（150–180cm 里 Marvel 占比）、769（Dark Horse 最耐久，配 `ORDER BY value DESC, id LIMIT 1`）、
+  773（同色）、775、818、819、834。

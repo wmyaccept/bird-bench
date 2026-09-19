@@ -75,13 +75,13 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
 用 `comments.PostId=107829` 会返回 **0 行**（该 id 是帖子的父帖 id）。
 凡是出现 "parent id / parent post"，先想 `posts.ParentId`。
 
-## 惯例卡片（实测统计，n=181 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=186 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 51 / COUNT(DISTINCT) 10 / COUNT(*) 6 / 无 114　⇒ 本库以 `COUNT(列)` 为主（51/67 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：users 74 / posts 47 / comments 23 / badges 16 / votes 7 / tags 6 / postHistory 5 / postLinks 3　⇒ 主表以 **users** 为主但**不固定**（74/181）⇒ 按题干主语选
-- `SELECT DISTINCT`：10/181　|　`*100`：6　|　`BETWEEN`：10
-- 输出列数分布：1列×148 / 2列×31 / 3列×2
-- JOIN 数分布：0:44, 1:117, 2:20
+- 计数形态：COUNT(列) 54 / COUNT(DISTINCT) 10 / COUNT(*) 6 / 无 116　⇒ 本库以 `COUNT(列)` 为主（54/70 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：users 76 / posts 49 / comments 23 / badges 17 / votes 7 / tags 6 / postHistory 5 / postLinks 3　⇒ 主表以 **users** 为主但**不固定**（76/186）⇒ 按题干主语选
+- `SELECT DISTINCT`：10/186　|　`*100`：9　|　`BETWEEN`：10
+- 输出列数分布：1列×152 / 2列×32 / 3列×2
+- JOIN 数分布：0:45, 1:118, 2:23
 
 > 由 `bird_conventions db=codebase_community write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（30 道，17 对 = 56.7%）—— 全库最低分库之一，坑**全在"用哪张表、用哪一行"**
@@ -134,3 +134,14 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
 - **565**「was that post well-finished?」金标文案 = **`'well-finished'` / `'NOT well-finished'`**
   （`IIF(ClosedDate IS NULL, 'NOT well-finished', 'well-finished')`），**不是 'YES'/'NO'** ✗
   ⇒ 本库是否题的文本要从 evidence 的措辞里抄（这里 evidence 自己写了 not well-finished）。
+
+## ⚠️⚠️ challenging 实测（5 道，3 对 = 60%）
+
+- **586**「Which user added a bounty amount of 50 to the post title mentioning variance?」金标
+  `SELECT T3.DisplayName, T1.Title` ⇒ **2 列（用户名 + 帖子标题）**，我只给了用户名 ✗
+  ⇒ "Which user … to the post …" 这类**把两个实体都放进输出**是金标的习惯。
+- **598**「percentage difference of student badges during 2010 and 2011」金标
+  `… WHERE Name = 'Student'`，分母是 **`COUNT(Id)` = 该子集（Student 徽章）的行数**，
+  不是整张 `badges` 表 ✗（542/2501 − 1959/2501）。
+- 对得稳的：634（Harvey Motulsky 总浏览量更高）、639（Community 的帖子 0% 用 R 标签，**答案就是 0**）、
+  701（最 influencial 用户 whuber 的题目金标自身执行失败，不计）。

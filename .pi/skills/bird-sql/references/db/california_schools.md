@@ -72,12 +72,38 @@ satscores ──cds ───┘
 - "type of education offered" → `EdOpsName`（实测 `idx 42` 命中，值为 `'Traditional'`）。
 - 考试优秀率：`Excellence rate = NumGE1500 / NumTstTakr`。
 
-## 惯例卡片（实测统计，n=77 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=89 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 12 / COUNT(DISTINCT) 4 / COUNT(*) 3 / 无 58　⇒ 本库以 `COUNT(列)` 为主（12/19 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：schools 32 / frpm 23 / satscores 22　⇒ 主表以 **schools** 为主但**不固定**（32/77）⇒ 按题干主语选
-- `SELECT DISTINCT`：3/77　|　`*100`：13　|　`BETWEEN`：6
-- 输出列数分布：1列×35 / 2列×14 / 3列×7 / 4列×3 / 5列×1 / 6列×3 / 7列×2 / 9列×1 / 12列×4 / 13列×3 / 14列×1 / 15列×1 / 17列×1 / 18列×1
-- JOIN 数分布：0:16, 1:43, 3:3, 4:6, 5:6, 7:1, 8:1, 9:1
+- 计数形态：COUNT(列) 13 / COUNT(*) 6 / COUNT(DISTINCT) 4 / 无 66　⇒ 本库以 `COUNT(列)` 为主（13/23 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：schools 38 / frpm 28 / satscores 23　⇒ 主表以 **schools** 为主但**不固定**（38/89）⇒ 按题干主语选
+- `SELECT DISTINCT`：3/89　|　`*100`：19　|　`BETWEEN`：7
+- 输出列数分布：1列×35 / 2列×17 / 3列×7 / 4列×3 / 5列×1 / 6列×4 / 7列×2 / 8列×1 / 9列×3 / 11列×1 / 12列×7 / 13列×4 / 14列×1 / 15列×1 / 17列×1 / 18列×1
+- JOIN 数分布：0:17, 1:45, 3:4, 4:9, 5:7, 6:2, 7:2, 8:1, 9:1, 13:1
 
 > 由 `bird_conventions db=california_schools write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+
+## ⚠️⚠️ challenging 实测（12 道，0 对 = 0%）—— **全部是 A11「profile 题」，列数就是属性清单**
+
+**本库的 challenging 几乎全是 "comprehensive profile / statistics" 题**（"provide details"、"comprehensive performance analysis"、
+"statistics including …"）。金标列数 **9–18 列**，而我按"一个答案"写 1 列 ⇒ 全 0。
+
+金标列数实测（同一批、已答题）：`0→10、2→14、3→14、5→13、6→15、8→16、12→9、31→16、32→16、45→14、62→14、77→13、79→10、87→2`。
+
+**金标 profile 的组成规律（读 3 条金标 SQL 得出）**：
+1. 用 `WITH … AS (…)` 分块（EnrollmentRanked / SchoolDetails / SATPerformance …），
+   每块算好"派生列"再拼最终 SELECT。
+2. 派生列**一定要照题干数出来**：
+   - 比率列：`CAST(免费餐数 AS REAL)/注册数`、`ROUND("Percent (%) Eligible FRPM (K-12)" * 100, 2)`
+   - 排名列：**`RANK() OVER (PARTITION BY County ORDER BY … DESC)` / `ROW_NUMBER() OVER (…)`**
+   - 文字化 CASE：**`CASE WHEN Charter = 1 THEN 'Charter School' ELSE 'Regular School' END`**
+   - 布尔化：`CASE WHEN Latitude IS NOT NULL AND Longitude IS NOT NULL THEN 'Yes' ELSE 'No' END`
+3. 具体题的例外（已核金标）：
+   - **55**（Colusa/Humboldt 六个指标之比）金标是 **6 行 × 2 列**（每行一个指标名 + 比值），**不是 1 行 6 列** ✗
+   - **83**「K-8 + magnet + Multiple Provision Types 的城市」金标用 **`GSoffered = 'K-8'`**（不是 GSserved）、
+     且只有 **1 个城市**满足 ⇒ **1 行 2 列** ✗
+   - **87**「valid e-mail addresses」金标 **1 行 2 列 = `AdmEmail1, AdmEmail2`**（不是 1 列 × 2 行），
+     且 `DOC = 54` / `SOC = 62` 是**数字比较**，年份用 `strftime('%Y', OpenDate) BETWEEN '2009' AND '2010'` ✗
+   - **12** 的 9 列 = `sname, NumGE1500, NumTstTakr, excellence_rate, 免费餐数, 注册数, eligible_free_rate, City, county_rank` 这一类组合。
+
+⚠️ **教训（代价很大）**：本库**旧的 65 道 challenging 我全部只写了 1 列 ⇒ 全错**。
+以后本库见到 "profile / comprehensive / details / statistics"，**先照题干属性词一行一个数出列数，再写 SQL**。

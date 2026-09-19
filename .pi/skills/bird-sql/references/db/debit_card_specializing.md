@@ -30,12 +30,22 @@ yearmonth ──CustomerID──── customers（Date 'YYYYMM'，覆盖 2011-2
 - 我写 `FROM transactions` 直接 `no such table`，用 `yearmonth` 查某天 → **0 行**（空集是硬触发器）
 - `gasstations.Segment` 取值只有：`Value for money` / `Premium` / `Other` / `Noname` / `Discount`
 
-## 惯例卡片（实测统计，n=60 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=64 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 9 / COUNT(*) 2 / COUNT(DISTINCT) 2 / 无 47　⇒ 本库以 `COUNT(列)` 为主（9/13 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：transactions_1k 30 / customers 18 / yearmonth 7 / gasstations 5　⇒ 主表以 **transactions_1k** 为主但**不固定**（30/60）⇒ 按题干主语选
-- `SELECT DISTINCT`：6/60　|　`*100`：6　|　`BETWEEN`：3
-- 输出列数分布：1列×55 / 2列×2 / 3列×3
-- JOIN 数分布：0:15, 1:39, 2:6
+- 计数形态：COUNT(列) 10 / COUNT(*) 2 / COUNT(DISTINCT) 2 / 无 50　⇒ 本库以 `COUNT(列)` 为主（10/14 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：transactions_1k 30 / customers 21 / yearmonth 8 / gasstations 5　⇒ 主表以 **transactions_1k** 为主但**不固定**（30/64）⇒ 按题干主语选
+- `SELECT DISTINCT`：6/64　|　`*100`：7　|　`BETWEEN`：4
+- 输出列数分布：1列×57 / 2列×2 / 3列×5
+- JOIN 数分布：0:15, 1:41, 2:8
 
 > 由 `bird_conventions db=debit_card_specializing write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ challenging 实测（4 道，2 对 = 50%）
+
+- **1481**「annual average consumption of the customers with the least amount of consumption … between SME/LAM/KAM」金标：
+  `CAST(SUM(IIF(Segment='SME', Consumption, 0)) AS REAL) / COUNT(T1.CustomerID) - CAST(SUM(IIF(Segment='LAM', …)) AS REAL) / COUNT(T1.CustomerID) - …`
+  ⇒ **分子 = 该 segment 的消费总额，分母 = 全表客户数（所有 segment 一起数）**，
+  不是"每客户取最小再 /12"，也不是"按 segment 分组"✗ 我想复杂了。
+- **1482**「Which of the three segments has the biggest and lowest percentage increases」金标 **1 行 3 列**
+  （SME、LAM、KAM 三个百分比并列，**不是 2 行挑最大最小**）✗
+  ⇒ 同样用 `SUM(IIF(Segment='X' AND Date LIKE '2013%', Consumption, 0))` 的写法 → `*100/NULLIF(...,0)`。
+- 对得稳的：1476（CZK − EUR 2012 消费差）、1526（`transactions_1k.Price = 634.8` 的客户，2012/2013 消费降幅）。

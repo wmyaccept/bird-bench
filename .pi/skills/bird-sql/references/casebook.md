@@ -1878,3 +1878,36 @@ student_club 36、superhero 33、codebase_community 30、financial 25、card_gam
 
 - ⚠️ **`bird_score --db <库> --list-wrong` 会为形状校验重跑全量 1534 题**，本轮两次 1800s 超时。
   **批量核对用 `bird.compare_ex` 逐题跑**（十几秒），`score` 只在要全量数字时用。
+
+---
+
+## 第 44 轮（2026-09-18）｜challenging 首扫 110/231（45 道新答 22 对），暴露一个"整批 0 分"的结构性错误
+
+按"小库先行"扫 challenging：debit_card_specializing 4、codebase_community 5、student_club 9、
+california_schools 12、superhero 15 ⇒ **新答 45 道，对 22（48.9%）**；
+**challenging 累计 22/110**。
+
+### ⚠️ 最贵的一条：**65 道旧 california_schools challenging 全是"1 列"号，全部 0 分**
+
+逐题看失败明细：金标是 **10/13/14/15/16 列**，我当年（A11 升级之前）全部只给 1 列。
+读 3 条金标 SQL 后确认这类题的形态：`WITH` 分块算派生列 → 最终 SELECT 拼 **9–18 列**：
+原始属性 + 比率（`CAST(a AS REAL)/b`）+ **`RANK() OVER (PARTITION BY County ORDER BY …)`** +
+`CASE WHEN Charter=1 THEN 'Charter School' ELSE 'Regular School' END` 这类文字列。
+
+**这类错不能靠"更聪明"救，只能靠"数属性"** ⇒ 已把 A11 的硬产物（属性清单）写进 `traps.md` ⓪/④，
+并写明"见 profile 字样先数列"。
+
+### 本轮新写回的 6 条通用规则（`traps.md` ④）
+
+1. **给 id 还是给名字**：题干没写 name 就给外键/id（superhero 772 给 colour **id**；student_club 1437/1451 给 member_id/link_to_*）。
+2. **"which X more? find the difference" 常常只给差值 1 列**（superhero 744/829）。
+3. **百分比的方向与分母**：788 是"女性里 Marvel 占比"，分母 = 女性数；835 要 `LEFT JOIN` 才不丢 NULL 行；743 分母是全表。
+4. **profile 题列数 = 属性清单**（california_schools 全库 challenging）。
+5. **"六指标之比"金标排成 6 行 2 列**（california_schools 55）。
+6. **"percentage difference of A during Y1/Y2" 分母 = A 子集行数**（codebase_community 598）。
+
+### 库档案新增
+
+`superhero`（id/名字 + 分母三条）、`student_club`（外键优先）、`codebase_community`（两实体都进输出）、
+`debit_card_specializing`（1481 分母 = 全表客户数、1482 = 1 行 3 列）、`california_schools`（profile 列数实测表）。
+惯例卡片刷新：superhero 129 / student_club 158 / codebase_community 186 / debit_card_specializing 64 / california_schools 89。

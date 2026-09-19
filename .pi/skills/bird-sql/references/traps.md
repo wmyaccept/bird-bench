@@ -224,3 +224,21 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
 
 → 去 [`checklist.md`](checklist.md)，**逐条勾**（那里是从这里"毕业"出来的固定清单）。
 “列序 = 题干顺序”属于**允许重交**的情形，判定口径见 `checklist.md` 末尾的「⛔ 重交白名单（唯一出处）」。
+- [ ] ⭐ ⭐ **"给 id 还是给名字" —— 先看题干有没有 `name` 字样**：`superhero` 772 金标给的是
+      **`eye_colour_id / hair_colour_id / skin_colour_id`（数字 id）**，不是 JOIN `colour` 翻译出来的 'Blue'；
+      `student_club` 1437 给 `link_to_member, link_to_event`、1451 给 `member_id`。
+      ⇒ **不要"自作聪明"去 JOIN 维表把 id 翻译成人话**；题干没要求名称时优先原样给外键/编码列。
+- [ ] ⭐ ⭐ **"which X has more? Find the difference" 常常只输出差值一列**：
+      `superhero` 744（Marvel−DC）、829（DC−Marvel）金标都是 **1 列**，没有出版社名字。
+- [ ] ⭐ ⭐ **百分比的分子分母方向要照题干读，分母优先"没被 JOIN 缩小的那一侧"**：
+      `superhero` 788 是「女性英雄里 Marvel 占多少」（分母 = 女性数），不是"Marvel 里女性占多少"；
+      835 用 **`LEFT JOIN alignment`** 以便把 alignment 为 NULL 的算进分母；
+      743 的分母是 **`(SELECT COUNT(*) FROM superhero)` 全表**。
+- [ ] ⭐ ⭐ **"comprehensive profile / statistics / provide details" 这类题 = A11，列数就是属性清单**：
+      `california_schools` 的 challenging 全是这种，金标 **9–18 列**，由「原始属性 + 派生比率 +
+      `RANK() OVER` 排名 + `CASE` 文字列」拼成；我按 1 列写 ⇒ 那一批 65 道全 0。
+      **见到 profile 字样，先一行一个属性数出列数。**
+- [ ] ⭐ **"六个指标之比"这类题金标可能排成"每指标一行"**（`california_schools` 55 金标 **6 行 2 列**：
+      `(指标名, 比值)`），不是 1 行 6 列。
+- [ ] ⭐ **"percentage difference of A during Y1 and Y2" 的分母是 A 那个子集的行数**
+      （`codebase_community` 598：`WHERE Name='Student'` 后 `COUNT(Id)` = Student 徽章数）。

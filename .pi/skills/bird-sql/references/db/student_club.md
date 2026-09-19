@@ -53,13 +53,13 @@ event.event_id            = attendance.link_to_event
 题干说 “budget more than forty” → 用 `budget.amount > 40`（**不是** `spent`，也不是 `planned_amount`）。
 `expense.cost` 才是“花了多少钱”（`incurred less than 50USD` → `expense.cost < 50`）。
 
-## 惯例卡片（实测统计，n=149 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=158 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 3 / COUNT(*) 1 / 无 113　⇒ 本库以 `COUNT(列)` 为主（32/36 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：member 61 / event 41 / budget 16 / expense 11 / major 11 / zip_code 5 / income 3 / attendance 1　⇒ 主表以 **member** 为主但**不固定**（61/149）⇒ 按题干主语选
-- `SELECT DISTINCT`：12/149　|　`*100`：9　|　`BETWEEN`：4
-- 输出列数分布：1列×115 / 2列×25 / 3列×9
-- JOIN 数分布：0:32, 1:95, 2:19, 3:3
+- 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 4 / COUNT(*) 1 / 无 121　⇒ 本库以 `COUNT(列)` 为主（32/37 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：member 63 / event 42 / budget 17 / expense 15 / major 11 / zip_code 5 / income 3 / attendance 2　⇒ 主表以 **member** 为主但**不固定**（63/158）⇒ 按题干主语选
+- `SELECT DISTINCT`：15/158　|　`*100`：9　|　`BETWEEN`：5
+- 输出列数分布：1列×119 / 2列×27 / 3列×12
+- JOIN 数分布：0:32, 1:99, 2:22, 3:4, 5:1
 
 > 由 `bird_conventions db=student_club write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（36 道，29 对 = 80.6%）—— 本库 89.2% 仍是最强库
@@ -100,3 +100,16 @@ event.event_id            = attendance.link_to_event
 - **`attendance` 计数用 `COUNT(DISTINCT link_to_member)`**（1395 = 17 ✓、1317 = 7 ✓）。
 - ⚠️ **`bird_query` 的表格渲染偶尔会把长单元格显示乱**（我把 `100.0` 看成过 `1000`、把
   `32|1|3.125` 看成过 `100`）⇒ **拿不准就换成分列 SELECT 再跑一次**，别在错数字上做判断。
+
+## ⚠️⚠️ challenging 实测（9 道，5 对 = 56%）—— **金标爱给外键 id，不爱给姓名**
+
+- **1437**「Which members who were approved from …? identify the member … and the link to their event」金标：
+  `SELECT DISTINCT T1.link_to_member, T3.link_to_event` ⇒ **2 列、全是 id**（46 行）
+  —— 我给 472 行 × 3 列（`first_name, last_name, link_to_event`）✗
+- **1451**「Among the members who incurred expenses in more than one event, who paid the most amount?」金标：
+  `SELECT T2.member_id … GROUP BY member_id HAVING … ORDER BY … LIMIT 1` ⇒ **1 列 = member_id** ✗
+  ⇒ 口诀：**本库 "which member/who" 且没有明说 "full name" 时，先按"给 `member_id` / 外键"写**；
+  只有题干写 "full name"/"last name" 时才是姓名列。
+- 对得稳的：1339（`AVG(cost)` + `substr(expense_date,6,2) IN ('09','10')`）、1359（两会议 Advertisement 金额之比）、
+  1429（`event.location = '900 E. Washington St.'` + `position='Vice President'` + `type='Social'`）、
+  1448（Pizza 50<c<100 → 4 行 2 列）、1457（3 行 3 列）、1460、1464（`income.date_received`）。
