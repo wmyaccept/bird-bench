@@ -63,13 +63,13 @@ races ──circuitId── circuits
     `driverStandings`、`lapTimes`、`pitStops`。写 SQL 前先用 `bird_schema formula_1` 确认表名，
     不要凭直觉写 `constructor_standings` / `lap_times`（会直接 `no such table`）。
 
-## 惯例卡片（实测统计，n=160 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=174 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 21 / COUNT(DISTINCT) 6 / COUNT(*) 3 / 无 130　⇒ 本库以 `COUNT(列)` 为主（21/30 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：circuits 35 / drivers 35 / races 32 / results 20 / qualifying 10 / lapTimes 10 / pitStops 6 / constructorStandings 5 / driverStandings 3 / constructorResults 2 / constructors 2　⇒ 主表**不固定**（最大是 circuits 也只占 35/160）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：21/160　|　`*100`：3　|　`BETWEEN`：5
-- 输出列数分布：1列×113 / 2列×24 / 3列×16 / 4列×7
-- JOIN 数分布：0:34, 1:90, 2:32, 3:3, 6:1
+- 计数形态：COUNT(列) 23 / COUNT(DISTINCT) 6 / COUNT(*) 4 / 无 141　⇒ 本库以 `COUNT(列)` 为主（23/33 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：drivers 36 / circuits 35 / races 33 / results 27 / lapTimes 12 / qualifying 11 / pitStops 7 / constructorStandings 5 / constructorResults 3 / driverStandings 3 / constructors 2　⇒ 主表**不固定**（最大是 drivers 也只占 36/174）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：21/174　|　`*100`：8　|　`BETWEEN`：9
+- 输出列数分布：1列×118 / 2列×30 / 3列×18 / 4列×8
+- JOIN 数分布：0:34, 1:92, 2:40, 3:4, 5:1, 6:1, 7:1, 8:1
 
 > 由 `bird_conventions db=formula_1 write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（43 道，29 对 = 67.4%）—— 输出列数/列序是本库最大失分源
@@ -113,3 +113,16 @@ races ──circuitId── circuits
 - `simple 88/117 = 75.2%`（旧答案迁移）、`moderate 29/43 = 67.4%`、合计 **117/160 = 73.1%**。
 - ⚠️ **输出列数是本库第一失分源**（moderate 14 道错里 8 道是列数）⇒ 走 A11「属性清单」时，
   本库要额外回想上表「题干写法 → 金标列数」。
+
+## ⚠️⚠️ challenging 实测（14 道，8 对 = 57%）—— **"圈速记录"在 results，不在 lapTimes**
+
+- ⚠️⚠️ **"lap record" 用 `results.fastestLapTime`，不是 `lapTimes.time`**：
+  1014 金标 `WITH per AS (SELECT c.name, res.fastestLapTime, 用 SUBSTR 拆成秒 …)` 再按 circuit 取最快。
+  我用 `lapTimes` 完全找错表。
+- ⚠️ **"top 20 driver" = 输出 20 行 3 列**（1011 金标把 `lapTimes.time` 拆成秒、按秒排序取 20）
+  —— 不是"全局最快的那一个"。
+- ⚠️ **时间字符串固定宽拆法**：金标用 `INSTR(time,':')=2 THEN SUBSTR(t,1,1)*3600 + SUBSTR(t,3,2)*60 + SUBSTR(t,6,2)…`
+  这种"按位置切"，我写通用 `INSTR` 版本**算出来的秒数会有差**（955 的 25 行全不同）。
+- ⚠️ **表名是驼峰**：`lapTimes` / `pitStops`（不是 `lap_times`）；`circuits` 表**没有** lap record 列。
+- 对得稳的：880（853 与 854 的 fastestLapSpeed 百分比）、896、944（用 '+MM:SS.mmm' 判 gap）、954、
+  962、990（`constructors.constructorRef, url`）、994、1001（`MIN(q3)`）。

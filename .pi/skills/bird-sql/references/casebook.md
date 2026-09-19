@@ -1911,3 +1911,40 @@ california_schools 12、superhero 15 ⇒ **新答 45 道，对 22（48.9%）**�
 `superhero`（id/名字 + 分母三条）、`student_club`（外键优先）、`codebase_community`（两实体都进输出）、
 `debit_card_specializing`（1481 分母 = 全表客户数、1482 = 1 行 3 列）、`california_schools`（profile 列数实测表）。
 惯例卡片刷新：superhero 129 / student_club 158 / codebase_community 186 / debit_card_specializing 64 / california_schools 89。
+
+---
+
+## 第 45 轮（2026-09-18）｜**challenging 231 道全部做完**：本轮 121 道对 63（52.1%），累计 85/231 = 36.8%
+
+本轮按"小库先行"扫完最后一整段：card_games 13、formula_1 14、european_football_2 14、financial 19、
+thrombosis_prediction 28、toxicology 33 ⇒ **新答 121、对 63（52.1%）**。
+`dev2025` 至此 **simple 860 / moderate 443 / challenging 231 全部有作答**。
+
+### 分库（challenging 全量）
+
+| 库 | 对/答 | 备注 |
+|---|---|---|
+| toxicology | 20/42 | 本轮 33 道只对 9；**两张表都只有 3 列**，join 靠 `bond_id` |
+| thrombosis_prediction | 17/28 | 已有 28 道之外的老批次 0 对 |
+| superhero | 9/15 | 给 id 还是给名字 |
+| formula_1 | 8/14 | **lap record 在 `results.fastestLapTime`**，不在 lapTimes |
+| european_football_2 | 8/14 | 年龄题 1 列 + DISTINCT；子查询平均不加时间过滤 |
+| card_games | 7/13 | 语言在 foreign_data/set_translations；id 不是 code |
+| student_club | 7/9 | 金标爱给外键 id |
+| financial | **3/57** | **全库最低**：challenging 几乎全是 "comprehensive profile"，我按 1–2 列写 ⇒ 全错 |
+| codebase_community | 2/5 | |
+| california_schools | **2/30** | 同 financial：profile 题列数 9–18 |
+| debit_card_specializing | 2/4 | |
+
+### 本轮新写回的 8 条通用规则（`traps.md` ④）
+
+题干语义 > evidence 算子（`two or more` ⇒ `>=2`）／年龄锚点用题干给的日期／子查询平均不带外层时间过滤／
+"record"先找对表／"compared to"把差做成列／带前缀的列名说明在另一张表／驼峰表名与 3 列表／
+"Indicate the id"给主键 id。
+
+### 结论（给下一阶段的判断）
+
+- **challenging 的主要失分不是"算错"，而是"列数/列语义"**：financial 3/57、california_schools 2/30
+  几乎全是 `comprehensive profile` 型（金标 6–18 列）。这类题靠"逐项数题干里的名词"能显著改善，
+  但**光靠现有 skill 的信息量仍打不满**——需要把"属性清单"做成更硬的产出（写进答案前的中间产物）。
+- 元/流程层（P0–P15）已全部修完；剩下能动的只有**语义层**（题型识别 + 列集合）。

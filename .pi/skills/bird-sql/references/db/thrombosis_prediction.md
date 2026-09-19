@@ -111,12 +111,27 @@ WHERE <T1 上的条件> AND <T2/T3 上的条件>
 - ⭐ **诊断名一律 `=` 精确**（1264 `='APS'`、1289 `='SJS'` 金标；用 `LIKE '%X%'` 会吃进组合诊断行）；
   唯一例外是 `SLE` 有时写 `LIKE '%SLE%'`（1279）——两种在无组合行时结果相同。
 
-## 惯例卡片（实测统计，n=135 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=163 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(DISTINCT) 29 / COUNT(列) 19 / COUNT(*) 6 / 无 81　⇒ 本库偏去重（29/54 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
-- 主表（FROM 第一张）：Patient 113 / Examination 12 / Laboratory 10　⇒ 主表几乎总是 **Patient**（113/135）
-- `SELECT DISTINCT`：25/135　|　`*100`：8　|　`BETWEEN`：12
-- 输出列数分布：1列×109 / 2列×15 / 3列×9 / 4列×2
-- JOIN 数分布：0:21, 1:101, 2:12, 4:1
+- 计数形态：COUNT(DISTINCT) 34 / COUNT(列) 27 / COUNT(*) 7 / 无 95　⇒ 本库偏去重（34/68 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：Patient 137 / Examination 14 / Laboratory 12　⇒ 主表几乎总是 **Patient**（137/163）
+- `SELECT DISTINCT`：31/163　|　`*100`：11　|　`BETWEEN`：17
+- 输出列数分布：1列×131 / 2列×18 / 3列×12 / 4列×2
+- JOIN 数分布：0:23, 1:119, 2:20, 4:1
 
 > 由 `bird_conventions db=thrombosis_prediction write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ challenging 实测（28 道，17 对 = 61%）—— 四处"表/列/口径"硬坑
+
+- ⚠️⚠️ **`aCL IgG` / `aCL IgM` / `aCL IgA` 在 `Examination`，不在 `Laboratory`**！
+  （Laboratory 里的是 `IGG`/`IGA`/`IGM`）1161「average anti-cardiolipin antibody (IgG)」金标 = `AVG(e."aCL IgG")`；
+  1189 的 `AVG("aCL IgM")` 也是 Examination。
+  ⇒ **evidence 写的列名如果有 `aCL` 前缀，就去 Examination 找。**
+- ⭐ **`Patient` 有 `First Date` 列**（"first presented to the hospital" 用它，不是 MIN(`Examination Date`)）。
+- ⚠️⚠️ **年龄的锚点看题干给了什么日期**：1242「lab tests in 1984，patients below 50」金标用
+  **`STRFTIME('%Y', T2.Date) - STRFTIME('%Y', T1.Birthday) < 50`**（用**检查日期**算年龄），
+  我用了 `'now'` ⇒ 5 行 vs 金标 76 行 ✗。只有题干没给日期时才用 `CURRENT_TIMESTAMP`。
+- ⚠️ **题干语义 > evidence 的算子**：1239「**two or more** laboratory examinations」金标是
+  `HAVING COUNT(...) >= 2`，而 evidence 写的是 `COUNT(ID) > 2` —— 我照 evidence 写就少了 1 行 ✗。
+- ⭐ **"how is it compared to" 是把差做成第二列**：1241 金标 = `(低于正常值的人数, 低于 − 高于)`。
+- ⭐ 1168 金标 3 列 = `(最新 Lab Date, 首次到院年龄, Birthday)`（profile 题把 Birthday 也带上）。
+- 稳的：1169（男女比）、1171、1173、1183、1190、1191、1192、1194、1202、1223、1231、1232、1236、1243、1247、1257、1270、1292、1295、1302、1307。

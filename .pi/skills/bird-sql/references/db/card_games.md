@@ -141,12 +141,25 @@ JOIN `cards` 会把同一张卡的所有版本都算进去（我因此给出 3 �
   WHERE T3.name='Coldsnap' AND T1.language='Italian' ORDER BY T2.convertedManaCost DESC`（**155 行 = 全部意大利语行**）
   ⇒ ① `T2.name` 是 **`cards.name`（英文名）**，不是 `foreign_data.name`；② 这个「最高 cmc」的过滤**在金标里就失效了**（没 LIMIT/没 MAX）——遇到金标自己走样的题，形状对了也拿不到分。
 - **446**「percentage of the cards with cmc 10 in set of Abyssal Horror」金标：2 列 `（百分比, T1.name）`，范围是 **`cards.name='Abyssal Horror'`**（卡本身，不是整个 set），分母 `COUNT(T1.id)` = 3。
-## 惯例卡片（实测统计，n=178 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=191 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 33 / COUNT(DISTINCT) 7 / COUNT(*) 6 / 无 132　⇒ 本库以 `COUNT(列)` 为主（33/46 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：cards 127 / sets 36 / set_translations 6 / foreign_data 6 / legalities 3　⇒ 主表几乎总是 **cards**（127/178）
-- `SELECT DISTINCT`：36/178　|　`*100`：10　|　`BETWEEN`：1
-- 输出列数分布：1列×149 / 2列×22 / 3列×7
-- JOIN 数分布：0:72, 1:97, 2:5, 3:3, 4:1
+- 计数形态：COUNT(列) 38 / COUNT(DISTINCT) 9 / COUNT(*) 6 / 无 138　⇒ 本库以 `COUNT(列)` 为主（38/53 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：cards 135 / sets 40 / set_translations 6 / foreign_data 6 / legalities 4　⇒ 主表几乎总是 **cards**（135/191）
+- `SELECT DISTINCT`：39/191　|　`*100`：16　|　`BETWEEN`：2
+- 输出列数分布：1列×158 / 2列×26 / 3列×7
+- JOIN 数分布：0:73, 1:108, 2:6, 3:3, 4:1
 
 > 由 `bird_conventions db=card_games write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ challenging 实测（13 道，7 对 = 54%）—— **"语言"和"set id"三处分布**
+
+- ⚠️ **`cards` 没有 `language` 列**！"cards whose language is French" 要 JOIN **`foreign_data`**（`fd.uuid = c.uuid`，16 种语言）
+  （371 法语 spotlight、416 无 power 的法语、507 巴西葡语、431 日语）。
+- ⚠️ **`cards` 也没有 `isFoilOnly` / `isNonFoilOnly`**（只有 `hasFoil` / `hasNonFoil`）——
+  431/506 金标用的是 **`sets.isFoilOnly` / `sets.isNonFoilOnly`**（evidence 点名的列名就是 sets 的）。
+- ⚠️ **"Japanese translation" = `set_translations`，不是 `foreign_data`**：
+  506 金标 `FROM sets WHERE code IN (SELECT setCode FROM set_translations WHERE language = 'Japanese')`，
+  分母 `COUNT(id)`；523 的 "common language" 也走 **`set_translations.language`**。
+- ⚠️ **"Indicate the id of the set" 要给 `sets.id`**（不是 `code`）：513 金标
+  `SELECT id FROM sets WHERE type = 'commander' ORDER BY totalSetSize DESC, id ASC LIMIT 1`（**加了 id ASC 破并列**）。
+- 515/528 类"名字 + 合法赛制"：528 金标 `cards.name, legalities.format`（`status='Legal'`，1664 行）。
+- 对得稳的：415（commander 合法且无内容警告）、487（Coldsnap 的 cardKingdom 双 id）、494、507、521、528。

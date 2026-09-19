@@ -242,3 +242,20 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       `(指标名, 比值)`），不是 1 行 6 列。
 - [ ] ⭐ **"percentage difference of A during Y1 and Y2" 的分母是 A 那个子集的行数**
       （`codebase_community` 598：`WHERE Name='Student'` 后 `COUNT(Id)` = Student 徽章数）。
+- [ ] ⭐ ⭐ **题干语义 > evidence 的算子**：evidence 写 `COUNT(ID) > 2`，题干写 "**two or more**" ⇒ 金标是 `>= 2`
+      （thrombosis 1239，我照 evidence 写少了 1 行）。**算子/阈值以题干文字为准，evidence 只用来定位列**。
+- [ ] ⭐ ⭐ **"年龄"的锚点看题干给了什么日期**：题干说 "lab tests in 1984, patients below 50" ⇒ 用**那次检查的日期**算年龄
+      （thrombosis 1242：`STRFTIME('%Y', T2.Date) - STRFTIME('%Y', T1.Birthday) < 50`，金标 76 行 vs 我 5 行）；
+      题干没有日期时才用 `CURRENT_TIMESTAMP` / `DATETIME()`。
+- [ ] ⭐ ⭐ **子查询里的"平均/基准值"常常不带外层的时间过滤**：european_football_2 1041 金标的平均是
+      "该类全部年份的平均"，外层才限 2014（我里外都加 ⇒ 106 行 vs 220 行）。
+- [ ] ⭐ ⭐ **"记录 / record" 先确认落在哪张表**：formula_1 的 circuit lap record 是 **`results.fastestLapTime`**，
+      不是 `lapTimes.time`；`circuits` 表里根本没有记录列。
+- [ ] ⭐ **"how is it compared to X" = 把差值做成第二列**（thrombosis 1241 金标 = `(低于人数, 低于−高于)`）。
+- [ ] ⭐ **evidence 里的列名带限定前缀时，说明它在另一张表**：thrombosis 的 `aCL IgG/IgM/IgA` 在 `Examination`，
+      `Laboratory` 只有 `IGG/IGA/IGM`；european_football_2 的 `preferred_foot` 在 `Player_Attributes`。
+- [ ] ⭐ **表名/列名可能是驼峰**：`lapTimes` / `pitStops` / `Team_Attributes`；toxicology 的
+      **`bond` 与 `connected` 都只有 3 列**（`bond(bond_id, molecule_id, bond_type)` / `connected(atom_id, atom_id2, bond_id)`），
+      bond_type 与原子对必须靠 `bond_id` 桥接，**不要假设任一张表里有全部字段**。
+- [ ] ⭐ **"Indicate the id of the set/…" 要给主键 `id`，不是业务编码 `code`**（card_games 513 金标 `sets.id`，
+      并且加了 `id ASC` 破并列）。

@@ -78,12 +78,23 @@ Team   ──team_api_id─── Team_Attributes
 
 **做题提示**：本库 50 道 moderate 里 13 道错，其中 **7 道是「计数去不去重」和「列数 1 还是 2」** —— 这两类占总错的 54%。
 
-## 惯例卡片（实测统计，n=115 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=129 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 25 / COUNT(DISTINCT) 3 / COUNT(*) 1 / 无 86　⇒ 本库以 `COUNT(列)` 为主（25/29 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：Player 57 / Team 18 / Player_Attributes 14 / League 9 / Country 9 / Match 4 / Team_Attributes 3 / TEAM 1　⇒ 主表以 **Player** 为主但**不固定**（57/115）⇒ 按题干主语选
-- `SELECT DISTINCT`：21/115　|　`*100`：2　|　`BETWEEN`：4
-- 输出列数分布：1列×107 / 2列×6 / 3列×2
-- JOIN 数分布：0:27, 1:82, 2:5, 3:1
+- 计数形态：COUNT(列) 28 / COUNT(DISTINCT) 6 / COUNT(*) 2 / 无 93　⇒ 本库以 `COUNT(列)` 为主（28/36 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：Player 64 / Team 20 / Player_Attributes 15 / League 12 / Country 9 / Match 4 / Team_Attributes 4 / TEAM 1　⇒ 主表以 **Player** 为主但**不固定**（64/129）⇒ 按题干主语选
+- `SELECT DISTINCT`：24/129　|　`*100`：5　|　`BETWEEN`：6
+- 输出列数分布：1列×120 / 2列×7 / 3列×2
+- JOIN 数分布：0:27, 1:93, 2:5, 3:3, 5:1
 
 > 由 `bird_conventions db=european_football_2 write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
+## ⚠️⚠️ challenging 实测（14 道，8 对 = 57%）
+
+- ⚠️ **"current age" 金标就写 `DATETIME() - T2.birthday`，且只要 1 列**（1031 金标
+  `SELECT DISTINCT DATETIME() - T2.birthday age …`）—— 我给了 (name, 年龄) 两列 23 行 ✗
+  ⇒ 本库这种"年龄"题**默认 1 列 + DISTINCT**。
+- ⚠️ **子查询里的"平均"往往不带题干的时间过滤**：1041 金标
+  `t4.buildUpPlayDribblingClass = 'Normal' AND t4.chanceCreationPassing < (SELECT CAST(SUM(...) AS REAL)/COUNT(...) FROM Team_Attributes WHERE buildUpPlayDribblingClass='Normal')`
+  —— 平均**没有** `substr(date,1,4)='2014'` 这层限制（我加了 ⇒ 106 行 vs 金标 220 行）✗
+  ⇒ 口诀：**外层过滤照抄题干，内层"平均值"先用最宽口径**。
+- ⚠️ `Player_Attributes.preferred_foot`（`Player` 表里没有这一列）—— 1037 要 JOIN 才找得到。
+- 对得稳的：1028、1036、1042、1058、1071、1076、1084、1114、1115、1139。

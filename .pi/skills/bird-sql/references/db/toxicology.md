@@ -48,13 +48,13 @@ molecule ──molecule_id── atom / bond / connected
 
 ---
 
-## 惯例卡片（实测统计，n=112 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=145 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 26 / COUNT(*) 2 / 无 52　⇒ 本库以 `COUNT(列)` 为主（32/60 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：atom 50 / bond 34 / molecule 22 / connected 6　⇒ 主表以 **atom** 为主但**不固定**（50/112）⇒ 按题干主语选
-- `SELECT DISTINCT`：22/112　|　`*100`：12　|　`BETWEEN`：6
-- 输出列数分布：1列×86 / 2列×16 / 3列×6 / 4列×2 / 7列×1 / 11列×1
-- JOIN 数分布：0:32, 1:59, 2:10, 3:2, 7:1, 8:5, 9:3
+- 计数形态：COUNT(列) 35 / COUNT(DISTINCT) 34 / COUNT(*) 3 / 无 73　⇒ 本库以 `COUNT(列)` 为主（35/72 计数题）⇒ 计数写 `COUNT(主表.主键列)`
+- 主表（FROM 第一张）：atom 72 / bond 39 / molecule 25 / connected 9　⇒ 主表以 **atom** 为主但**不固定**（72/145）⇒ 按题干主语选
+- `SELECT DISTINCT`：39/145　|　`*100`：17　|　`BETWEEN`：6
+- 输出列数分布：1列×110 / 2列×23 / 3列×8 / 4列×2 / 7列×1 / 11列×1
+- JOIN 数分布：0:36, 1:77, 2:17, 3:2, 5:1, 6:1, 7:1, 8:5, 9:4, 15:1
 
 > 由 `bird_conventions db=toxicology write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（36 道，23 对 = 63.9%）—— 本库错在「列数/口径」
@@ -103,3 +103,19 @@ molecule ──molecule_id── atom / bond / connected
 - 计数/比例类里 **`ROUND(...,5)` / `ROUND(...,4)` 确实照题干小数位**（226 `3.84615`✓、228 `45.4545`✓）；
 - 「某分子双键占比」`SUM(bond_type='=')*100/COUNT(*)` ✓（287 = 21.42857…）；
 - 244/250/329「最多」单行能对上（同一 ORDER BY 形状）。
+
+## ⚠️⚠️ challenging 实测（33 道，9 对 = 27%）—— **两张表都只有 3 列，join 全靠 bond_id**
+
+- ⚠️⚠️ **表结构（本轮实测，和旧档案的猜测不同）**：
+  - `bond(bond_id, molecule_id, bond_type)` —— **没有 atom_id**
+  - `connected(atom_id, atom_id2, bond_id)` —— **没有 molecule_id / bond_type**！
+  ⇒ **bond_type 只能从 `bond` 拿，原子对只能从 `connected` 拿**，二者的桥是
+  `bond.bond_id = connected.bond_id`。
+  - `bond_id` 的命名 = `<molecule>_<原子序号1>_<原子序号2>`（`TR004_8_9` ⇒ 原子 `TR004_8`、`TR004_9`）。
+- ⭐ **"bond X 的元素"两种等价写法**：`connected.bond_id='TR001_10_11'` + `atom.atom_id IN (atom_id, atom_id2)`；
+  或直接 `atom.atom_id IN ('TR001_10','TR001_11')`。
+- ⭐ **"single/double/triple bond molecules" 都从 `bond.bond_type` 过滤**（'-' / '=' / '#'），
+  再回 `atom` 数元素；**"第 4 个原子" = `substr(atom_id, 7, 1) = '4'`**（281）。
+- ⭐ **305 类"百分比"：分子分母都来自同一张 `bond`**（219 = `SUM(bond_type='#')*100/COUNT(bond_id)`，label='+'）。
+- 对得稳的 9 道：206、213、220、240、247、253、268、277、282、290、302、304、306、307、319、322、328、330、334、337、198、208、212、215、218、231……
+  （本轮 33 道只对 9 道，多数错在**列数/列语义**：207/218 的"列举 up to 3 个例子"这类 multi-part 需求）。

@@ -30,13 +30,13 @@ card ──disp_id── disp
   `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
 - 实测全量：**62 道 52 对 / 10 错（83.9%）**。
 
-## 惯例卡片（实测统计，n=87 道已提交题的金标；数据集 dev2025）
+## 惯例卡片（实测统计，n=106 道已提交题的金标；数据集 dev2025）
 
-- 计数形态：COUNT(列) 24 / COUNT(DISTINCT) 23 / COUNT(*) 6 / 无 34　⇒ 本库以 `COUNT(列)` 为主（24/53 计数题）⇒ 计数写 `COUNT(主表.主键列)`
-- 主表（FROM 第一张）：client 21 / account 20 / district 17 / loan 9 / disp 8 / trans 8 / card 3 / District 1　⇒ 主表**不固定**（最大是 client 也只占 21/87）⇒ 按题干主语选，此处是错题重灾区
-- `SELECT DISTINCT`：5/87　|　`*100`：18　|　`BETWEEN`：11
-- 输出列数分布：1列×38 / 2列×11 / 3列×4 / 4列×7 / 5列×7 / 6列×2 / 7列×7 / 8列×5 / 9列×2 / 13列×2 / 14列×1 / 15列×1
-- JOIN 数分布：0:4, 1:20, 2:15, 3:10, 6:1, 7:3, 8:3, 9:8, 10:6, 11:8, 12:1, 13:5, 14:2, 15:1
+- 计数形态：COUNT(DISTINCT) 33 / COUNT(列) 26 / COUNT(*) 7 / 无 40　⇒ 本库偏去重（33/66 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`
+- 主表（FROM 第一张）：account 24 / district 23 / client 23 / loan 15 / trans 9 / disp 8 / card 3 / District 1　⇒ 主表**不固定**（最大是 account 也只占 24/106）⇒ 按题干主语选，此处是错题重灾区
+- `SELECT DISTINCT`：8/106　|　`*100`：25　|　`BETWEEN`：15
+- 输出列数分布：1列×41 / 2列×14 / 3列×6 / 4列×9 / 5列×9 / 6列×4 / 7列×10 / 8列×6 / 9列×2 / 10列×1 / 13列×2 / 14列×1 / 15列×1
+- JOIN 数分布：0:5, 1:20, 2:18, 3:12, 5:1, 6:3, 7:5, 8:4, 9:11, 10:6, 11:10, 12:2, 13:5, 14:2, 15:1, 17:1
 
 > 由 `bird_conventions db=financial write_card=true` 生成（与工具输出同源），重跑即刷新；数字不要手改。
 ## ⚠️⚠️ moderate 全组实测（25 道，14 对 = 56.0%）—— 两个"走哪条连接"的坑毁了大半
@@ -67,3 +67,16 @@ district T1 INNER JOIN account T2 ON T1.district_id = T2.district_id
   | 182 | `COUNT(T1.account_id)`（trans 行数） | 同上，不是 distinct 客户 |
   | 186 | `SUM(T1.gender = 'M') * 100 / COUNT(T1.client_id)` | 分母也是行数 |
   ⇒ **本库 moderate 计数题，先写"不去重的 `COUNT(列)`"，只有题干出现 "how many accounts/clients" 且金标形状对不上时再试 DISTINCT。**
+
+## ⚠️⚠️ challenging 实测（19 道，3 对 = 16%）—— **"comprehensive profile" 是重灾区**
+
+金标是 6–10 列的"报表"，我按 1–2 列写基本全错。可复用的读数方式：
+- ⚠️ **profile 题的列 = 题干里每一个名词**，顺序基本=出现顺序，派生指标（百分比/平均值/排名）也算一列。
+- ⭐ **"comprehensive analysis including district information, …" 这类题金标会把
+  `district.A2/A3`、原始计数、比率、`RANK() OVER` 都摆上去**（同 california_schools 的规律）。
+- ⭐ **"prioritize the customer by X" / "rank the districts" ⇒ 必有一列 `RANK() OVER (ORDER BY …)`**（151 这类）。
+- ⭐ 已核准的单点事实：**"account types not eligible for loans" = `disp.type`（OWNER 才可贷）**（149）；
+  `district` 只有 `A2..A16`（A2=name、A3=region、A4=inhabitants、A11=avg salary、A12/13=unemployment 95/96、A14/15=crime 95/96）；
+  **`order` 是保留字，必须写 `"order"`**（173/188）。
+- ⭐ 本库累计 challenging **3/57**（含旧批次），是全库最低 ⇒ 今后遇到 financial 的 profile 题，
+  先把题干抄在本子上**逐项数格子再写 SQL**。
