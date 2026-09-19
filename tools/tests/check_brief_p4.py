@@ -181,7 +181,7 @@ def main() -> int:
         r = subprocess.run(
             [PY, str(ROOT / "tools" / "bird.py"), "--dataset", "minidev", "answer", "2",
              "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
-             "--checks", "1,1b,2,2b,8,12,13,13b",
+             "--checks", "1,1b,2,2b,8,8b,12,13,13b",
              "--attrs", "how many customers"],
             cwd=ROOT, env=env, capture_output=True, text=True, encoding="utf-8", errors="replace",
         )

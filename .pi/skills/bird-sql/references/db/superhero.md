@@ -95,3 +95,12 @@ superhero ──id── hero_power ──power_id── superpower
     ⇒ 分母 = **女性英雄数**，分子 = 其中 Marvel 的（不是我写的"Marvel 里女性占比"——**两个方向别搞反**）✗
 - 对得稳的：724（蓝眼金发名单）、730、760（150–180cm 里 Marvel 占比）、769（Dark Horse 最耐久，配 `ORDER BY value DESC, id LIMIT 1`）、
   773（同色）、775、818、819、834。
+## ⚠️⚠️ 值层实测（D 类 7 道）
+
+- ⭐ `812` “full names of superheroes” 金标给 **`superhero_name`**（本表还有一列 `full_name`，别选错）。
+- ⭐ `772` “eyes / hair / skin colour” 金标给 **`eye_colour_id` / `hair_colour_id` / `skin_colour_id`（id）**，
+  不是 JOIN `colour` 翻译出来的 'Blue'。
+- ⭐ 百分比的分母是**全体**（`788`：金标 `COUNT(superhero.id)` 全表、只有分子限 Marvel）
+  —— 优先“没被 `WHERE` 收窄的那一侧”。
+- ⭐ `741` “most powers” 金标 `GROUP BY superhero_name` + `ORDER BY COUNT(T2.hero_id)`
+  （`GROUP BY` 的列和 `COUNT` 的列都要对）。

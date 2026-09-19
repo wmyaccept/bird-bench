@@ -135,3 +135,19 @@ WHERE <T1 上的条件> AND <T2/T3 上的条件>
 - ⭐ **"how is it compared to" 是把差做成第二列**：1241 金标 = `(低于正常值的人数, 低于 − 高于)`。
 - ⭐ 1168 金标 3 列 = `(最新 Lab Date, 首次到院年龄, Birthday)`（profile 题把 Birthday 也带上）。
 - 稳的：1169（男女比）、1171、1173、1183、1190、1191、1192、1194、1202、1223、1231、1232、1236、1243、1247、1257、1270、1292、1295、1302、1307。
+## ⚠️⚠️ 值层实测（D 类 40 道，全库最多）：三张主表的**分工**
+
+- `Patient`（患者属性：`SEX` / `Birthday` / `First Date` / `Admission` / `Diagnosis`）、
+  `Examination`（每次检查：`Examination Date` / `Symptoms` / `Thrombosis` / `ANA Pattern` / `KCT`…）、
+  `Laboratory`（化验值：`IGA` / `TP` / `GPT` / `UA`…）。
+- ⭐ **“first presented / came to the hospital” = `Patient.\`First Date\``**，不是 `Examination.\`Examination Date\``
+  （`1191` 我用了检查日期 ⇒ 值错；`1178` “first AORTITIS patient” 金标也是 `Patient.\`First Date\``）。
+- ⭐ **“多少患者” 的计数单位**：金标多数是 `COUNT(T1.ID)`（患者数），不是 `COUNT(*)`（化验行数）
+  （`1245`/`1300`/`1306`/`1280`/`1203`/`1200`…）；而 `1287`/`1289`/`1298`/`1304`/`1267` 这几道
+  **金标反过来不加 DISTINCT**，我多写了 `COUNT(DISTINCT …)` ⇒ 方向反了。
+  ⇒ **先写 `COUNT(主表.ID)`（不加 DISTINCT）**；只有 evidence 明说 “different ones” 才去重。
+- ⭐ 百分比模板（`1279`/`1150`/`1160`）：
+  `CAST(SUM(CASE WHEN <条件> THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*)`，**实体级过滤放 `WHERE`**，
+  `* 100` 紧跟 `CAST`。
+- ⭐ `1254`：`STRFTIME('%Y', x) >= '1990'` **必须带引号**（写整数 `1990` 在 SQLite 里恒为真）。
+- ⭐ `1243`/`1189`：金标的分母常是**同一个子集**（“PT 异常的女性数 / PT 异常的全部患者数”）。

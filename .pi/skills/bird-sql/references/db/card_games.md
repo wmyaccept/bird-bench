@@ -163,3 +163,16 @@ JOIN `cards` 会把同一张卡的所有版本都算进去（我因此给出 3 �
   `SELECT id FROM sets WHERE type = 'commander' ORDER BY totalSetSize DESC, id ASC LIMIT 1`（**加了 id ASC 破并列**）。
 - 515/528 类"名字 + 合法赛制"：528 金标 `cards.name, legalities.format`（`status='Legal'`，1664 行）。
 - 对得稳的：415（commander 合法且无内容警告）、487（Coldsnap 的 cardKingdom 双 id）、494、507、521、528。
+## ⚠️⚠️ 值层实测（D 类 24 道）：**百分比的分母 = card 数，不是翻译行数**
+
+- ⭐ `352`/`417` 我 `FROM set_translations … / COUNT(*)`（分母 = 翻译行数）；金标是
+  **`FROM cards JOIN foreign_data … / COUNT(cards.id)`**（分母 = 卡片数）。`506` 更极端：
+  金标 `FROM sets WHERE code IN (子查询)` + `COUNT(id)`。
+- ⭐ `361`/`363` 金标 `COUNT(DISTINCT cards.id)` 而我 `COUNT(*)`；`499`/`463` “how many translations”
+  金标是 **`COUNT(DISTINCT translation)`**。
+- ⭐ **给 id 还是给 name：本库金标大量给 `id`** —— `343`/`382`/`387`/`389`/`437`/`425` 的题干写着
+  “Name all cards… / What are the cards… / List down the name of cards…”，金标给的都是 **`id`**。
+  ⇒ 除非题干明确要 `name`，否则先给 `id`。
+- ⭐ 并列要补第二排序键：`513`（我 `code`，金标 `id` + `ORDER BY totalSetSize DESC, id ASC`）、`514` 同。
+- ⭐ `451` “positive starting maximum hand size” = `hand IS NOT NULL AND CAST(hand AS INTEGER) > 0`
+  （**不是**某个具体值；我硬编码 `hand='3'` 是错的）。

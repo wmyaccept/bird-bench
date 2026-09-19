@@ -113,3 +113,12 @@ event.event_id            = attendance.link_to_event
 - 对得稳的：1339（`AVG(cost)` + `substr(expense_date,6,2) IN ('09','10')`）、1359（两会议 Advertisement 金额之比）、
   1429（`event.location = '900 E. Washington St.'` + `position='Vice President'` + `type='Social'`）、
   1448（Pizza 50<c<100 → 4 行 2 列）、1457（3 行 3 列）、1460、1464（`income.date_received`）。
+## ⚠️⚠️ 值层实测（D 类 7 道）
+
+- ⭐ `1388` “highest income 的学生的 full name + income source” 金标是
+  `GROUP BY first_name, last_name, source`（**GROUP BY 要含全部非聚合输出列**）。
+- ⭐ `1442` 百分比按**事件**去重：`COUNT(DISTINCT CASE WHEN remaining < 0 THEN link_to_event END)
+  / COUNT(DISTINCT event_id)`（我按预算行数的 ⇒ 值错）。
+- ⭐ `1454` “percentage of the cost for meeting events” 的分母是 **`SUM(全部 cost)`**（金额占比），
+  不是 `COUNT(event_id)`。
+- ⭐ `1458` 两个百分比之差：**先合并再 `* 100` 再除**（`(a - b) * 100 / n`，不是 `a/n - b/n`）。

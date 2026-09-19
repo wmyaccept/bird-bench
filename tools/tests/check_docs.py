@@ -160,9 +160,45 @@ def main() -> int:
         "闸门 4 有自我标定（audit 会算它会拦下几道错题 / 误拦几道对题）",
         "闸门 4 列数下界自标定" in bird_src,
     )
+    # ⭐ P17：核心条目必须用**闸门自己的解析器**断言 —— 上一轮把 13b 的 `<!-- core -->`
+    #    写在续行上，闸门（按行匹配）根本没认，而这里用 re.S 的宽松断言却放过了（测试比实现松）。
+    import sys as _sys
+
+    if str(ROOT / "tools") not in _sys.path:
+        _sys.path.insert(0, str(ROOT / "tools"))
+    import bird as _bird
+
+    _core = [i for i, c in _bird.checklist_items() if c]
     check(
-        "checklist 有 13b（属性清单）且是核心条目",
-        bool(re.search(r"\*\*13b\..*?<!-- core -->", txt(REF / "checklist.md"), re.S)),
+        "核心条目 == 闸门现场解析出来的集合（含 13b 属性清单 / 8b 值层六问）",
+        set(_core) == {"1", "1b", "2", "2b", "8", "8b", "12", "13", "13b"},
+        _core,
+    )
+    _orphan = [
+        l for l in txt(REF / "checklist.md").splitlines()
+        if "<!-- core -->" in l
+        and not l.lstrip().startswith(">")
+        and not re.match(r"^\s*-\s*\[ \]\s*\*\*[0-9]+[a-z]?\.", l)
+    ]
+    check(
+        "没有『孤儿 core 标记』（写在条目续行上闸门会静默忽略）",
+        not _orphan,
+        [x.strip()[:40] for x in _orphan[:2]],
+    )
+    check(
+        "traps.md 有『值层六问』且带 205 道错题的实测道数（不是只写个标题）",
+        "值层六问" in txt(REF / "traps.md") and "70 道（34%）" in txt(REF / "traps.md"),
+    )
+    _profiles = list((REF / "db").glob("*.md"))
+    _with = [p.name for p in _profiles if "值层实测" in p.read_text(encoding="utf-8")]
+    check(
+        "11 份库档案都补了『值层实测』（D 类错题按库落地）",
+        len(_with) == len(_profiles) == 11,
+        f"{len(_with)}/{len(_profiles)}",
+    )
+    check(
+        "AGENTS/SKILL 不再手抄核心条目号",
+        not re.search(r"核心条目（`1`/`1b`", txt(AGENTS) + txt(SKILL / "SKILL.md")),
     )
     check(
         "pi 扩展侧同步：bird_answer 有 attrs 参数 + bird_attrs 工具",

@@ -98,3 +98,13 @@ Team   ──team_api_id─── Team_Attributes
   ⇒ 口诀：**外层过滤照抄题干，内层"平均值"先用最宽口径**。
 - ⚠️ `Player_Attributes.preferred_foot`（`Player` 表里没有这一列）—— 1037 要 JOIN 才找得到。
 - 对得稳的：1028、1036、1042、1058、1071、1076、1084、1114、1115、1139。
+## ⚠️⚠️ 值层实测（D 类 22 道）：**Player 与 Player_Attributes 是 1:N**
+
+- ⭐ **`AVG` 的分母**：`1093` 金标是 **`SUM(overall_rating) / COUNT(Player.id)`**（按**球员**平均），
+  我写 `AVG(pa.overall_rating)`（按**属性行**平均）；`1068`/`1058` 同理。
+  ⇒ 题干问“球员的平均 X”时先写 `SUM(x) / COUNT(Player.id)`。
+- ⭐ 计数一律 **`COUNT(DISTINCT Player.id)`**（`1052`/`1080`/`1037`）。
+- ⭐ `1144` “heaviest weight 的球员的 finishing/curve” 金标**第一列给 `id`**（不是 `player_name`）；
+  `1135` “top five players' IDs” 金标给 **`Player_Attributes.id`**（不是 `player_api_id`）。
+- ⭐ `1024`/`1027` 并列要补第二排序键（`player_api_id ASC`）。
+- ⭐ `1029` “top 4 队伍的 buildUpPlaySpeed” 金标 `DISTINCT` + `ORDER BY …, team_api_id ASC`（我漏了破并列）。

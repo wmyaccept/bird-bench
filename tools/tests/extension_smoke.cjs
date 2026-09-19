@@ -97,7 +97,7 @@ function check(name, cond, detail = "") {
 
   fs.rmSync(PROBE_LOG, { force: true }); // 探针日志从零开始
   const answersBefore = fs.readFileSync(ANSWERS, "utf8");
-  const CHECKS_CORE = "1,1b,2,2b,8,12,13,13b";
+  const CHECKS_CORE = "1,1b,2,2b,8,8b,12,13,13b";
   const ATTRS_Q1 = "the least consumption"; // 1472 题干原文
   const ATTRS_Q2 = "how many customers";    // 1473 题干原文
 

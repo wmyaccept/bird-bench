@@ -126,3 +126,21 @@ races ──circuitId── circuits
 - ⚠️ **表名是驼峰**：`lapTimes` / `pitStops`（不是 `lap_times`）；`circuits` 表**没有** lap record 列。
 - 对得稳的：880（853 与 854 的 fastestLapSpeed 百分比）、896、944（用 '+MM:SS.mmm' 判 gap）、954、
   962、990（`constructors.constructorRef, url`）、994、1001（`MIN(q3)`）。
+## ⚠️⚠️ 值层实测（D 类 23 道）：**本库有 4 套“成绩”表，选错就是值错**
+
+同一件事（分数/名次/胜场/圈速）在四套表里各有一份：
+
+| 题干问的东西 | 金标习惯用的表 | 我常错用的表 |
+|---|---|---|
+| `points` / `wins` / `position`（车手） | **`driverStandings`** | `results` |
+| 车队积分/名次 | **`constructorStandings`** | `constructorResults` |
+| 最快圈速 / lap record | **`lapTimes.time`（每圈）或 `results.fastestLapTime`** | `results.time`（那是**比赛总用时**，不是圈速！） |
+| 单场比赛结果 | `results` | — |
+
+- ⭐ 实测：`1010`/`1006`/`1012` 我都写 `MIN(results.time)`，金标是 `lapTimes … ORDER BY milliseconds LIMIT 1`；
+  `893`/`903`/`905`/`995`/`1004` 我用 `results`，金标全走 **`driverStandings`**。
+- ⭐ `936` “fastest lap” 金标给的是 **`results.fastestLap`（名次）**，不是 `fastestLapTime`（时间）—— 两个相邻列，看题干的动词/名词。
+- ⭐ `889` “最后一场是哪年” 我 `MAX(year)`，金标 `ORDER BY year DESC LIMIT 1` 取 **`date`**（问“何时”就给日期列，不是年份）。
+- ⭐ 平均圈速要把 `'1:31.4'` **换算成秒**再平均（`942` 金标 `SUBSTR` + `INSTR` 拆分秒）；直接 `AVG(fastestLapTime)` 是对字符串求平均 ⇒ 0。
+- ⭐ `1024`/`1027` “top 5 的 id”：金标给 **`player_api_id`**（`1024`）/`Player_Attributes.player_api_id`（`1027`），且**并列要补第二排序键**（`player_api_id ASC`）。
+- ⭐ `996` “21 世纪头十年” = `year BETWEEN 2000 AND 2009`（我写成 `2010-12-31` ⇒ 多算一年）。

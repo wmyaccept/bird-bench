@@ -109,6 +109,8 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反�
 
 📖 **读**：`traps.md` —— 它不是按主题、而是**按你正在写的部分**组织的：
 写 `SELECT` 看 ①、写 `JOIN` 看 ②、写 `WHERE 值` 看 ③、写聚合看 ④。
+⭐ **④ 开头是「值层六问」**（表 / 数实体还是行 / `DISTINCT` / `*100` 与分母 / 要值还是要整行 / NULL）
+—— 落笔前按顺序问一遍（`traps.md` ④、`checklist.md` 8b）。
 📤 **产出**：SQL
 
 ⭐ **写 `SELECT` 列之前的固定动作（治列序错）**：把题干里的概念**按出现的先后标号**，

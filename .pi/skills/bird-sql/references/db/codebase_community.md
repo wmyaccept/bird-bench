@@ -145,3 +145,17 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
   不是整张 `badges` 表 ✗（542/2501 − 1959/2501）。
 - 对得稳的：634（Harvey Motulsky 总浏览量更高）、639（Community 的帖子 0% 用 R 标签，**答案就是 0**）、
   701（最 influencial 用户 whuber 的题目金标自身执行失败，不计）。
+## ⚠️⚠️ 值层实测（D 类 25 道）：**时间列常不在你以为的那张表里**
+
+- ⭐ `posts.CreaionDate`（**原文就是拼错的**）vs `postHistory.CreationDate` vs `postLinks.CreationDate`：
+  `642`（21st July 2010 发的帖子）金标走 **`postHistory`**；`603`（2011 年 686 的收藏）金标也走 `postHistory`；
+  `667`（oldest post link）金标排序用的却是 **`posts.CreaionDate`**（不是 `postLinks.CreationDate`）。
+  ⇒ 题干说的是**行为**（posted / commented / edited）时，先想 `postHistory`。
+- ⭐ `696` “tag specified as 'careers'” 金标 **`FROM tags WHERE TagName = 'careers'`**（tags 表一行一标签），
+  不是 `posts.Tags LIKE '%<careers>%'`。
+- ⭐ 计数形态：`COUNT(T1.Id)` 常见（`557`/`632`/`672`）；`709`/`716` 才用 `COUNT(DISTINCT …)`。
+- ⭐ `628` “users with the highest number of views” 要给 **`Id, DisplayName`** 两列；
+  `594` “which user created post ID 1” 给 **`DisplayName`**（不是 userId）。
+- ⭐ `665` “average monthly number of links in 2010” 的分母是 **12**（不是“有数据的月份数”）。
+- ⭐ `565` 是否题：金标 `IIF(ClosedDate IS NULL, 'NOT well-finished', 'well-finished')`
+  —— 两个字符串是**它自己定的**，别自己造。

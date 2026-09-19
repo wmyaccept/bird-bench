@@ -49,3 +49,14 @@ yearmonth ──CustomerID──── customers（Date 'YYYYMM'，覆盖 2011-2
   （SME、LAM、KAM 三个百分比并列，**不是 2 行挑最大最小**）✗
   ⇒ 同样用 `SUM(IIF(Segment='X' AND Date LIKE '2013%', Consumption, 0))` 的写法 → `*100/NULLIF(...,0)`。
 - 对得稳的：1476（CZK − EUR 2012 消费差）、1526（`transactions_1k.Price = 634.8` 的客户，2012/2013 消费降幅）。
+## ⚠️⚠️ 值层实测（D 类 13 道）
+
+- ⭐ `1470` “gas stations with Premium gas” 金标 **`FROM gasstations WHERE Segment = 'Premium'`**，
+  不是 JOIN `products` 判断。
+- ⭐ `1494` “Slovakian” = **`Country = 'SVK'`**（表里不是 `'Slovakia'`）。
+- ⭐ `1477` “most gas use paid in EUR” 金标走 **`yearmonth`**（不是 `transactions_1k`）。
+- ⭐ `1529` 两个问句 = 两个 `SUM(Price)`：第二个用
+  `SUM(CASE WHEN strftime('%Y%m', Date) = '201201' THEN Price ELSE 0 END)`。
+- ⭐ `1527`/`1531` “highest revenue / top spending customer” 要 `GROUP BY 实体` + `ORDER BY SUM(Price)`
+  （不是单笔 `Amount`）；`1530` “top five best selling products” 金标按 **`Amount`** 排序（不是 `COUNT(*)`）。
+- ⭐ `1505`/`1525` 计数/百分比按 **`COUNT(DISTINCT CustomerID)`**。

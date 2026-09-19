@@ -80,3 +80,16 @@ district T1 INNER JOIN account T2 ON T1.district_id = T2.district_id
   **`order` 是保留字，必须写 `"order"`**（173/188）。
 - ⭐ 本库累计 challenging **3/57**（含旧批次），是全库最低 ⇒ 今后遇到 financial 的 profile 题，
   先把题干抄在本子上**逐项数格子再写 SQL**。
+## ⚠️⚠️ 值层实测（D 类 15 道）：**钱有两套表，id 有三个**
+
+- ⭐ `transactions_1k`（逐笔：`Price` / `Amount` / `Date`）vs `yearmonth`（月度汇总：`Consumption` / `Date='YYYYMM'`）：
+  `1477`（哪一年加油花得最多）金标走 **`yearmonth`**；`1529`（在加油站花了多少 + 2012 年 1 月花了多少）
+  金标全在 **`transactions_1k`**（`Price` 求和）。
+  ⇒ “spent / spend（花了多少）” 先想 **`transactions_1k.Price`**；“consumption（消费额）” 先想 **`yearmonth.Consumption`**。
+- ⭐ `107`/`174`：`account_id` / `disp_id` / `client_id` 别混 —— `174` 题干 “account owner number 130”
+  金标是 **`account.account_id = 130`**，我用了 `disp_id`。
+- ⭐ “没有信用卡” = **`disp.type != 'OWNER'`**（`130`），不是“在 `card` 表里没有记录”。
+- ⭐ 地区名**小写**：`A3 = 'north Bohemia'` / `'south Bohemia'`（`130`/`131`/`150`）；`A2` 是分支所在地。
+- ⭐ 贷款状态：`status IN ('C','D')` 才算 active（`131`）。
+- ⭐ `94`/`189`/`95` “最年轻/最年长 + 平均工资”这类双条件题，金标是 `ORDER BY` + `LIMIT 1` 或
+  `WHERE 列 = (SELECT …)`，**不要把两个条件分别写成两个子查询**。

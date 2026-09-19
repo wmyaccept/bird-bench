@@ -107,3 +107,14 @@ satscores ──cds ───┘
 
 ⚠️ **教训（代价很大）**：本库**旧的 65 道 challenging 我全部只写了 1 列 ⇒ 全错**。
 以后本库见到 "profile / comprehensive / details / statistics"，**先照题干属性词一行一个数出列数，再写 SQL**。
+## ⚠️⚠️ 值层实测（D 类 9 道）：**近义列 + NULL 处理**
+
+- ⭐ `frpm` 里同时有 **`Free Meal Count (Ages 5-17)`** 与 **`FRPM Count (Ages 5-17)`**（另有 K-12 版）：
+  `26` 我用了前者，金标用 **`FRPM Count`**。
+  ⇒ 题干说 “free or reduced-priced meals” 用 **FRPM Count**；只说 “eligible free” 才用 `Free Meal Count`。
+- ⭐ “continuation schools” 是 **`Educational Option Type = 'Continuation School'`**，
+  不是 `School Type LIKE '%Continuation%'`（`1`，我还漏了它当分母时的 `IS NOT NULL`）。
+- ⭐ **排序取极值前一律加 `IS NOT NULL`**：`40`/`43`/`51` 三道金标都带 `IS NOT NULL`
+  （NULL 会让“最低分/最低比例”选到空行）。
+- ⭐ `85`：“Percent (%) Eligible Free (K-12)”**表里已有现成列**时就直接用；要自己算时按
+  `Free Meal Count (K-12) * 100 / Enrollment (K-12)`（金标那道是现算的，不是取现成列）。

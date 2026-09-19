@@ -408,7 +408,7 @@ export default function (pi: ExtensionAPI) {
     promptGuidelines: [
       "bird_answer 的闸门 1：本题在 probe_log 里必须已有记录（只有带 for_idx 的 bird_query/bird_cols/bird_find/bird_schema 才会写入）—— 不能凭空声称'我查过了'。",
       "bird_answer 的闸门 2：SQL 最前面必须写 /* shape: 行数x列数 */，与实测形状不符会被拒绝（列表题不知几行可写 /* shape: ?x2 */ 只校验列数；计数题/极值题必须写数字）。",
-      "bird_answer 的闸门 3：checks 里列出的条目号必须都存在于 checklist.md；标了 core 的核心条目（1 / 1b / 2 / 2b / 8 / 12 / 13 / 21）无条件适用、少一个就交不上。留痕进 probe_log，bird_audit 会统计勾选率与最常被漏掉的条目。",
+      "bird_answer 的闸门 3：checks 里列出的条目号必须都存在于 checklist.md；标了 core 的核心条目无条件适用、少一个就交不上（清单由后端现场解析 checklist.md，缺哪条它会告诉你）。留痕进 probe_log，bird_audit 会统计勾选率与最常被漏掉的条目。",
       "bird_answer 的闸门 4：attrs 是属性清单（用 | 分隔，逐条抄题干/evidence 里的原文片段），条数必须 == SELECT 列数；并且列数不能低于「同模板已提交题的金标列数」与「本库×难度金标列数 P20」的较大者（少给列会被拒）。写 SQL 前先 bird_attrs 看列数先验。",
       "确属一目了然、不必探测的题用 force=true 跳过闸门 —— 会记进 probe_log 并被 bird_audit 统计（强制率本身是要盯的指标）。",
     ],
@@ -418,7 +418,7 @@ export default function (pi: ExtensionAPI) {
       checks: Type.Optional(
         Type.String({
           description:
-            '闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目 1/1b/2/2b/8/12/13/21 必须出现',
+            '闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目（checklist.md 里带 core 标记的全部条目）必须出现',
         }),
       ),
       attrs: Type.Optional(

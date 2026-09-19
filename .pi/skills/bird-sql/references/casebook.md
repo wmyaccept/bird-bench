@@ -2014,3 +2014,59 @@ thrombosis_prediction 28、toxicology 33 ⇒ **新答 121、对 63（52.1%）**�
 ⇒ 闸门用 **0.6**（精确优先，剩下的靠 P20），`attrs` 命令另用 **0.25** 档**只做展示**
 （把"最像的已提交题给了几列"摆出来给我估列数，不参与拒绝）。
 **教训：一个相似度阈值不可能同时服务"拒绝"和"提示"两种用途 —— 拆成两个常量。**
+
+---
+
+## 第 47 轮（2026-09-18）｜**值不对（D 类 205 道）的病因归纳与毕业**
+
+### 怎么做的（不靠印象）
+
+把 dev2025 全量错题按失败类型切开后，**D 类（形状对、取值不同）205 道**是最大一块（45.4%）。
+于是把 205 道**逐条读完**（题干 + evidence + 我的 SQL + 金标 SQL，导出成 `dclass.txt`），
+再用**文本判据**给每个病因定数（判据写死在 `D:/tmp/bird/d_rules.py`，可复核）：
+
+| 病因 | 道数 | 判据 |
+|---|---|---|
+| ① **用了另一套同义表**（本库有 2~4 套数据源） | **70（34%）** | 我的表集合 ≠ 金标的表集合 |
+| ② **`COUNT(*)` 而金标 `COUNT(主表列)`**（JOIN 膨胀） | **53** | 我含 `count(*)`、金标含 `count(列)` |
+| ③ 金标用了 `DISTINCT` 而我没有 | 25 | — |
+| ④ 我多写了 `DISTINCT` 而金标没有 | 27 | — |
+| ⑤ “最…的”：我 `MAX/MIN`、金标 `ORDER BY … LIMIT` | 16 | — |
+| ⑥ 百分比漏 `* 100` | 12 | 题干有 percent，我 SQL 里没有 `100` |
+| ⑦ 金标有 `IS NOT NULL`、我漏了 | 11 | — |
+| ⑧ 我少一个 `AND` / 多一个 `AND` | 24 / 22 | 条件计数 |
+| ⑨ 字面值只差大小写 | 4 | — |
+
+**至少命中一条的 161/205 = 79%**；一条没命中的 44 道属于纯语义判断（如“这句英文到底问哪个实体”）。
+
+### 毕业到哪三处（都在核心路径上）
+
+1. `traps.md` ④ 开头 → 新增 **「值层六问」表 + 四步思维顺序**（先写答案主语 → 再定表 → 再定分子分母 → 最后去重与 NULL）。
+2. `checklist.md` → 新增 **8b（`<!-- core -->`，无条件强制勾）**：把六问变成**机器留痕的提交闸门**。
+3. `db/*.md` × **11 份全部**新增「⚠️⚠️ 值层实测」：
+   - `formula_1`：**4 套“成绩”表**（`driverStandings` vs `results` vs `lapTimes`；`results.time` 是**比赛总用时不是圈速**）
+   - `thrombosis_prediction`：`Patient`/`Examination`/`Laboratory` 分工 + **“first presented” = `Patient.First Date`** + 先写 `COUNT(主表.ID)`（**不加 DISTINCT**）
+   - `card_games`：百分比分母 = **card 数**（不是翻译行数）+ 本库大量给 `id` 而非 `name`
+   - `codebase_community`：时间列在 `postHistory`（`posts.CreaionDate` 是**拼错的列名**）+ `tags.TagName`
+   - `financial`：`transactions_1k.Price` vs `yearmonth.Consumption`；`account_id`/`disp_id` 别混；“没有信用卡”= `disp.type != 'OWNER'`
+   - `california_schools`：`FRPM Count` vs `Free Meal Count` + 取极值先 `IS NOT NULL`
+   - `european_football_2`：`Player` 与 `Player_Attributes` 1:N ⇒ 平均写 `SUM(x)/COUNT(Player.id)`
+   - `toxicology`：百分比的分子分母常是**两个粒度**
+   - `superhero` / `student_club` / `debit_card_specializing`：见各自档案
+
+### ⭐ 这轮抓到一个**真 bug**（守卫写在续行 = 守卫不存在）
+
+上一轮（P16）给 `checklist.md` 的 **13b（属性清单）** 加了 `<!-- core -->`，但那行标记落在**条目的第 3 行**；
+而闸门 3 的解析器是**按行**匹配 `^\s*-\s*\[ \]\s*\*\*\d+[a-z]?\.`（标记必须在**条目首行**）——
+⇒ **13b 其实一直没被强制**，而当时的 `check_docs` 断言用的是 `re.S` 正则（能跨行匹配），**测试比实现松**，所以没人发现。
+
+修法（两层）：
+- 把标记挪到 13b 的**首行**（现在核心集 = `1,1b,2,2b,8,8b,12,13,13b`，9 条）；
+- 断言改用**闸门自己的解析器**（`import bird; bird.checklist_items()`）**加**一条“**没有孤儿 core 标记**”的反向守卫
+  —— 从此“标记写在续行”会被当场抓住（本轮实测：它立刻又抓出一处在正文里写字面量 `<!-- core -->` 的散文行，已改成“core 标记”措辞）。
+
+### 元教训
+
+- ⭐ **测试必须用与实现同一个解析器** —— 自己另写一条宽松正则，等于给自己发假通行证（本轮实锤）。
+- ⭐ **“标记”和“标记所在的行”是两件事**：解析器按行/按块，写文档的人按段落 —— 这类错会**静默**。
+- ⭐ 归纳病因要先**定数**再写规则：205 道全读 + 文本判据计数，才能说出“34% 是表选错”这种可行动的结论。
