@@ -36,6 +36,7 @@ import re
 import sqlite3
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 # ---------------------------------------------------------------- 路径与配置
@@ -852,6 +853,63 @@ def cmd_audit(args):
         print(f"  无探针 idx：{no_probe[:20]}{' …' if len(no_probe) > 20 else ''}")
     if not shaped:
         print("  （形状声明为 0 属正常 —— 这批答案早于闸门；闸门启用后新提交的都会有。）")
+
+    # ⭐ 闸门 4（属性清单）：留痕统计 + **自我标定**（指标自己就能证伪）
+    attrs_last = {k: parse_attrs(v[-1].get("detail", "")) for k, v in probes_all.items() if any(p.get("kind") == "attrs" for p in v)}
+    if attrs_last:
+        lens = [len(v) for v in attrs_last.values() if v]
+        print(
+            f"  属性清单留痕：{len(attrs_last)}/{len(ids)} 道"
+            + (f"（平均 {sum(lens) / len(lens):.1f} 条）" if lens else "")
+        )
+    else:
+        print("  （属性清单留痕 0 条 —— 这批答案早于闸门 4；启用后新提交的都会有。）")
+    rows4 = _answered_gold()
+    meta4 = {i: q for i, q, _g in rows4}
+    words4 = {i: _question_words(q) for i, q, _g in rows4}
+    gcol4 = {i: _gold_ncol(g) for i, _q, g in rows4}
+    mycol4 = {i: _sql_profile(answered_sql[i])["ncol"] for i in ids if i in answered_sql}
+    pri4: dict = {}
+    bydb4: dict = {}
+    for i, q, _g in rows4:
+        pri4.setdefault((q["db_id"], q["difficulty"]), []).append(gcol4[i])
+        bydb4.setdefault(q["db_id"], []).append(i)
+    p204 = {k: _pctl(v, 0.20) for k, v in pri4.items()}
+    tpl4 = {}
+    for _db, group in bydb4.items():
+        for i in group:
+            best = []
+            for j in group:
+                if i == j:
+                    continue
+                a, b = words4[i], words4[j]
+                if not a or not b:
+                    continue
+                inter = len(a & b)
+                if inter < 4:
+                    continue
+                r = inter / len(a | b)
+                if r >= ATTRS_LOWER_THETA:
+                    best.append((r, j))
+            best.sort(reverse=True)
+            tpl4[i] = min((gcol4[j] for _r, j in best[:3]), default=0)
+    wrong4 = {w[0] for w in wrong}
+    b_wrong = b_ok = 0
+    for i in ids:
+        if i not in mycol4:
+            continue
+        q = meta4.get(i)
+        lower = max(tpl4.get(i, 0), p204.get((q["db_id"], q["difficulty"]), 0.0)) if q else 0.0
+        if mycol4[i] < lower:
+            if i in wrong4:
+                b_wrong += 1
+            else:
+                b_ok += 1
+    n_ok4 = max(len(ids) - len(wrong4), 1)
+    print(
+        f"  闸门 4 列数下界自标定：会拦下 {b_wrong} 道错题（共 {len(wrong4)} 道错题），"
+        f"误拦 {b_ok} 道对题（{b_ok / n_ok4 * 100:.2f}%）"
+    )
     print()
     print(f"错题 {len(wrong)} 道，失败类型分布：", end="")
     print()
@@ -1181,6 +1239,140 @@ def cmd_brief(args):
         print("（没有带 push 标记的片段 —— 去 references/*.md 里用 <!-- push step=N --> 包住要推送的内容）")
 
 
+# ══════════════════════════════════════════════════════════════════
+# 闸门 4：属性清单（P16）—— 专治「少给列」（本项目最大单类错，占错题 31%、其中 83% 是少给）
+#   ① 机器**无法**从题干自动算出"该给几列"：实测自动抽取属性词的误拦率 15%~100%，已证伪；
+#   ② 所以拆成两半：
+#      4a 逼我把题干的属性**逐条抄成清单**（每条必须逐字出现在题干/evidence，防凑数）
+#         且条数必须 == SELECT 实测列数；
+#      4b 用"同模板已提交题的金标列数"与"本库×难度金标列数 P20"取大者做**下界**，
+#         低于下界直接拒绝（2026-09-18 标定：1534 道实测误拦对题 5 道 = 0.46%，
+#         可拦下 52 道错题 = 错题的 11.5%，集中在 financial 21 / california_schools 21）。
+#   前提声明（P15）：金标形状只有**已提交题**才拿得到，所以 4b 对"全新模板的第一道题"无效，
+#   只在本库已有同模板作答时生效；它仍然只是**校验器**，不是逐题抄答案。
+# ══════════════════════════════════════════════════════════════════
+ATTRS_LOWER_THETA = 0.6   # 闸门 4 用严阈值（实测：放宽会把误拦率拉到 4%，得不偿失）
+ATTRS_DISPLAY_THETA = 0.25  # 仅用于 `attrs` 命令的展示（不参与闸门）
+ATTRS_STOP = set(
+    "the a an of in on for and or to is are was were be been with that this these those their its it by as at "
+    "from which what who whom whose how many much all any each per than then there here we you they he she i "
+    "not no do does did can could should would will shall may might must if else when where why show list give "
+    "find get return output provide calculate compute tell me please using use used".split()
+)
+
+
+def parse_attrs(raw: str) -> list[str]:
+    """`--attrs` 的清单：用 | 或换行分隔，每条 = 题干里的一个属性（原文片段）。"""
+    if not raw:
+        return []
+    return [p.strip() for p in re.split(r"[|\n]", raw) if p.strip()]
+
+
+def _norm_ws(text: str) -> str:
+    text = (text or "").replace("’", "'").replace("“", '"').replace("”", '"')
+    return re.sub(r"\s+", " ", text.lower()).strip()
+
+
+def attrs_traceable(piece: str, question: str, evidence: str) -> bool:
+    """清单的一条必须在题干或 evidence 里**逐字**出现（防凑数、防编造属性名）。"""
+    p = _norm_ws(piece).strip(" .,:;?!\"'()[]")
+    if len(p) < 2:
+        return False
+    return p in _norm_ws((question or "") + " \n " + (evidence or ""))
+
+
+def _question_words(q: dict) -> frozenset:
+    text = (q.get("question", "") + " " + (q.get("evidence") or "")).lower()
+    return frozenset(w for w in re.findall(r"[a-z0-9_]+", text) if w not in ATTRS_STOP and len(w) > 1)
+
+
+def _gold_ncol(sql: str) -> int:
+    return _sql_profile(sql)["ncol"]
+
+
+def similar_submitted(idx: int, theta: float = ATTRS_LOWER_THETA, top: int = 3):
+    """题干最相似的**已提交**题（同库）—— 形状聚合先验，不是逐题抄答案。"""
+    questions = load_questions()
+    mine = _question_words(questions[idx])
+    out = []
+    for i, q, g in _answered_gold(only_db=questions[idx]["db_id"]):
+        if i == idx:
+            continue
+        other = _question_words(q)
+        if not mine or not other:
+            continue
+        inter = len(mine & other)
+        if inter < 4:
+            continue
+        ratio = inter / len(mine | other)
+        if ratio >= theta:
+            out.append((ratio, i, _gold_ncol(g)))
+    out.sort(reverse=True)
+    return out[:top]
+
+
+def gold_ncol_prior(db_id: str, difficulty: str) -> Counter:
+    """本库×难度的**已提交题**金标列数分布（只覆盖已提交题 —— P15 前提）。"""
+    dist = Counter()
+    for _i, q, g in _answered_gold(only_db=db_id):
+        if q["difficulty"] == difficulty:
+            dist[_gold_ncol(g)] += 1
+    return dist
+
+
+def _pctl(vals: list, q: float) -> float:
+    vals = sorted(vals)
+    if not vals:
+        return 0.0
+    k = (len(vals) - 1) * q
+    f = int(k)
+    c = min(f + 1, len(vals) - 1)
+    return vals[f] + (vals[c] - vals[f]) * (k - f)
+
+
+def attrs_lower_bound(idx: int) -> tuple:
+    """列数下界 = max(同模板已提交题的列数下界, 本库×难度金标列数 P20)；附证据文字。"""
+    questions = load_questions()
+    q = questions[idx]
+    sims = similar_submitted(idx)
+    tpl = min(x[2] for x in sims) if sims else 0
+    prior = gold_ncol_prior(q["db_id"], q["difficulty"])
+    p20 = _pctl(list(prior.elements()), 0.20) if prior else 0.0
+    lines = []
+    if sims:
+        lines.append("  同模板已提交题（题干相似度 >= %.2f；列数=它们的金标输出列数）：" % ATTRS_LOWER_THETA)
+        for ratio, j, nc in sims:
+            lines.append(f"    #{j}  相似 {ratio:.2f}  金标 {nc} 列  | {questions[j]['question'][:58]}…")
+    lines.append(
+        f"  本库×难度（{q['db_id']}/{q['difficulty']}）已提交题金标列数分布："
+        f"{dict(sorted(prior.items()))}（P20={p20:.1f}）"
+    )
+    return max(tpl, p20), "\n".join(lines)
+
+
+def cmd_attrs(args):
+    """做题前的**列数先验**：题干最相似的已提交题给了几列 + 本库分布 + 闸门 4 的下界。"""
+    questions = load_questions()
+    if not 0 <= args.idx < len(questions):
+        fail(f"idx 越界，合法范围 0–{len(questions) - 1}")
+    q = questions[args.idx]
+    lower, detail = attrs_lower_bound(args.idx)
+    print(f"#{args.idx}  {q['db_id']} / {q['difficulty']}")
+    print(detail)
+    # 展示用：放宽阈值，把“最像已提交题”的形状先验摆出来（**不参与闸门**，只供我估列数）
+    loose = similar_submitted(args.idx, theta=ATTRS_DISPLAY_THETA, top=5)
+    if loose:
+        print(
+            f"\n  最相似的已提交题（相似度 >= {ATTRS_DISPLAY_THETA:.2f}，**仅供参考、不参与闸门**）："
+        )
+        for ratio, j, nc in loose:
+            print(f"    #{j}  相似 {ratio:.2f}  金标 {nc} 列  | {questions[j]['question'][:58]}…")
+    print(
+        f"\n⭐ 列数下界 = {lower:.1f}（低于它会被闸门 4 拒绝）。\n"
+        "   属性清单：逐条抄题干里的属性原文，写进 answer 的 --attrs \"属性1|属性2|…\"，条数必须 == SELECT 列数。"
+    )
+
+
 def cmd_answer(args):
     questions = load_questions()
     if not 0 <= args.idx < len(questions):
@@ -1315,6 +1507,54 @@ def cmd_answer(args):
         _probe_record(args.idx, db_id, "checks", ",".join(picked))
         loose = [i for i in item_ids if i not in picked and i not in core]
         print(f"✅ 勾选留痕：{len(picked)}/{len(item_ids)} 条（核心条目齐；按题意略过：{','.join(loose) if loose else '无'}）")
+
+    # ══ 闸门 4：属性清单（P16）—— 专治「少给列」══
+    attrs = parse_attrs(getattr(args, "attrs", None) or "")
+    if not args.force:
+        if not attrs:
+            fail(
+                "拒绝记录（闸门 4：属性清单）：没有写 --attrs。\n"
+                "  列数错里 83% 是「少给列」—— 对治办法是**在写 SQL 前把题干的属性逐条抄下来**。\n"
+                '    answer ... --attrs "属性1|属性2|属性3"   （每条抄题干里的原文片段，用 | 分隔）\n'
+                "  硬要求：① 条数 == SELECT 列数；② 每条必须逐字出现在题干/evidence 里；③ 不能重复。\n"
+                "  先跑 `attrs <idx>` 看本类题的列数先验（同模板已提交题给了几列）。"
+            )
+        if len(attrs) != len(columns):
+            fail(
+                f"拒绝记录（闸门 4：属性清单）：清单 {len(attrs)} 条，但实测 {len(columns)} 列。\n"
+                f"  清单：{' | '.join(attrs)}\n"
+                "  二者必须相等 —— 差一条就说明你对「这题要输出什么」还没数清，别交。\n"
+                "  （漏列就补列；多列就删清单里站不住的那条；改完再交）"
+            )
+        dup = [a for a, c in Counter(attrs).items() if c > 1]
+        if dup:
+            fail(f"拒绝记录（闸门 4：属性清单）：有条目重复（{dup}）—— 重复条目的意思是「一列被当成了两列」，不许拿它凑数。")
+        bad = [
+            a
+            for a in attrs
+            if not attrs_traceable(
+                a, questions[args.idx].get("question", ""), questions[args.idx].get("evidence") or ""
+            )
+        ]
+        if bad:
+            fail(
+                f"拒绝记录（闸门 4：属性清单）：这些条目在题干/evidence 里找不到原话：{bad}\n"
+                "  每条必须是题干（或 evidence）里的**原文片段**（大小写不敏感，长度 >= 2）—— 不能自己概括、不能编。\n"
+                f"  题干：{questions[args.idx].get('question', '')[:160]}"
+            )
+        lower, ldetail = attrs_lower_bound(args.idx)
+        if len(columns) < lower:
+            fail(
+                f"拒绝记录（闸门 4：列数下界）：本条只有 {len(columns)} 列，低于列数下界 {lower:.1f}。\n"
+                f"{ldetail}\n"
+                "  ⇒ 「少给列」是本项目最大单类错（列数错里 83% 是少给，集中在 profile / 多维度题）。\n"
+                "    回题干把属性逐个数一遍：该 JOIN 的维表、该算的派生列（比率/排名/CASE 文字列）都补上。\n"
+                "    确认本题确实只要这么少列，才用 --force（会留痕，audit 统计强制率）。"
+            )
+    if attrs:
+        _probe_record(args.idx, db_id, "attrs", "|".join(attrs))
+        shown = " | ".join(attrs[:6]) + (" …" if len(attrs) > 6 else "")
+        print(f"✅ 属性清单留痕（闸门 4）：{len(attrs)} 条 == 实测 {len(columns)} 列 → {shown}")
 
     if args.force:
         _probe_record(args.idx, db_id, "force", f"expected={expected} kinds={[p.get('kind') for p in mine]}")
@@ -1682,8 +1922,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--checks",
         help='闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目必须出现',
     )
-    p.add_argument("--force", action="store_true", help="跳过闸门 1/2/3（会在 probe_log 留痕）")
+    p.add_argument(
+        "--attrs",
+        help='闸门 4 凭据：属性清单，用 | 分隔（每条抄题干原文片段）；条数必须 == SELECT 列数',
+    )
+    p.add_argument("--force", action="store_true", help="跳过闸门 1/2/3/4（会在 probe_log 留痕）")
     p.set_defaults(func=cmd_answer)
+
+    p = sub.add_parser("attrs", help="做题前看列数先验：同模板已提交题给了几列 + 本库分布 + 闸门 4 的下界")
+    p.add_argument("idx", type=int)
+    p.set_defaults(func=cmd_attrs)
 
     p = sub.add_parser("answers", help="查看已作答")
     p.add_argument("--json", action="store_true")

@@ -48,7 +48,7 @@ SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最�
 ### 第 0.5 步｜⭐⭐ **惯例体检：把“猜惯例”换成“查惯例”**（换库时一次性，30 秒）
 
 ```bash
-# bash 批量做（pi 会话里用同名工具：bird_brief / bird_conventions / bird_cols）
+# bash 批量做（pi 会话里用同名工具：bird_brief / bird_conventions / bird_cols / bird_attrs）
 python tools/bird.py --dataset dev2025 brief <db_id>            # ★ 本题库的知识 + 档案推到眼前
 python tools/bird.py --dataset dev2025 conventions --db <db_id> --write-card   # ★ 写回惯例卡片
 python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反查
@@ -133,13 +133,16 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 📖 **读**：`checklist.md` —— **逐条勾**，不许跳。
 📤 **产出**：提交 or 改（勾不过就改，一次改完直接交，不要反复）
 
-### 第 6 步｜**提交（三道机器闸门，过不去交不上）**
+### 第 6 步｜**提交（四道机器闸门，过不去交不上）**
 
 ```bash
 # ① 探针留痕：run / find / cols / schema 带 --for <idx>（下面闸门 1 的凭据）
 python tools/bird.py --dataset dev2025 run <db> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for <idx>
-# ② SQL 最前面写形状声明；③ --checks 列出真正勾过的条目号（闸门 2 / 3）
-python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ..." --checks "0,1,1b,2,2b,4,5,5b,8,10,12,13"
+# ② 先看列数先验（闸门 4 的下界、同模板已提交题给了几列）
+python tools/bird.py --dataset dev2025 attrs <idx>   # ai 工具名 bird_attrs
+# ③ SQL 最前写形状声明；④ --checks 勾选；⑤ --attrs 属性清单（条数必须 == 列数）
+python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ..." \
+  --checks "0,1,1b,2,2b,4,5,5b,8,10,12,13,13b" --attrs "属性1|属性2|属性3"
 ```
 
 | 闸门 | 规则 | 不过会怎样 |
@@ -147,6 +150,9 @@ python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ...
 | **闸门 1 探针覆盖** | 该 idx 在 `work/probe_log.jsonl` 里必须有**真探针**记录（`tables/schema/desc/run/find/cols` 之一；**`checks` 与 `force` 不算** —— 硬交过一次不会让这题以后免探针），且**按数据集隔离**（minidev 的 344 ≠ dev2025 的 344） | `answer` 拒绝记录并告诉你该跑哪条 |
 | **闸门 2 形状预演** | SQL 里必须有 `/* shape: 行数x列数 */`，且必须与实测一致（**拿完整结果比**，`--max-rows` 只管预览） | 拒绝记录（不符时告诉你实测几行几列） |
 | **闸门 3 勾选留痕** | `--checks` 必须给出真实条目号（`checklist.md` 里带 `<!-- core -->` 的核心条目缺一不可） | 拒绝记录（缺条目时告诉你差哪一条） |
+| **闸门 4 属性清单** | `--attrs "属性1\|属性2\|…"`：每条必须是题干/evidence 里的**原文片段**，**条数 == SELECT 列数**；且列数不得低于**列数下界** = max(同模板已提交题的金标列数, 本库×难度金标列数 P20) | 拒绝记录（少列时把“同模板给了几列”摆出来） |
+
+⭐ 闸门 4 治「少给列」（怎么标定的、为什么不能更硬 → `traps.md` ⓪）。
 
 确属一目了然的题可以用 `--force` 跳过，但会记进 probe_log、`audit` 会统计 ——
 **强制率本身就是要盯的指标**（高了说明流程没真走）。

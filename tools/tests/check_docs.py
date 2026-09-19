@@ -131,11 +131,47 @@ def main() -> int:
     )
     for f in (AGENTS, SKILL / "SKILL.md"):
         t = txt(f)
-        check(f"{f.name} 已改成「三道闸门」（与代码一致）", "三道" in t and "两道机器闸门" not in t)
+        check(f"{f.name} 已改成「四道闸门」（与代码一致）", "四道" in t and "三道" not in t)
         check(
             f"{f.name} 的闸门 1 口径写清了 checks/force 不算探针（P14）",
             "`checks` 与 `force` 不算" in t,
         )
+
+    print("\n── P16 闸门 4（属性清单）：治「少给列」")
+    ext_src = (ROOT / ".pi/extensions/bird-sql/index.ts").read_text(encoding="utf-8")
+    check(
+        "answer 支持 --attrs 且属性清单会被校验（不是只加个参数）",
+        '"--attrs"' in bird_src
+        and "def parse_attrs(" in bird_src
+        and "attrs_traceable(" in bird_src
+        and "len(attrs) != len(columns)" in bird_src,
+    )
+    check(
+        "闸门 4 的列数下界用了两个来源（同模板已提交题 + 本库×难度 P20）",
+        "def attrs_lower_bound(" in bird_src
+        and "def similar_submitted(" in bird_src
+        and "def gold_ncol_prior(" in bird_src,
+    )
+    check(
+        "attrs 记录不算探针（闸门 1 的凭据只能是真探针）",
+        '"attrs"' in bird_src and '"attrs"' not in set(re.findall(r'"([a-z]+)"', re.search(r"PROBE_KINDS = \{([^}]*)\}", bird_src).group(1))),
+    )
+    check(
+        "闸门 4 有自我标定（audit 会算它会拦下几道错题 / 误拦几道对题）",
+        "闸门 4 列数下界自标定" in bird_src,
+    )
+    check(
+        "checklist 有 13b（属性清单）且是核心条目",
+        bool(re.search(r"\*\*13b\..*?<!-- core -->", txt(REF / "checklist.md"), re.S)),
+    )
+    check(
+        "pi 扩展侧同步：bird_answer 有 attrs 参数 + bird_attrs 工具",
+        "attrs: Type.Optional" in ext_src and 'name: "bird_attrs"' in ext_src,
+    )
+    check(
+        "SKILL.md 不抄闸门 4 的标定数字（或移到了 traps.md）",
+        "0.83%" not in txt(SKILL / "SKILL.md") and "0.83%" in txt(REF / "traps.md"),
+    )
 
     print("\n── P8 SKILL.md 常驻预算（搬出去的知识必须还有落点）")
     budget = 14500  # 常驻上下文上限：SKILL.md 实测 18.3KB 时启用（P8），改小要先搬东西出去

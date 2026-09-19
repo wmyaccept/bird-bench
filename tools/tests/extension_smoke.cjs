@@ -77,7 +77,7 @@ function check(name, cond, detail = "") {
   console.log("── 工具注册");
   const expected = [
     "bird_info", "bird_list", "bird_question", "bird_schema", "bird_query",
-    "bird_find", "bird_answer", "bird_score",
+    "bird_find", "bird_answer", "bird_score", "bird_attrs",
     "bird_brief", "bird_cols", "bird_conventions", "bird_audit",
   ];
   for (const n of expected) check(`注册了 ${n}`, tools.has(n));
@@ -97,7 +97,9 @@ function check(name, cond, detail = "") {
 
   fs.rmSync(PROBE_LOG, { force: true }); // 探针日志从零开始
   const answersBefore = fs.readFileSync(ANSWERS, "utf8");
-  const CHECKS_CORE = "1,1b,2,2b,8,12,13";
+  const CHECKS_CORE = "1,1b,2,2b,8,12,13,13b";
+  const ATTRS_Q1 = "the least consumption"; // 1472 题干原文
+  const ATTRS_Q2 = "how many customers";    // 1473 题干原文
 
   console.log("\n── 1. 新工具真的能跑（不是只有名字）");
   let r = await call("bird_brief", { db_id: "demo", dataset: "minidev" });
@@ -151,6 +153,7 @@ function check(name, cond, detail = "") {
     idx: 1,
     sql: "/* shape: ?x1 */ SELECT COUNT(*) FROM customers",
     checks: CHECKS_CORE,
+    attrs: ATTRS_Q1,
   });
   check("? 行数 → 只校验列数，通过", r.ok && /已记录第 1 题/.test(r.text), r.text.slice(0, 200));
 
@@ -164,7 +167,7 @@ function check(name, cond, detail = "") {
   console.log("\n── 3c. P13：形状校验必须用完整结果，--max-rows 只管预览");
   const rowsCTE = (n) =>
     `WITH RECURSIVE s(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM s WHERE x<${n}) SELECT x FROM s`;
-  r = await call("bird_answer", { idx: 1, sql: `/* shape: 21x1 */ ${rowsCTE(21)}`, checks: CHECKS_CORE });
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 21x1 */ ${rowsCTE(21)}`, checks: CHECKS_CORE, attrs: ATTRS_Q1 });
   check(
     "真 21 行按 21 声明能通过（修前会被截断成「实测 20 行」而误拒）",
     r.ok && /执行通过：21 行/.test(r.text),
@@ -172,7 +175,7 @@ function check(name, cond, detail = "") {
   );
   r = await call("bird_answer", { idx: 1, sql: `/* shape: 20x1 */ ${rowsCTE(21)}` });
   check("反向守卫：真 21 行却声明 20 行仍被拒（闸门没被削弱）", !r.ok, r.text.slice(0, 200));
-  r = await call("bird_answer", { idx: 1, sql: `/* shape: 50001x1 */ ${rowsCTE(50001)}`, checks: CHECKS_CORE });
+  r = await call("bird_answer", { idx: 1, sql: `/* shape: 50001x1 */ ${rowsCTE(50001)}`, checks: CHECKS_CORE, attrs: ATTRS_Q1 });
   check(
     "超过一次取回的上限时用 COUNT(*) 把真实行数数准（50001 行按 50001 声明通过）",
     r.ok && /50001 行/.test(r.text),
@@ -196,6 +199,7 @@ function check(name, cond, detail = "") {
     idx: 1,
     sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
     checks: `0,${CHECKS_CORE},4,5,10`,
+    attrs: ATTRS_Q1,
   });
   check("勾齐核心条目即通过", r.ok && /已记录第 1 题/.test(r.text), r.text.slice(0, 200));
   check(
@@ -227,7 +231,80 @@ function check(name, cond, detail = "") {
   });
   check("checks 记录不算探针（2 号题仍被闸门 1 拦住）", !r.ok && /闸门 1/.test(r.text), r.text.slice(0, 200));
 
-  console.log("\n── 4. force 逃生口");
+  console.log("\n── 3e. P16：闸门 4（属性清单）—— 专治「少给列」");
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+  });
+  check("不写 attrs → 闸门 4 拒绝", !r.ok && /闸门 4/.test(r.text), r.text.slice(0, 200));
+
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+    attrs: `${ATTRS_Q1}|the least consumption`,
+  });
+  check("清单 2 条但只有 1 列 → 拒绝（条数必须 == 列数）", !r.ok && /清单 2 条/.test(r.text), r.text.slice(0, 200));
+
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+    attrs: "number of customers",
+  });
+  check(
+    "清单条目必须在题干里逐字存在（编造/概括 → 拒绝）",
+    !r.ok && /找不到原话/.test(r.text),
+    r.text.slice(0, 200),
+  );
+
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x2 */ SELECT COUNT(*), COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+    attrs: `${ATTRS_Q1}|${ATTRS_Q1}`,
+  });
+  check("清单条目重复 → 拒绝（不许拿重复凑条数）", !r.ok && /重复/.test(r.text), r.text.slice(0, 200));
+
+  r = await call("bird_attrs", { idx: 1 });
+  check("bird_attrs 跑通并给出列数下界", r.ok && /列数下界/.test(r.text), r.text.slice(0, 200));
+  check(
+    "bird_attrs 摆出本库×难度的金标列数分布（做题前唯一的合法形状先验）",
+    r.ok && /金标列数分布/.test(r.text),
+    r.text.slice(0, 300),
+  );
+
+  // 4b：列数下界会拦住「少给列」——测试自己造状态：把 fixture 金标临时改成多列
+  const GOLD = FIXTURE + "/MINIDEV/mini_dev_sqlite_gold.sql";
+  const goldBefore = fs.readFileSync(GOLD, "utf8");
+  fs.writeFileSync(
+    GOLD,
+    goldBefore
+      .split("\n")
+      .map((l) => (l.trim() ? l.replace(/^SELECT /, "SELECT 1 AS a, 2 AS b, 3 AS c, ") : l))
+      .join("\n"),
+  );
+  r = await call("bird_attrs", { idx: 1 });
+  check(
+    "金标变 4 列后下界跟着升（先验来自已提交题的金标形状）",
+    r.ok && /列数下界 = 4/.test(r.text),
+    r.text.slice(0, 200),
+  );
+  r = await call("bird_answer", {
+    idx: 1,
+    sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
+    checks: CHECKS_CORE,
+    attrs: ATTRS_Q1,
+  });
+  check(
+    "只给 1 列、低于列数下界 → 闸门 4 拒绝（少给列被机器拦住）",
+    !r.ok && /列数下界/.test(r.text),
+    r.text.slice(0, 200),
+  );
+  fs.writeFileSync(GOLD, goldBefore); // 按字节还原，后面的断言不受影响
+
+    console.log("\n── 4. force 逃生口");
   r = await call("bird_answer", {
     idx: 2,
     sql: "/* shape: 1x1 */ SELECT COUNT(*) FROM customers",
@@ -331,6 +408,7 @@ function check(name, cond, detail = "") {
   check("bird_query schema 含 for_idx", /for_idx/.test(qSchema));
   check("bird_query schema 含 dataset", /dataset/.test(qSchema));
   check("bird_answer schema 含 force", /force/.test(aSchema));
+  check("bird_answer schema 含 attrs（闸门 4 参数）", /attrs/.test(aSchema));
 
   console.log("\n── 6. fixture 只被动了该动的两题");
   const answersAfter = JSON.parse(fs.readFileSync(ANSWERS, "utf8"));

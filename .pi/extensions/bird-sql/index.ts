@@ -401,12 +401,15 @@ export default function (pi: ExtensionAPI) {
     label: "BIRD Answer",
     description:
       "提交第 idx 题的最终 SQL。会先真的在数据库上跑一遍：跑不通会拒绝记录并回报错误，跑得通则把 SQL 记入 answers 文件。" +
-      "三道机器闸门：① 本题必须已有带 for_idx 的真实探测；② SQL 最前面必须写 /* shape: 行数x列数 */；③ 必须带 checks 列出这次真正勾过的 checklist 条目号（核心条目一条不能少）。",
+      "四道机器闸门：① 本题必须已有带 for_idx 的真实探测；② SQL 最前面必须写 /* shape: 行数x列数 */；" +
+      "③ 必须带 checks 列出这次真正勾过的 checklist 条目号（核心条目一条不能少）；" +
+      "④ 必须带 attrs 属性清单（逐条抄题干原文，条数 == SELECT 列数；列数低于先验下界也会被拒——专治「少给列」）。",
     promptSnippet: "提交 BIRD 第 idx 题的最终 SQL（先试跑，失败会拒绝记录）",
     promptGuidelines: [
       "bird_answer 的闸门 1：本题在 probe_log 里必须已有记录（只有带 for_idx 的 bird_query/bird_cols/bird_find/bird_schema 才会写入）—— 不能凭空声称'我查过了'。",
       "bird_answer 的闸门 2：SQL 最前面必须写 /* shape: 行数x列数 */，与实测形状不符会被拒绝（列表题不知几行可写 /* shape: ?x2 */ 只校验列数；计数题/极值题必须写数字）。",
-      "bird_answer 的闸门 3：checks 里列出的条目号必须都存在于 checklist.md；标了 core 的核心条目（1 / 1b / 2 / 2b / 8 / 12 / 13）无条件适用、少一个就交不上。留痕进 probe_log，bird_audit 会统计勾选率与最常被漏掉的条目。",
+      "bird_answer 的闸门 3：checks 里列出的条目号必须都存在于 checklist.md；标了 core 的核心条目（1 / 1b / 2 / 2b / 8 / 12 / 13 / 21）无条件适用、少一个就交不上。留痕进 probe_log，bird_audit 会统计勾选率与最常被漏掉的条目。",
+      "bird_answer 的闸门 4：attrs 是属性清单（用 | 分隔，逐条抄题干/evidence 里的原文片段），条数必须 == SELECT 列数；并且列数不能低于「同模板已提交题的金标列数」与「本库×难度金标列数 P20」的较大者（少给列会被拒）。写 SQL 前先 bird_attrs 看列数先验。",
       "确属一目了然、不必探测的题用 force=true 跳过闸门 —— 会记进 probe_log 并被 bird_audit 统计（强制率本身是要盯的指标）。",
     ],
     parameters: Type.Object({
@@ -415,17 +418,24 @@ export default function (pi: ExtensionAPI) {
       checks: Type.Optional(
         Type.String({
           description:
-            '闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目 1/1b/2/2b/8/12/13 必须出现',
+            '闸门 3 凭据：这次真正勾过的 checklist 条目号，逗号分隔（如 "0,1,1b,2,2b,4,5,8,10,12,13"）；核心条目 1/1b/2/2b/8/12/13/21 必须出现',
+        }),
+      ),
+      attrs: Type.Optional(
+        Type.String({
+          description:
+            '闸门 4 凭据：属性清单，用 | 分隔（如 "the name|the email|the number of orders"）。每条必须是题干/evidence 里的原文片段，条数必须 == SELECT 列数',
         }),
       ),
       force: Type.Optional(
-        Type.Boolean({ description: "true = 跳过三道闸门（会记进 probe_log，bird_audit 会统计强制率）" }),
+        Type.Boolean({ description: "true = 跳过四道闸门（会记进 probe_log，bird_audit 会统计强制率）" }),
       ),
       dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["answer", String(params.idx), params.sql];
       if (params.checks) args.push("--checks", params.checks);
+      if (params.attrs) args.push("--attrs", params.attrs);
       if (params.force) args.push("--force");
       const result = await getBackend(ctx).call(
         ctx,
@@ -433,6 +443,32 @@ export default function (pi: ExtensionAPI) {
         signal,
       );
       return toResult(result, { idx: params.idx, sql: params.sql });
+    },
+  });
+
+  pi.registerTool({
+    name: "bird_attrs",
+    label: "BIRD Attrs",
+    description:
+      "做题前看**列数先验**：题干最相似的已提交题给了几列 + 本库×难度的金标列数分布 + 闸门 4 的列数下界。" +
+      "「少给列」是本项目最大单类错，写 SQL 前先跑它，再把手头的属性逐条抄成 attrs 清单。",
+    promptSnippet: "看 BIRD 第 idx 题的列数先验（同模板已提交题给了几列）",
+    promptGuidelines: [
+      "题干出现 profile / comprehensive / statistics / including 这类多属性信号时，先 bird_attrs 看列数下界，再决定 SELECT 几列。",
+      "它的数据只来自**已提交题**（金标形状没有做题前通道）——对全新模板的第一道题，只能看本库×难度的分布。",
+    ],
+    parameters: Type.Object({
+      idx: Type.Number({ description: IDX_DESC }),
+      dataset: DatasetType,
+    }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const args = ["attrs", String(params.idx)];
+      const result = await getBackend(ctx).call(
+        ctx,
+        withDataset(args, params.dataset),
+        signal,
+      );
+      return toResult(result, { idx: params.idx });
     },
   });
 

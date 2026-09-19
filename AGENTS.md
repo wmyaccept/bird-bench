@@ -6,7 +6,7 @@
 ## 目录
 
 ```
-.pi/extensions/bird-sql/index.ts   工具层：8 个 bird_* 工具（TypeScript）
+.pi/extensions/bird-sql/index.ts   工具层：13 个 bird_* 工具（TypeScript）
 .pi/skills/bird-sql/
   SKILL.md                         入口：硬规则 + 7 步工作流（每步绑定"读哪个文件"）
   references/
@@ -98,7 +98,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 "D:/python/python" tools/bird.py --dataset dev score --list-wrong 12
 ```
 
-### 元工具与三道闸门（写 SQL 前 / 提交时 / 复盘时必须用）
+### 元工具与四道闸门（写 SQL 前 / 提交时 / 复盘时必须用）
 
 ```bash
 # ① 知识推送：把 references 知识库与当前库档案推到决策点（换库跑一次）
@@ -112,17 +112,20 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 # ④ 探针留痕：给这些 idx 记下“我真的查过”（answer 的闸门 1 凭据）
 #   ⑤ 勾选留痕：answer --checks "1,1b,2,2b,8,12,13,…"（闸门 3 凭据，条目号来自 checklist.md）
 "D:/python/python" tools/bird.py --dataset dev2025 run <db_id> "SELECT DISTINCT 列 FROM 表 LIMIT 5" --for 344
-# ⑤ 复盘：EX + 各库正确率 + 失败类型分布 + 结构特征差异频次 + 闸门合规率
+# ⑥ 列数先验：题干最相似的已提交题给了几列 + 本库×难度金标列数分布（闸门 4 的下界）
+"D:/python/python" tools/bird.py --dataset dev2025 attrs <idx>
+# ⑦ 复盘：EX + 各库正确率 + 失败类型分布 + 结构特征差异频次 + 闸门合规率
 "D:/python/python" tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 ```
 
-⭐ **三道机器闸门（`answer` 会真的拒绝）**：
+⭐ **四道机器闸门（`answer` 会真的拒绝）**：
 
 | 闸门 | 规则 |
 |---|---|
 | 1 探针覆盖 | 该 idx 在 `work/probe_log.jsonl` 里必须有**真探针**记录（`tables/schema/desc/run/find/cols` 之一；**`checks` 与 `force` 不算** —— 硬交过一次不会让这题以后免探针），**且按数据集隔离**（dev2025 的 344 ≠ minidev 的 344） |
 | 2 形状预演 | SQL 最前面必须有 `/* shape: 行数x列数 */`，且与实测一致（行数可写 `?`，只校验列数；**比对用完整结果**，`--max-rows` 只管预览）
-| 3 勾选留痕 | `--checks "0,1,1b,…"`：条目号必须都是 `checklist.md` 里真实存在的，核心条目（`1`/`1b`/`2`/`2b`/`8`/`12`/`13`）缺一不可；留痕进 `probe_log`，`audit` 统计勾选率与最常被漏的条目 |
+| 3 勾选留痕 | `--checks "0,1,1b,…"`：条目号必须都是 `checklist.md` 里真实存在的，核心条目（`1`/`1b`/`2`/`2b`/`8`/`12`/`13`/`13b`）缺一不可；留痕进 `probe_log`，`audit` 统计勾选率与最常被漏的条目 |
+| 4 属性清单 | `--attrs "属性1\|属性2\|…"`：每条必须是题干/evidence 里的**原文片段**（防凑数），**条数必须 == SELECT 列数**；且列数不得低于**列数下界** = max(同模板已提交题的金标列数, 本库×难度金标列数 P20)。专治「少给列」（列数错里 83% 是少给）—— 标定（`audit` 自标定，本轮实测）：误拦对题 9/1083 = 0.83%、可拦下 57 道错题（错题的 12.6%） |
 
 ### ⭐ pi 里的工具与上面的命令一一对应（同一套后端，同一套闸门）
 
@@ -135,7 +138,8 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 | `bird_query` | `run <db> <sql>` | **`for_idx`**（留痕）+ `max_rows` |
 | `bird_find` | `find <db> <词>` | **`for_idx`** |
 | `bird_schema` | `tables` / `schema` / `desc` | **`for_idx`** |
-| `bird_answer` | `answer <idx> <sql> --checks "0,1,1b,…"` | `checks` / `force`（跳过闸门，会留痕） |
+| `bird_answer` | `answer <idx> <sql> --checks "0,1,1b,…" --attrs "属性1\|属性2"` | `checks` / **`attrs`**（属性清单，条数==列数）/ `force`（跳过闸门，会留痕） |
+| `bird_attrs` | `attrs <idx>` | `idx` —— 列数先验（同模板已提交题给了几列） |
 | 所有工具 | — | `dataset`：`minidev`（默认）/ `dev` / `dev2025` |
 
 > 2026-09-16 修：此前扩展里根本没有 `brief/cols/conventions/audit`，`bird_query` 也无法带 `--for`、
@@ -160,7 +164,7 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 四个套件各管一类：`check_docs.py` 文档一致性（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
 `check_brief_p4.py` 库档案整份送达（含投毒）、`check_write_card.py` 惯例卡片可刷新且与工具同源、
-`extension_smoke.cjs` 真加载扩展 + 真跑后端（三道闸门 / 参数 / 数据集隔离）。
+`extension_smoke.cjs` 真加载扩展 + 真跑后端（四道闸门 / 参数 / 数据集隔离）。
 **断言数只由 `run_all.py` 打印，不写进文档**（手抄数字必然过期 —— 见 casebook 第 29/30/31 轮）。
 
 - `make_fixture.py` 生成隔离 fixture（3 题 / demo.sqlite），**绝不碰真答案**；
