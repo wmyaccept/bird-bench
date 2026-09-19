@@ -18,7 +18,13 @@ SUITES = [
     ("文档一致性（P1/P5/P6/P7/P9）", [PY, "tools/tests/check_docs.py"]),
     ("库档案整份送达（P4）", [PY, "tools/tests/check_brief_p4.py"]),
     ("惯例卡片可刷新且同源（P2）", [PY, "tools/tests/check_write_card.py"]),
+    # 类③「失败开放」：喂不存在的键必须 rc=2（跑真 CLI，不是单元桩）
+    ("失败关闭（P19：不存在的键）", [PY, "tools/tests/check_failclosed.py"]),
 ]
+# 扩展套件要 node，单独放；⭐ 套件个数**只有这里一个出处**（N_SUITES），
+# 文档 / check_docs 想引用就引用它，别自己数（手抄必然漂移）。
+EXT_SUITE = ("扩展端到端（闸门/参数/隔离）", ["node", "tools/tests/extension_smoke.cjs"])
+N_SUITES = len(SUITES) + 1
 
 
 def main() -> int:
@@ -28,9 +34,7 @@ def main() -> int:
     # fixture 是 extension_smoke 的测试床（隔离目录，绝不碰真答案）
     subprocess.run([PY, "tools/tests/make_fixture.py"], cwd=ROOT, capture_output=True)
 
-    suites = list(SUITES) + [
-        ("扩展端到端（闸门/参数/隔离）", ["node", "tools/tests/extension_smoke.cjs"])
-    ]
+    suites = list(SUITES) + [EXT_SUITE]
     for name, cmd in suites:
         r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True,
                            encoding="utf-8", errors="replace")

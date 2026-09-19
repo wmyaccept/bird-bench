@@ -159,11 +159,13 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 ### 回归测试（改完必跑）
 
 ```bash
-"D:/python/python" tools/tests/run_all.py     # ★ 一键跑完四个套件，并打印真实断言数
+"D:/python/python" tools/tests/run_all.py     # ★ 一键跑完全部套件，并打印真实断言数
 ```
 
-四个套件各管一类：`check_docs.py` 文档一致性（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
+套件各管一类（**数量以 `run_all.py` 的 `SUITES` 为准，不在文档里手抄**）：`check_docs.py` 文档一致性（含 P19 三类元缺陷的类级守卫：产物↔落点注册表 / 闸门数对账 / 源码不留字面量）、（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
 `check_brief_p4.py` 库档案整份送达（含投毒）、`check_write_card.py` 惯例卡片可刷新且与工具同源、
+`check_failclosed.py` **失败关闭**（给每个入口喂不存在的库/表/步骤/idx ⇒ 必须 `rc=2`，
+合法负结果走显式白名单）、
 `extension_smoke.cjs` 真加载扩展 + 真跑后端（四道闸门 / 参数 / 数据集隔离）。
 **断言数只由 `run_all.py` 打印，不写进文档**（手抄数字必然过期 —— 见 casebook 第 29/30/31 轮）。
 

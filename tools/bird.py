@@ -150,10 +150,19 @@ def load_gold() -> list[tuple[str, str]]:
     return rows
 
 
+def available_dbs() -> list[str]:
+    """真正可用的库（必须是目录、且里面有同名 .sqlite）—— 别把 .DS_Store 这类杂项列成"可用"。"""
+    if not DB_ROOT.exists():
+        return []
+    return sorted(
+        p.name for p in DB_ROOT.iterdir() if p.is_dir() and (p / f"{p.name}.sqlite").exists()
+    )
+
+
 def db_path(db_id: str) -> Path:
     path = DB_ROOT / db_id / f"{db_id}.sqlite"
     if not path.exists():
-        available = sorted(p.name for p in DB_ROOT.iterdir()) if DB_ROOT.exists() else []
+        available = available_dbs()
         fail(f"数据库 {db_id!r} 不存在。可用：{', '.join(available) or '(无，请先运行 setup_data.py)'}")
     return path
 
@@ -275,6 +284,13 @@ def cmd_info(_args):
 
 
 def cmd_list(args):
+    # ⭐ P19（类③）：list 是**选题入口**，打错库名会得到"0 题" ⇒ 看起来像"这个库做完了"。
+    #   空筛选（--difficulty 命中 0 题）是合法负结果；库名不存在则不是。
+    if args.db and args.db not in available_dbs():
+        fail(
+            f"数据库 {args.db!r} 不存在（list 不会把打错的库名显示成「0 题」）。\n"
+            f"  可用：{', '.join(available_dbs())}"
+        )
     questions = load_questions()
     rows = [
         (i, q)
@@ -736,6 +752,9 @@ def cmd_conventions(args):
     只统计形状/口径（计数形态、主表、DISTINCT、*100、区间写法…），不产出答案。
     `--write-card` 把**同一份统计**写回 db/<库>.md 的惯例卡片（卡片 = 工具输出）。
     """
+    if args.db and args.db not in available_dbs():
+        # ⭐ P19：库名不存在 ≠ 这个库没做过题（旧文案会说"没有可统计的已提交题"，指向错误的修法）
+        fail(f"数据库 {args.db!r} 不存在。可用：{', '.join(available_dbs())}")
     stats = _convention_stats(args.db)
     if not stats:
         fail("没有可统计的已提交题（conventions 只看已提交题的金标，避免污染未做的题）")
@@ -759,6 +778,9 @@ def cmd_audit(args):
     """
     from collections import Counter
 
+    if args.db and args.db not in available_dbs():
+        # ⭐ P19：库名打错时，旧文案说"该筛选条件下没有已提交的题" —— 会让人以为这个库做完了
+        fail(f"数据库 {args.db!r} 不存在。可用：{', '.join(available_dbs())}")
     questions = load_questions()
     answers = load_answers()
     gold = load_gold()
@@ -1051,6 +1073,19 @@ PROBE_KINDS = {"tables", "schema", "desc", "run", "find", "cols"}
 SHAPE_RE = re.compile(r"shape\s*:\s*(\d+|\?)\s*[x×*]\s*(\d+)", re.I)
 PROBE_ONLY = {"answer", "score", "answers", "reset", "info", "list"}
 
+# ⭐ P19（类②「同一事实多处手写」）：闸门**个数**从常量生成，不靠人手写。
+#   答案 help、AGENTS.md / SKILL.md / checklist.md 里的「N 道闸门」由
+#   tools/tests/check_docs.py 拿这个常量对账（“四道”必须 == N_GATES）。
+N_GATES = 4
+_CN_NUM = {2: "两", 3: "三", 4: "四", 5: "五", 6: "六"}
+GATES = (
+    "① 探针覆盖（必须先用带 for_idx 的 run/find/cols/schema 探过）",
+    "② 形状预演（SQL 最前面写 /* shape: 行数x列数 */）",
+    "③ 勾选留痕（--checks，核心条目由本文件现场解析 checklist.md）",
+    "④ 属性清单（--attrs，逐字来自题干/evidence，条数必须等于实测列数）",
+)
+assert len(GATES) == N_GATES, "GATES 与 N_GATES 不一致"
+
 
 def parse_shape(sql: str):
     """从 SQL 里取形状声明 `/* shape: 行数x列数 */`（闸门 2 的依据）。
@@ -1237,6 +1272,16 @@ def cmd_brief(args):
             "  想要某一步没有内容 ⇒ 去对应 references/*.md 里用 <!-- push step=N --> 包住要推的内容。"
         )
     if args.db_id:
+        # ⭐ P19（类③）：库名不存在必须**失败关闭**。旧行为是把它当成"新库还没建档"，
+        #   推完知识库就退出 0 —— 打错库名的人会以为自己拿到了档案（静默说谎）。
+        #   判据要宽一点：**要么本地有库、要么有档案** —— 只判库会误伤「只有档案没有数据」
+        #   的测试床（fixture），而它确实能推出值得读的档案。
+        if args.db_id not in available_dbs() and not (REFS / "db" / f"{args.db_id}.md").exists():
+            fail(
+                f"{args.db_id!r} 既不是本地库、也没有 db/{args.db_id}.md 档案（brief 不会为它推「档案」）。\n"
+                f"  可用库：{', '.join(available_dbs())}"
+                f"  已有档案：{', '.join(sorted(q.stem for q in (REFS / 'db').glob('*.md')))}"
+            )
         _, profile = brief_for_db(args.db_id)
         print(f"╔══ 库档案 {args.db_id} ══")
         if profile:
@@ -1244,7 +1289,7 @@ def cmd_brief(args):
                   f"避免中间新增的小节静默丢失）")
             print(profile)
         else:
-            print(f"⚠️ 还没有 db/{args.db_id}.md 档案：先用 bird_schema 摸清库结构，再建一份")
+            print(f"⚠️ 库存在、但还没有 db/{args.db_id}.md 档案：先用 bird_schema 摸清库结构，再建一份")
         print()
     blocks = push_blocks(step)
     print(f"╔══ 知识库推送（step={step or 'all'}，共 {len(blocks)} 段）══")
@@ -1256,7 +1301,7 @@ def cmd_brief(args):
 
 
 # ══════════════════════════════════════════════════════════════════
-# 闸门 4：属性清单（P16）—— 专治「少给列」（本项目最大单类错，占错题 31%、其中 83% 是少给）
+# 闸门 4：属性清单（P16）—— 专治「少给列」（列数错占错题 34.5% = 156/452、其中 130 道是少给 = 83%）
 #   ① 机器**无法**从题干自动算出"该给几列"：实测自动抽取属性词的误拦率 15%~100%，已证伪；
 #   ② 所以拆成两半（列数错 156 道里 130 道是少给 = 83%）：
 #      4a 逼我把题干的属性**逐条抄成清单**（每条必须逐字出现在题干/evidence，防凑数）
@@ -1901,7 +1946,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("brief", help="决策点推送：库档案（必查+惯例卡片）+ 知识库里带 push 标记的片段")
     p.add_argument("db_id", nargs="?")
-    p.add_argument("--step", help="只推某个步骤的片段（1/2/3.5/4/5/7；以 references 里的实际 push 标记为准）")
+    p.add_argument("--step", help=f"只推某个步骤的片段（{'/'.join(available_steps())}；"
+                                  "与实际 push 标记同源，未知 step 会失败关闭）")
     p.set_defaults(func=cmd_brief)
 
     p = sub.add_parser("schema", help="表结构 + 行数 + 样例值")
@@ -1928,7 +1974,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser(
         "answer",
-        help="记录第 idx 题的最终 SQL（四道闸门：探针覆盖 / 形状预演 / 勾选留痕 / 属性清单）",
+        help=f"记录第 idx 题的最终 SQL（{_CN_NUM[N_GATES]}道闸门："
+             "探针覆盖 / 形状预演 / 勾选留痕 / 属性清单）",
     )
     p.add_argument("idx", type=int)
     p.add_argument("sql")

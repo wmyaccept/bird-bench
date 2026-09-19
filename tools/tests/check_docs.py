@@ -254,8 +254,8 @@ def main() -> int:
 
     # ④ brief --step：帮助文本列出的步骤 == 真有内容的步骤；未知 step 必须失败关闭
     steps_real = _bird.available_steps()
-    help_txt = (ROOT / "tools" / "bird.py").read_text(encoding="utf-8")
-    m_step = re.search(r'--step", help="[^"]*?（([0-9./]+)', help_txt)
+    help_txt = _bird.build_parser()._subparsers._group_actions[0].choices["brief"].format_help()
+    m_step = re.search(r"--step[^\n]*?（([0-9./]+)", help_txt)
     claimed_steps = m_step.group(1).split("/") if m_step else []
     check(f"brief --step 的 help 步骤 == 实际有内容的步骤（{[*steps_real]}）",
           claimed_steps == steps_real, f"help 写 {claimed_steps}，实际 {steps_real}")
@@ -314,6 +314,79 @@ def main() -> int:
     # ⑨ 流程入口：选题（这是整条链的前端，曾完全没写）
     check("SKILL.md 写了选题入口（bird_list / list --db）",
           "bird_list" in txt(SKILL / "SKILL.md") or "list --db" in txt(SKILL / "SKILL.md"))
+
+    print("\n── P19 三类元缺陷的类级守卫（不是只管住那几个实例）")
+    # ⭐ 类①「无落点的产物」：SKILL.md 每个「📤 产出」步骤都必须在注册表登记，且落点真实存在
+    maint = txt(REF / "maintaining.md")
+    check("产物↔落点注册表存在且有哨兵（唯一出处）", "<!-- canon:artifacts" in maint)
+    sk_txt = txt(SKILL / "SKILL.md")
+    steps_out, cur = [], None
+    for ln in sk_txt.splitlines():
+        m = re.match(r"###\s*第\s*([0-9.]+)\s*步", ln)
+        if m:
+            cur = m.group(1)
+        if "📤" in ln and "产出" in ln and cur:
+            steps_out.append(cur)
+    registered = set(re.findall(r"^\|\s*第\s*([0-9.]+)\s*步\s*\|", maint, re.M))
+    has_any = bool(re.search(r"^\|\s*任意步\s*\|", maint, re.M))
+    missing = sorted(set(steps_out) - registered)
+    extra = sorted(registered - set(steps_out))
+    check(f"每个含「📤 产出」的步骤都在注册表里（SKILL 有 {len(set(steps_out))} 个）",
+          not missing, f"没登记：{missing}")
+    check("注册表里没有指向已不存在步骤的行", not extra, f"多出：{extra}")
+    check("注册表登记了「任意步」的产物（挂起清单）", has_any)
+    profiles = "\n".join(txt(d) for d in sorted((REF / "db").glob("*.md")))
+    bad_sink = []
+    for row in re.findall(r"^\|\s*第\s*[0-9.]+\s*步\s*\|([^|]*)\|([^|]*)\|", maint, re.M):
+        sink = row[1]
+        for sec in re.findall(r"##\s*([^`|]+)", sink):
+            sec = sec.strip()
+            if sec and f"## {sec}" not in profiles:
+                bad_sink.append(f"承诺小节「{sec}」不存在")
+        for path in re.findall(r"`([\w/]+\.(?:md|json|jsonl))`", sink):
+            if not any((d / path).exists() for d in (ROOT, REF, SKILL, ROOT / "work")):
+                bad_sink.append(f"落点文件不存在：{path}")
+    check("注册表里的落点容器都真实存在（档案小节 / 文件）", not bad_sink, " ｜ ".join(bad_sink))
+
+    # ⭐ 类②「同一事实多处手写」：文档说的闸门数必须 == 代码常量（单一数据源）
+    n_gates = _bird.N_GATES
+    cn = {2: "两", 3: "三", 4: "四", 5: "五", 6: "六"}
+    bad_n = []
+    for f in live + [AGENTS]:
+        for m in re.finditer(r"([两二三四五六])道(?:机器)?闸门", txt(f)):
+            if cn.get(n_gates) != m.group(1):
+                bad_n.append(f"{f.name}: {m.group(0)}")
+    check(f"现役文档里的闸门个数都 == bird.N_GATES（{n_gates}）", not bad_n, " ｜ ".join(bad_n))
+    _acts = _bird.build_parser()._subparsers._group_actions[0]._choices_actions
+    src = (ROOT / "tools" / "bird.py").read_text(encoding="utf-8")
+    ans_help = next(x.help or "" for x in _acts if x.dest == "answer")
+    check("answer 的 help 里闸门数由 N_GATES/_CN_NUM 生成（源码不留字面量）",
+          _bird._CN_NUM[n_gates] in ans_help, ans_help)
+    check("bird.py 的 GATES 条数 == N_GATES（常量自洽）", len(_bird.GATES) == n_gates)
+    #    ⭐ 光看"输出里有没有『四』"抓不到"改回手写"（手写的也是『四』）⇒ 必须查**源码**：
+    #    answer 的 help 要用 _CN_NUM[N_GATES] 拼，不能出现字面的「N 道闸门」。
+    check("answer 的 help 是 _CN_NUM[N_GATES] 拼出来的（源码不留字面闸门数）",
+          "_CN_NUM[N_GATES]" in src
+          and not re.search(r'help=f?"[^"]*[两二三四五]道(?:机器)?闸门', src),
+          "源码里出现了手写的闸门数字")
+    # 扩展侧也不能另抄一份步骤列表（同一事实多处手写 = 早晚漂移）
+    ext = (ROOT / ".pi/extensions/bird-sql/index.ts").read_text(encoding="utf-8")
+    check("index.ts 不手抄 step 取值列表（指路后端）",
+          not re.search(r"step 取值：[0-9]", ext) and "available_steps" in ext)
+    # 套件个数：文档说的数字 == run_all.py 里真实的套件数
+    import importlib.util as _ilu
+    _spec = _ilu.spec_from_file_location("_run_all", ROOT / "tools/tests/run_all.py")
+    _mod = _ilu.module_from_spec(_spec)
+    _spec.loader.exec_module(_mod)          # run_all 的重活都在 main() 里，导入无副作用
+    n_suites = _mod.N_SUITES
+    ag = txt(AGENTS)
+    cn_map = {2: "两", 3: "三", 4: "四", 5: "五", 6: "六", 7: "七"}
+    bogus = [m.group(0) for m in re.finditer(r"[两三五六七八]个套件|四个套件", ag)
+             if m.group(0)[0] != cn_map.get(n_suites)]
+    check(f"AGENTS.md 不再手抄套件个数（真实 {n_suites} 个）", not bogus, str(bogus))
+
+    check("brief 的 --step help 由 available_steps() 生成（不留手写步骤列表）",
+          "available_steps()" in src and not re.search(r'--step", help="[^"]*（[0-9]/', src))
 
     print("\n── P8 SKILL.md 常驻预算（搬出去的知识必须还有落点）")
     budget = 14500  # 常驻上下文上限：SKILL.md 实测 18.3KB 时启用（P8），改小要先搬东西出去

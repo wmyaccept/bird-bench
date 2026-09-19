@@ -145,6 +145,8 @@ python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ...
 
 ⭐ 闸门 4 治「少给列」（怎么标定的、为什么不能更硬 → `traps.md` ⓪）。
 
+📤 **产出**：`work/answers_dev2025.json` 的一条记录 + `work/probe_log.jsonl` 的探针/勾选/属性留痕。
+
 确属一目了然的题可以用 `--force` 跳过，但会记进 probe_log、`audit` 会统计 ——
 **强制率本身就是要盯的指标**（高了说明流程没真走）。
 （注释开头的 SQL 已被 `guard_sql` 放行；导出提交时可剥掉。前面写错列名属硬错，直接按真列名重交。）
@@ -203,3 +205,5 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 ## 维护约定（改这个 skill 时）
 
 📖 见 `references/maintaining.md`（维护原则 + 「下次又漏了规则」的自查 3 条；**做题时不用读**）。
+
+📤 **产出**：规则写回 `traps.md` / `checklist.md` / `db/<库>.md`（`casebook.md` 只记账）+ 当场 `rg` 验证命中。

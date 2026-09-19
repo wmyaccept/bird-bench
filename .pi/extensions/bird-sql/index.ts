@@ -511,11 +511,11 @@ export default function (pi: ExtensionAPI) {
     promptSnippet: "把知识库与当前库档案推到决策点（换库先跑，step 可只推某一步）",
     promptGuidelines: [
       "换库第一题之前必须 bird_brief db_id=<库> —— 否则等于靠语感猜库级写法，实测这是准确率最大的单一来源。",
-      "step 取值：1 读题/形状、2 题型骨架、3.5 概念定位、4 写 SQL/口径/方言、5 判定口径、7 复盘归因。",
+      "step 的合法取值由后端 available_steps() 现场生成（`bird.py brief --help` 可查），文档里不手抄；喂一个没有内容的 step 会失败关闭，不会静默返回空。",
     ],
     parameters: Type.Object({
       db_id: Type.Optional(Type.String({ description: "数据库 id（给出时推**整份**库档案：必查 + 连接图与坑 + 值域陷阱/补充 + 惯例卡片）" })),
-      step: Type.Optional(Type.String({ description: "只推某一步的片段：1 / 2 / 3.5 / 4 / 5 / 7" })),
+      step: Type.Optional(Type.String({ description: "只推某一步的片段（合法值见 bird.py brief --help，由 available_steps() 生成）" })),
       dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
