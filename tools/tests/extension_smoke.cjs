@@ -440,6 +440,11 @@ function check(name, cond, detail = "") {
   check("brief --step 7 仍推得到「口径实验」", r.ok && /口径实验/.test(r.text), r.text.slice(0, 160));
   check("brief --step 7 仍推得到「挂起清单」集中复盘", r.ok && /挂起清单/.test(r.text));
   check("brief --step 7 仍推得到按类归因（≥2 道才毕业）", r.ok && /同一类 ≥2 道/.test(r.text));
+  // ⭐ P18：未知 step 必须失败关闭（旧行为：静默返回“没有片段”，看起来像这一步没东西可读）
+  r = await call("bird_brief", { step: "9" });
+  check("brief --step 9（不存在）报错，而不是静默空手而归",
+        !r.ok && /没有 step=9/.test(r.text), r.text.slice(0, 200));
+  check("报错里列出了真实可用的步骤", /实际有内容的步骤/.test(r.text));
 
   console.log(String.fromCharCode(10) + "── 8. P2 回归：卡片能被工具刷新（参数真的接通）");
   const cSchema = JSON.stringify(tools.get("bird_conventions").parameters);

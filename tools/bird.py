@@ -1185,6 +1185,12 @@ def push_blocks(step: str | None = None):
     return blocks
 
 
+def available_steps() -> list[str]:
+    """真实存在的推送步骤号（按数值排序）—— 供 `brief --step` 校验与报错。"""
+    steps = {s for s, _, _ in push_blocks(None)}
+    return sorted(steps, key=lambda x: float(x))
+
+
 CARD_MARK = "## 惯例卡片"
 
 
@@ -1220,6 +1226,16 @@ def _card_section(text: str) -> str | None:
 def cmd_brief(args):
     """决策点推送：把知识库真正递到我眼前，而不是指望我“主动去读”。"""
     step = None if args.step in (None, "all") else str(args.step)
+    # ⭐ P18：未知 step 必须**失败关闭** —— 否则 `--step 3` 只会得到一句
+    #   “没有带 push 标记的片段”，看起来像“这一步没什么要读的”（实测踩过：help 里
+    #   还列着 3/6 这两个根本没内容的 step）。
+    if step is not None and not push_blocks(step):
+        ok = available_steps()
+        fail(
+            f"没有 step={step} 的推送片段（不会静默返回空）。\n"
+            f"  实际有内容的步骤：{'/'.join(ok)}\n"
+            "  想要某一步没有内容 ⇒ 去对应 references/*.md 里用 <!-- push step=N --> 包住要推的内容。"
+        )
     if args.db_id:
         _, profile = brief_for_db(args.db_id)
         print(f"╔══ 库档案 {args.db_id} ══")
@@ -1242,12 +1258,13 @@ def cmd_brief(args):
 # ══════════════════════════════════════════════════════════════════
 # 闸门 4：属性清单（P16）—— 专治「少给列」（本项目最大单类错，占错题 31%、其中 83% 是少给）
 #   ① 机器**无法**从题干自动算出"该给几列"：实测自动抽取属性词的误拦率 15%~100%，已证伪；
-#   ② 所以拆成两半：
+#   ② 所以拆成两半（列数错 156 道里 130 道是少给 = 83%）：
 #      4a 逼我把题干的属性**逐条抄成清单**（每条必须逐字出现在题干/evidence，防凑数）
 #         且条数必须 == SELECT 实测列数；
 #      4b 用"同模板已提交题的金标列数"与"本库×难度金标列数 P20"取大者做**下界**，
-#         低于下界直接拒绝（2026-09-18 标定：1534 道实测误拦对题 5 道 = 0.46%，
-#         可拦下 52 道错题 = 错题的 11.5%，集中在 financial 21 / california_schools 21）。
+#         低于下界直接拒绝。标定（以 `audit` 的自标定为准）：1534 道实测**误拦对题 9/1083 = 0.83%**、
+#         可拦下 57 道错题（占错题 12.6%），集中在 financial / california_schools 的 profile 型题。
+#         （离线脚本口径给出 5/1082 = 0.46% / 52 道；差异在分类口径，见 casebook 第 46 轮。）
 #   前提声明（P15）：金标形状只有**已提交题**才拿得到，所以 4b 对"全新模板的第一道题"无效，
 #   只在本库已有同模板作答时生效；它仍然只是**校验器**，不是逐题抄答案。
 # ══════════════════════════════════════════════════════════════════
@@ -1884,7 +1901,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("brief", help="决策点推送：库档案（必查+惯例卡片）+ 知识库里带 push 标记的片段")
     p.add_argument("db_id", nargs="?")
-    p.add_argument("--step", help="只推某个步骤的片段（0/1/3/3.5/4/5/6/7）")
+    p.add_argument("--step", help="只推某个步骤的片段（1/2/3.5/4/5/7；以 references 里的实际 push 标记为准）")
     p.set_defaults(func=cmd_brief)
 
     p = sub.add_parser("schema", help="表结构 + 行数 + 样例值")
@@ -1909,7 +1926,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）—— answer 的闸门 1 凭据")
     p.set_defaults(func=cmd_run)
 
-    p = sub.add_parser("answer", help="记录第 idx 题的最终 SQL（有探针覆盖 + 形状预演两道闸门）")
+    p = sub.add_parser(
+        "answer",
+        help="记录第 idx 题的最终 SQL（四道闸门：探针覆盖 / 形状预演 / 勾选留痕 / 属性清单）",
+    )
     p.add_argument("idx", type=int)
     p.add_argument("sql")
     p.add_argument(

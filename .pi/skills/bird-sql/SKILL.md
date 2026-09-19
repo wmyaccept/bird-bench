@@ -30,20 +30,11 @@ EX = 预测 SQL 的结果集与金标结果集**完全相同**才算对。
 
 ## 工作流（7 步）
 
-### 第 0 步｜**换新库时先做结构体检**（3 分钟，一次性）
-
-```sql
--- 每个库跑一遍，把结果写进 db/<db_id>.md 顶部的"体检单"
-SELECT m.name, (SELECT COUNT(*) FROM pragma_table_info(m.name)) AS cols
-FROM sqlite_master m WHERE m.type='table';
--- 关键：主键重复度 + 两两 JOIN 的命中率
-SELECT COUNT(*) AS rows_all, COUNT(DISTINCT 主键) AS distinct_pk FROM 表;
-SELECT COUNT(*) AS joined FROM A JOIN B ON A.key = B.key;   -- ← 这一步最容易被跳过
-```
+### 第 0 步｜**换新库时先做结构体检**（3 分钟，一次性；现役 11 库都已建档，日常直接读档案）
 
 📖 **读**：`db/<db_id>.md`（**只读当前库那一个文件**，不要翻别的库）
-📤 **产出**：这张库的体检单（尤其 JOIN 命中率——`thrombosis_prediction` 就是靠它发现
-`Examination` 806 行里只有 70 行能连上 `Patient`）
+📤 **产出**：表数/列数/主键重复度/**两两 JOIN 命中率**，补进该档案的 **`## 连接图与坑`**
+（"体检单"不是另一个文件，就是这一节）
 
 ### 第 0.5 步｜⭐⭐ **惯例体检：把“猜惯例”换成“查惯例”**（换库时一次性，30 秒）
 
@@ -59,22 +50,21 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反�
 
 `conventions` **只统计已提交题**的金标（绝不碰未做的题），给的是**这个库自己**的写法分布：
 计数形态、主表（`FROM` 第一张表是谁）、`SELECT DISTINCT` 比例、`*100`、JOIN 数。
-
-**这里不抄数字**（手抄的数字必然过期）：直接跑 `bird_conventions`，或读 `db/<库>.md` 的惯例卡片（两者同源）——「没有单一主表的库就是错题重灾区」这类结论也在卡片里。
-
-⭐ **卡片由工具写、不手改**：`bird_conventions db=<库> write_card=true`（配 `all=true` 刷全部）。
-卡片和 `conventions` 的输出是同一次统计渲染的 ⇒ 不会出现“工具一套数、卡片另一套数”。
+**这里不抄数字**（必然过期）：跑 `bird_conventions` 或读卡片（两者同源）。
+⭐ **卡片由工具写、不手改**（`write_card=true`）：同一份统计渲染 ⇒ 不会出现两套数。
 
 📤 **产出**：本库“惯例卡片”，直接追加进 `db/<db_id>.md`（例：`db/thrombosis_prediction.md` 末尾）。
 
-### 第 1 步｜**读题**
+### 第 1 步｜**选题 + 读题**
+
+选题（**同库连做**）：`bird_list <db> <difficulty>` 挑没做的题；`bird_info` 看进度，`bird.py answers | rg <库名>` 看本库已交。
 
 `bird_question <idx>` → 题干 + **evidence**。
 📤 **产出**：① 题型 ② evidence 给的口径/阈值/列名（**逐条划出来，后面要对着实现**）
 
 ### 第 2 步｜**认题型、套骨架**
 
-📖 **读**：`shapes.md` 的 A 部分（A1–A10）
+📖 **读**：`shapes.md` 的 A 部分（**A1–A11**；`comprehensive profile / statistics` 那类看 **A11**）
 📤 **产出**：这道题属于哪个骨架（A1 单属性 / A2 极值 / A4 计数 / A5 列表 / A6 比率 …）
 
 ### 第 3 步｜**查当前库的“交题前必查 3 条”**
@@ -82,7 +72,6 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反�
 📖 **读**：`db/<db_id>.md` 顶部的 **⚠️ 交题前必查**
 📤 **产出**：这次写 SQL 要特别防的 3 条（例：`card_games` = ① DISTINCT ② 值首字母大写 ③ `=` vs `LIKE`）
 
-> **这一步是防止"写了没看到"的关键**：库级坑不在长文档里翻，而是每次只读**当前库的 1 个短文件**。
 
 ### 第 3.5 步｜⭐ **两个概念先定位（列名靠猜是最贵的错）**
 
@@ -144,7 +133,7 @@ python tools/bird.py --dataset dev2025 run <db> "SELECT DISTINCT 列 FROM 表 LI
 python tools/bird.py --dataset dev2025 attrs <idx>   # ai 工具名 bird_attrs
 # ③ SQL 最前写形状声明；④ --checks 勾选；⑤ --attrs 属性清单（条数必须 == 列数）
 python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ..." \
-  --checks "0,1,1b,2,2b,4,5,5b,8,10,12,13,13b" --attrs "属性1|属性2|属性3"
+  --checks "0,1,1b,2,2b,4,5,5b,8,8b,10,12,13,13b" --attrs "属性1|属性2|属性3"
 ```
 
 | 闸门 | 规则 | 不过会怎样 |
@@ -196,6 +185,7 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 
 | 处境 | 读什么 |
 |---|---|
+| "`answer` 被闸门拒了" | 按它的提示**改一次**再交（探针 → 去跑一条；形状 → 对实测；勾选 → 补缺的条目；属性 → 补/删列）；**不许直接 `--force`** |
 | "`bird_score` 说我错了，为什么？" | `diagnosis.md`（含"行列反推手册"） |
 | "形状对但值不对，改了还是不对" | `diagnosis.md` 的止损规则 → 通常该去做**口径实验**（见下） |
 | "金标返回的形状很奇怪" | `gold-style.md` |
@@ -205,7 +195,7 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 | "这样算对了吗？列顺序、DISTINCT 有影响吗" | `scoring.md` |
 | "这题之前错过吗" | `casebook.md` |
 
-⚠️ **止损规则**：同一题试过 2 种写法、或 probe 过 2 轮还没定 → **挂起**，继续下一题。
+⚠️ **止损规则**：同一题试过 2 种写法、或 probe 过 2 轮还没定 → **挂起**（落盘形式见 `diagnosis.md`），继续下一题。
 ⚠️ **口径实验**（一批里 ≥30% 的错题是"形状对、值不同"时做 —— 一轮看清，别逐题猜）：做法见 `calibration.md`。
 
 ---

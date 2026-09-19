@@ -2,11 +2,8 @@
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
-1. ⛔ **已作废（第 14 轮推翻）**：Mini-Dev 时代的笔记写「`date` 是 `'930101'`（YYMMDD）」，
-   在 dev 版**不成立**（下面是现行事实）。
-1. ⚠️ **日期全是 `'YYYY-MM-DD'`**（`'1995-03-24'`）—— playbooks 旧笔记里的 `'930101'` 是 **Mini-Dev 版**。
-   
-   **动手前先探一句**：`SELECT date FROM trans LIMIT 1`。
+1. ⚠️ **日期全是 `'YYYY-MM-DD'`**（`'1995-03-24'`）；**动手前先探一句** `SELECT date FROM trans LIMIT 1`。
+   ⛔ **已作废（第 14 轮推翻）**：Mini-Dev 时代写的「`date` 是 `'930101'`（YYMMDD）」在 dev 版**不成立**。
 2. **捷克语缩写**：`A2`=区名、`A3`=region、`A4`=人口、`A11`=平均工资、`A12`/`A13`=95/96 失业率、
    `A15`/`A16`=95/96 犯罪数；`trans.operation`：`'VYBER'`=取现、`'VKLAD'`=存款；
    `trans.type`：`'PRIJEM'`=贷方、`'VYDAJ'`=借方。

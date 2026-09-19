@@ -54,7 +54,7 @@
 - [ ] **"full name" 是 1 列还是 2 列？** `student_club` 1366 实测是 **1 列**，而 1414 的 evidence
       明写 `first_name, last_name`（2 列）→ **evidence 写了就按 evidence。**
 - [ ] ⭐⭐ **计数形态三选一：默认 `COUNT(主表.主键列)`**（不是 `COUNT(*)`、也不是 `COUNT(DISTINCT)`）。
-      实测 11 库 1057 道已提交题的金标：`COUNT(列)` 全面占优（codebase 46 / superhero 21 / student_club 25 /
+      实测（数字会涨，以 `conventions --db <库>` 的 `n=` 为准）`COUNT(列)` 全面占优（codebase 46 / superhero 21 / student_club 25 /
       card_games 18 / california 29 …），`COUNT(DISTINCT)` 只在 **financial（23）和 thrombosis（29）** 常见，
       `COUNT(*)` 很少。⇒ **先看 `db/<库>.md` 末的“惯例卡片”，再决定**：
       - 本库以 `COUNT(列)` 为主 → `COUNT(T1.主键列)`（如 `COUNT(T1.member_id)`、`COUNT(T2.driverId)`）

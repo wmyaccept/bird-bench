@@ -209,6 +209,112 @@ def main() -> int:
         "0.83%" not in txt(SKILL / "SKILL.md") and "0.83%" in txt(REF / "traps.md"),
     )
 
+    print("\n── P18 skill 全量审计：把「静态声明」全部机器化（本轮 9 类漂移都是这么漏的）")
+    import argparse
+    import contextlib
+    import io
+
+    live = [SKILL / "SKILL.md", REF / "checklist.md", REF / "traps.md", REF / "shapes.md",
+            REF / "diagnosis.md", REF / "scoring.md", REF / "gold-style.md",
+            REF / "naming-traps.md", REF / "sqlite-and-data.md", REF / "calibration.md",
+            REF / "maintaining.md", *sorted((REF / "db").glob("*.md"))]
+
+    # ① 闸门数：任何一处写成「两道/三道」都是陈年文本（连 bird.py 的 help 一起管）
+    stale_gates = []
+    for f, label in [(x, x.name) for x in live + [AGENTS]] + [(ROOT / "tools" / "bird.py", "bird.py")]:
+        for i, ln in enumerate(txt(f).splitlines(), 1):
+            if re.search(r"[两二三四]道(机器)?闸门", ln) and "四道" not in ln:
+                stale_gates.append(f"{label}:{i}: {ln.strip()[:70]}")
+    check("现役文档 + bird.py 里没有「两道/三道闸门」的陈年文本", not stale_gates,
+          " ｜ ".join(stale_gates))
+
+    # ② 文档里的 --checks 示例必须自身合法（否则照抄就被闸门 3 拒）
+    core_ids = [i for i, c in _bird.checklist_items() if c]
+    all_ids = [i for i, _ in _bird.checklist_items()]
+    bad_checks = []
+    for f in live:
+        for m in re.finditer(r'--checks\s+"([^"]+)"', txt(f)):
+            raw = m.group(1)
+            if any(ch in raw for ch in "…<>"):        # 占位式示例，跳过
+                continue
+            got = [x.strip() for x in raw.split(",") if x.strip()]
+            miss = [c for c in core_ids if c not in got]
+            unk = [g for g in got if g not in all_ids]
+            if miss or unk:
+                bad_checks.append(f"{f.name}: 缺{miss} 未知{unk}")
+    check("文档里可照抄的 --checks 示例都含全部核心条目且不含未知条目号", not bad_checks,
+          " ｜ ".join(bad_checks))
+
+    # ③ 骨架范围：SKILL 说的 A1–AN 必须等于 shapes.md 实际的最大骨架号
+    shape_txt = txt(REF / "shapes.md")
+    max_a = max(int(x) for x in re.findall(r"^##\s*A(\d+)\.", shape_txt, re.M))
+    claimed = [int(x) for x in re.findall(r"A1[–\-—]A(\d+)", txt(SKILL / "SKILL.md"))]
+    check(f"SKILL 说的骨架范围 == shapes.md 实际（A1–A{max_a}）",
+          claimed and set(claimed) == {max_a}, f"SKILL 声称 {claimed}，实际最大 A{max_a}")
+
+    # ④ brief --step：帮助文本列出的步骤 == 真有内容的步骤；未知 step 必须失败关闭
+    steps_real = _bird.available_steps()
+    help_txt = (ROOT / "tools" / "bird.py").read_text(encoding="utf-8")
+    m_step = re.search(r'--step", help="[^"]*?（([0-9./]+)', help_txt)
+    claimed_steps = m_step.group(1).split("/") if m_step else []
+    check(f"brief --step 的 help 步骤 == 实际有内容的步骤（{[*steps_real]}）",
+          claimed_steps == steps_real, f"help 写 {claimed_steps}，实际 {steps_real}")
+    ok_all = True
+    for s in steps_real:
+        try:
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                _bird.cmd_brief(argparse.Namespace(db_id=None, step=s))
+        except SystemExit as exc:
+            ok_all = ok_all and not exc.code
+    closed = False
+    try:
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            _bird.cmd_brief(argparse.Namespace(db_id=None, step="9"))
+    except SystemExit as exc:
+        closed = bool(exc.code)
+    check("每个真实步骤都能推出内容；未知 step（9）失败关闭（不是静默空手而归）",
+          ok_all and closed, f"ok_all={ok_all} closed={closed}")
+
+    # ⑤ 库档案「交题前必查」必须恰好 3 条、编号 1/2/3（financial 曾出现 1. 1. 2. 3.）
+    bad_db = []
+    for d in sorted((REF / "db").glob("*.md")):
+        head = txt(d).split("## 连接图")[0]
+        nums = re.findall(r"^(\d+)\. ", head, re.M)
+        if nums != ["1", "2", "3"]:
+            bad_db.append(f"{d.name}: {nums}")
+    check("每份库档案的「交题前必查」都是 3 条、编号 1/2/3", not bad_db, " ｜ ".join(bad_db))
+
+    # ⑥ SKILL 承诺的档案小节名必须真的存在（"体检单"就是这么漏的：承诺了一节没人建）
+    promised = set(re.findall(r"`## ([^`]+)`", txt(SKILL / "SKILL.md")))
+    profiles = "\n".join(txt(d) for d in sorted((REF / "db").glob("*.md")))
+    missing_sections = [s for s in promised if f"## {s}" not in profiles]
+    check("SKILL 承诺的 db 档案小节名真实存在", not missing_sections, str(missing_sections))
+
+    # ⑦ 挂起清单：唯一出处 + 别处只指路（它曾经是个"没有落点"的产物）
+    SENT_HANG = "<!-- canon:hangs"
+    holders = [f.name for f in live if SENT_HANG in txt(f)]
+    check(f"挂起清单落盘说明的哨兵只在 diagnosis.md（实际：{holders}）",
+          holders == ["diagnosis.md"], str(holders))
+    diag_txt = txt(REF / "diagnosis.md")
+    check("diagnosis.md 写明了挂起清单的落盘形式（不另设文件 ⇒ 就是 audit 错题明细 + 档案实测小节）",
+          "不另设文件" in diag_txt and "audit" in diag_txt)
+    loose = [f.name for f in [SKILL / "SKILL.md", REF / "checklist.md", REF / "traps.md"]
+             if "挂起" in txt(f) and "diagnosis.md" not in txt(f)]
+    check("提到「挂起」的现役文档都指路到 diagnosis.md", not loose, str(loose))
+
+    # ⑧ 会随提交量增长的统计数字不许写成裸数字（以工具输出为准）
+    grow = []
+    for f in [REF / "traps.md", REF / "checklist.md"]:
+        for i, ln in enumerate(txt(f).splitlines(), 1):
+            if re.search(r"\d{3,}\s*道(已提交|金标)", ln) and "conventions" not in ln:
+                grow.append(f"{f.name}:{i}: {ln.strip()[:70]}")
+    check("「N 道已提交题的金标」这类会涨的数字都带「以 conventions 为准」", not grow,
+          " ｜ ".join(grow))
+
+    # ⑨ 流程入口：选题（这是整条链的前端，曾完全没写）
+    check("SKILL.md 写了选题入口（bird_list / list --db）",
+          "bird_list" in txt(SKILL / "SKILL.md") or "list --db" in txt(SKILL / "SKILL.md"))
+
     print("\n── P8 SKILL.md 常驻预算（搬出去的知识必须还有落点）")
     budget = 14500  # 常驻上下文上限：SKILL.md 实测 18.3KB 时启用（P8），改小要先搬东西出去
     size = (SKILL / "SKILL.md").stat().st_size
