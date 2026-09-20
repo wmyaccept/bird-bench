@@ -2307,3 +2307,36 @@ README 必须有思考模式声明。
 以及临时 key（需人给）；
 越卡/超时保护：单次 LLM 调用无硬上界（`urlopen(timeout=60)` 拦不住慢速响应）。
 
+## 第 54 轮（2026-09-21）｜**打包器自检从来就没跑通过**
+
+**触发**：填完提交材料后跑 `make_submission.py --check-run`（真执行 1534 条预测 SQL 算异常率），
+想独立复核 README 里的 0.78%。结果它直接报错。
+
+**三个叠在一起的 bug**（所以一直没被发现：报错发生在第一层，后面两层永远轮不到）：
+
+1. `os.environ.setdefault("BIRD_DATASET", "dev2025")` 写在 **`import bird` 之后**。
+   而 `bird.py` 在**导入时**就把数据集目录固化了（模块级的 `DATASET_KEY`）⇒ 自检其实在查 MINIDEV 的库。
+2. `bird.run_sql(bird.db_path(db), sql)` —— `run_sql` 收的是 **db_id 字符串**（它内部自己调 `db_path`），
+   传 Path 就变成“路径套路径”。
+3. `rows, _ = bird.run_sql(...)` —— `run_sql` 返回的是 **四元组** `(columns, rows, truncated, total)`。
+   第 2、3 条任一条都会抛异常，而 `except Exception: n_err += 1` **把原因吞了**。
+
+**为什么这是本项目的典型病**：一个**门面是“自检”实际从未执行过任何 SQL** 的函数。
+与第 48 轮那三类元缺陷同族 —— 判据必须是“**自检真跑了吗**”，而不是“它输出了什么”。
+
+**修法（四条，全部机器化）**：
+
+- env 提到 `import` 之前 + **自证**（`bird.DATASET_KEY != "dev2025"` 就硬失败）
+- `run_sql(db, sql, max_rows=1, timeout=60.0)`，且 **timeout 镜像 `run_bird.py` 的 `--timeout` 默认值**
+  （原先用 `run_sql` 默认的 30s ⇒ 把 30~60s 的慢题误报成 error：实测 idx 42 / 903，
+  异常率因此从 **0.78% 虚高到 0.91%**）
+- 报错样例打出来（最多 5 条），不再静默累加
+- **失败关闭**：`n_err == len(d)` ⇒ 硬失败（“全错”= 自检没真跑，不许当通过）
+
+**验证**：修后 `--check-run` 得到 **12 空 / 0 报错 = 0.78%**，与 runner 自己的日志和 README 三者一致；
+zip 产出 `work/submission/bird_submission_20260920.zip`（0.23 MB，35 个文件）。
+新增 5 条源码级断言 + 投毒 4/4 全红并字节还原。`run_all` **324 / 0**。
+
+**教训**：**“有自检”不等于“自检有效”**。判断一个自检有没有价值，只能看它
+①是不是真的执行了目标动作 ②出错时会不会出声 ③全部失败时会不会硬停。三条缺一条就是装饰。
+

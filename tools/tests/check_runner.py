@@ -8,6 +8,8 @@
   ④ **空结果会回喂重写**（mock 第一条故意给 0 行，最终必须变成第二条）
   ⑤ 只读闸门真的拦得住写操作（mock 给 DELETE，最终答案不能是它）
   ⑥ 失败关闭：库路径不对 → rc=2（不是"跑了但什么都没做"还返回 0）
+  ⑦ 打包器的 `--check-run` 跑在 **dev2025** 上（bird.py 在导入时固化数据集目录，
+     原先写成 import 之后 setdefault ⇒ 自检静默地在 MINIDEV 的库上算空结果率）
 
 用法：python tools/tests/check_runner.py
 """
@@ -143,6 +145,38 @@ def main() -> int:
     check("prompt 里带上了库档案", "Currency is 'EUR'/'CZK'" in r4.stdout)
     check("prompt 里带上了 evidence", "## Evidence" in r4.stdout)
     check("prompt 里带上了 evidence 正文", "ratio = count(Currency='EUR')" in r4.stdout)
+
+    # ── ⑦ 打包器自检的数据集口径（源码顺序断言：env 必须早于 import bird）
+    #    按**行**匹配，不能 str.find('import bird') —— 那句会先命中上方的注释。
+    pack_lines = (ROOT / "tools" / "make_submission.py").read_text(encoding="utf-8").splitlines()
+    i_env = next((i for i, l in enumerate(pack_lines)
+                  if "BIRD_DATASET" in l and '"dev2025"' in l), -1)
+    i_imp = next((i for i, l in enumerate(pack_lines)
+                  if l.strip().startswith("import bird")), -1)
+    check("--check-run 在 import bird 之前设 BIRD_DATASET（否则静默查错数据集）",
+          0 <= i_env < i_imp, f"env@line{i_env+1} import@line{i_imp+1}")
+    check("--check-run 有数据集自证（真跑错数据集会硬失败）",
+          "bird.DATASET_KEY" in "\n".join(pack_lines))
+    #    run_sql 的真签名：收 db_id 字符串、返回 4 元组。传 Path / 二元解包 ⇒ 整条自检静默失效。
+    _call = next((l for l in pack_lines if "bird.run_sql(" in l), "")
+    check("--check-run 给 run_sql 传 db_id（不是 Path，它内部会自己调 db_path）",
+          "run_sql(db," in _call.replace(" ", ""), _call.strip())
+    _lhs = _call.split("=")[0]
+    check("--check-run 按 run_sql 的 4 元组解包（不是 2 元组）",
+          len([x for x in _lhs.split(",") if x.strip()]) == 4, _lhs.strip())
+    check("--check-run 会把报错原因打出来（不是静默 n_err+=1）",
+          "err_samples" in "\n".join(pack_lines))
+    check("--check-run 有失败关闭：全部报错 ⇒ 硬失败（自检没真跑不许当通过）",
+          "n_err == len(d)" in "\n".join(pack_lines))
+    #    超时口径也要对齐：自检用 30s 而 runner 用 60s ⇒ 把慢题误报成 error（实测 2 道）。
+    _rb_timeout_line = next((l for l in (ROOT / "runner" / "run_bird.py")
+                             .read_text(encoding="utf-8").splitlines()
+                             if '"--timeout"' in l), "")
+    _rb_default = _rb_timeout_line.split("default=")[-1].split(",")[0].strip()
+    _pk_timeout = _call.split("timeout=")[-1].split(")")[0].strip() if "timeout=" in _call else ""
+    check("--check-run 的执行超时 == runner --timeout 默认（否则测的不是同一件事）",
+          bool(_pk_timeout) and _pk_timeout == _rb_default,
+          f"packer={_pk_timeout!r} runner={_rb_default!r}")
 
     print(f"\n════ 通过 {pass_n} / 失败 {fail_n} ════")
     return 1 if fail_n else 0

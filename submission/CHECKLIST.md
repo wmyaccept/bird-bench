@@ -43,4 +43,4 @@ indices in the same order as `test.json` / `dev.json`.
 
 ## Contact
 
-`<FILL: team / contact email>`
+`wmyaccept-SQL` (Independent Researcher) — 3053819143@qq.com

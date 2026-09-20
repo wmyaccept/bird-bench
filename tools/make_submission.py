@@ -218,21 +218,40 @@ def main() -> int:
     # 空结果率（官方 5% 阈值）—— 真跑一遍
     empty_rate = None
     if args.check_run and pred:
+        # ★ 必须在 import bird 之前设：bird.py 在**导入时**就把数据集目录固化了
+        #   （DATASET_KEY 在模块级求值）。原先写成 import 之后 setdefault ⇒ 自检其实在查
+        #   MINIDEV 的库，空结果率算在错的库上（"自检说通过、其实没验"）。
+        import os
+        os.environ["BIRD_DATASET"] = "dev2025"
         sys.path.insert(0, str(ROOT / "tools"))
         import bird  # noqa: E402
-        import os
-        os.environ.setdefault("BIRD_DATASET", "dev2025")
+        if bird.DATASET_KEY != "dev2025":
+            hard.append(f"--check-run 跑在 {bird.DATASET_KEY} 上（应为 dev2025），空结果率不可信")
         d = json.loads(pred.read_text(encoding="utf-8"))
         n_empty = n_err = 0
+        err_samples: list[str] = []
         for k, v in d.items():
             sql = v.split("\t----- bird -----\t")[0]
             db = v.split("\t----- bird -----\t")[-1]
             try:
-                rows, _ = bird.run_sql(bird.db_path(db), sql)
+                # run_sql(db_id, sql) 收的是 **db_id 字符串**（它自己会调 db_path），
+                # 而且返回 **(columns, rows, truncated, total) 四元组**。原先写成
+                # `run_sql(db_path(db), ...)` + 两元解包 ⇒ 这条自检从来没真的执行过 SQL。
+                # timeout 必须镜像 run_bird 的 --timeout 默认值（60s）：用 run_sql 默认的
+                # 30s 会把 30~60s 的慢题误报成 error（实测 idx 42 / 903 就是这样）。
+                _cols, rows, _trunc, _total = bird.run_sql(db, sql, max_rows=1, timeout=60.0)
                 if not rows:
                     n_empty += 1
-            except Exception:
+            except Exception as e:                     # noqa: BLE001
                 n_err += 1
+                if len(err_samples) < 5:               # 别把原因吞掉（就是它掩盖了上面两个 bug）
+                    err_samples.append(f"idx {k}: {type(e).__name__}: {str(e)[:90]}")
+        if err_samples:
+            print("  报错样例：")
+            for s in err_samples:
+                print(f"    {s}")
+        if d and n_err == len(d):
+            hard.append("--check-run 全部报错（自检没真的执行 SQL），空结果率不可信")
         empty_rate = (n_empty + n_err) / max(1, len(d))
         print(f"  空结果 {n_empty} / 报错 {n_err} → 异常率 {empty_rate:.2%}（官方阈值 5%）")
         if empty_rate > 0.05:
