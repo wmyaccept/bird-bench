@@ -9,7 +9,7 @@ deterministic tooling:
 
 | Layer | Files | What it does |
 |---|---|---|
-| Prompt (the method) | `prompt/*.md` | rules distilled from our dev-set error analysis, plus one short card per database |
+| Prompt (the method) | `prompt/traps.md`, `prompt/shapes.md`, `prompt/db/<db_id>.md` | rules distilled from our dev-set error analysis, plus one short card per database — **exactly the files `runner/prompt.py` reads, nothing else** |
 | Runner | `runner/run_bird.py` | loop: build prompt → call LLM → validate → execute read-only → retry → log |
 | Data layer | `tools/bird.py` | schema introspection, sample values, read-only execution, EX comparison |
 | Local evaluator | `tools/official_eval/` | the official evaluation scripts (unmodified except a marked local patch) |
@@ -108,8 +108,8 @@ Required by the guidelines so that a failed run can be restarted instead of star
   If you prefer a prompt that does not use dev-derived notes at all, we can ship the same runner
   with `prompt/` reduced to the two generic rule files only (`traps.md`, `shapes.md`).
   Note on what is **not** in the prompt: our internal agent workflow (tool names, submission gates)
-  is deliberately excluded — the runner's system prompt contains SQL-writing rules and per-database
-  notes only.
+  is deliberately excluded — `prompt/` contains exactly the three things `runner/prompt.py`
+  loads (`traps.md`, `shapes.md`, one card per database) and no other file from our notes.
 
 ## 8. `column_meaning.json`
 
@@ -152,6 +152,6 @@ SUBMISSION.md              what is inside the archive + requirement-by-requireme
 requirements.txt           dependencies (see §2)
 runner/                    the runner (entry point: run_bird.py)
 tools/                     data layer + the official evaluation scripts
-prompt/                    the prompt text = our method (rules + per-database cards)
+prompt/                    exactly the files the runner reads: traps.md + shapes.md + db/<db_id>.md
 dev_pred/dev2025_pred.json our predicted SQL on the dev split
 ```

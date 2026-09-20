@@ -10,6 +10,7 @@
   ⑥ 失败关闭：库路径不对 → rc=2（不是"跑了但什么都没做"还返回 0）
   ⑦ 打包器的 `--check-run` 跑在 **dev2025** 上（bird.py 在导入时固化数据集目录，
      原先写成 import 之后 setdefault ⇒ 自检静默地在 MINIDEV 的库上算空结果率）
+  ⑧ 提交包里的 `prompt/` **正好**是 runner 读的那几份（不许把内部 agent 流程装进去）
 
 用法：python tools/tests/check_runner.py
 """
@@ -177,6 +178,30 @@ def main() -> int:
     check("--check-run 的执行超时 == runner --timeout 默认（否则测的不是同一件事）",
           bool(_pk_timeout) and _pk_timeout == _rb_default,
           f"packer={_pk_timeout!r} runner={_rb_default!r}")
+
+    # ── ⑧ 提交包里的 prompt/ 必须**正好**是 runner 读的那几份。
+    #    README 声明了“内部 agent 流程（工具名、闸门）已排除”，而 SKILL.md/checklist.md
+    #    里全是 bird_* 工具和四道闸门 —— 装进包就是自相矛盾（合规审查一眼能看到）。
+    import importlib.util
+    _spec = importlib.util.spec_from_file_location("_mk_sub", ROOT / "tools" / "make_submission.py")
+    _mk = importlib.util.module_from_spec(_spec)
+    sys.modules["_mk_sub"] = _mk
+    _spec.loader.exec_module(_mk)
+    _pfiles, _ = _mk.build_prompt_dir()
+    _names = sorted(dst for _, dst in _pfiles)
+    _want = sorted([f"prompt/{n}" for n in _mk.PROMPT_FILES]
+                   + [f"prompt/db/{p.name}" for p in
+                      sorted((ROOT / ".pi" / "skills" / "bird-sql" / "references" / "db")
+                             .glob("*.md"))])
+    check("提交包的 prompt/ == runner 真正读的文件（traps+shapes+库卡）",
+          _names == _want, f"多/少：{sorted(set(_names) ^ set(_want))[:4]}")
+    check("提交包的 prompt/ 不含内部 agent 流程文件（SKILL/checklist/…）",
+          not any(n.endswith(("SKILL.md", "checklist.md", "scoring.md", "diagnosis.md",
+                              "gold-style.md", "naming-traps.md", "sqlite-and-data.md",
+                              "casebook.md", "calibration.md", "maintaining.md"))
+                  for n in _names), str(_names[:4]))
+    check("打包器的 PROMPT_FILES 直接取自 runner 常量（唯一出处，不会漂移）",
+          "from runner.prompt import RULES_FILES as PROMPT_FILES" in "\n".join(pack_lines))
 
     print(f"\n════ 通过 {pass_n} / 失败 {fail_n} ════")
     return 1 if fail_n else 0

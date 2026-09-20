@@ -44,11 +44,11 @@ MANIFEST = [
     ("dev_pred/dev2025_pred.json", "work/runner_pred_dev2025.json"),
 ]
 
-# prompt 目录只放"推理时真的会读"的文本；casebook/calibration/maintaining 是内部账本，不进去。
-PROMPT_FILES = [
-    "SKILL.md", "traps.md", "checklist.md", "shapes.md", "scoring.md",
-    "diagnosis.md", "gold-style.md", "naming-traps.md", "sqlite-and-data.md",
-]
+# prompt 目录只放"推理时真的会读"的文本 —— 直接取 runner 的常量（唯一出处，结构上不可能漂移）。
+# ⛔ 不要把 SKILL.md / checklist.md 放进包：它们讲的是**内部 agent 流程**（bird_* 工具、四道闸门），
+#    runner 不读它们，而 README 又明列声明"内部流程已排除" —— 装进去就是自相矛盾。
+sys.path.insert(0, str(ROOT))
+from runner.prompt import RULES_FILES as PROMPT_FILES   # noqa: E402
 PROMPT_DIRS = ["db"]
 
 # 硬失败：出现即不许提交
@@ -101,12 +101,9 @@ def build_prompt_dir() -> tuple[list[tuple[Path, str]], list[str]]:
     for d in PROMPT_DIRS:
         for p in sorted((refs / d).glob("*.md")):
             out.append((p, f"prompt/{d}/{p.name}"))
-    if (src / "SKILL.md").exists():
-        out.append((src / "SKILL.md", "prompt/SKILL.md"))
-    # 内部账本，明确不进包
-    for skipped in ("casebook.md", "calibration.md", "maintaining.md"):
-        if (refs / skipped).exists():
-            notes.append(f"不打包 prompt/{skipped}（内部账本，非推理所需）")
+    # 明确不进包的：references 下除 PROMPT_FILES 以外的 .md（内部账本 / 细节展开）
+    for extra in sorted(p.name for p in refs.glob("*.md") if p.name not in set(PROMPT_FILES)):
+        notes.append(f"不打包 prompt/{extra}（runner 不读它）")
     return out, notes
 
 
