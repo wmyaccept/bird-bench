@@ -1,4 +1,4 @@
-# toxicology （4 表） · simple EX 82.9% (63/76)
+# toxicology （4 表） · simple EX 82.9% (63/76, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -29,7 +29,7 @@ molecule ──molecule_id── atom / bond / connected
   `SELECT DISTINCT connected.atom_id` —— **1 列、5399 行**（我给了 `atom_id, atom_id2` 两列 10882 行）。
   ⇒ 卡方（1 列 vs 2 列）在这里是常见失分点，“connected atoms”不一定给两个 atom_id。
 
-**⚠️ 全量实测（76 道 → 63 对 / 13 错，82.9%）：13 道错题里 7 道是“列数”错**
+**⚠️ 全量实测（旧 dev 2024-06，76 道 → 63 对 / 13 错，82.9%）：13 道错题里 7 道是“列数”错**
 
 这个库的列数倾向跟别的库相反 —— **金标爱多给列**：
 

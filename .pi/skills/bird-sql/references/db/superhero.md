@@ -1,4 +1,4 @@
-# superhero （10 表） · simple EX 92.6% (75/81)
+# superhero （10 表） · simple EX 92.6% (75/81, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -22,7 +22,7 @@ superhero ──id── hero_power ──power_id── superpower
 - ⚠️ **取最小/最大属性值时先查并列**：`idx 837`（“lowest attribute value”）用
   `ORDER BY … ASC LIMIT 1` 得 1 行，金标是 **10 行** —— `MIN(attribute_value)=5` 有 10 个英雄并列。
   ⇒ 按 A2 的备用写法：`WHERE attribute_value = (SELECT MIN(attribute_value) FROM hero_attribute)`。
-- 实测全量：**81 道 75 对 / 6 错（92.6%）**。未解的四道都是口径类：
+- 实测全量（旧 dev 2024-06）：**81 道 75 对 / 6 错（92.6%）**。未解的四道都是口径类：
   `720`（“over 15 powers”：金标 71 行 vs 我 102 行，已确认 `hero_power` 无重复行 —— 仍未解释）、
   `741`/`767`/`791`（极值/均值口径）。
 

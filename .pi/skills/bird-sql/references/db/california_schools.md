@@ -1,4 +1,4 @@
-# california_schools （3 表） · simple EX 94.4% (51/54)
+# california_schools （3 表） · simple EX 94.4% (51/54, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 

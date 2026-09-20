@@ -1,4 +1,4 @@
-# financial （8 表） · simple EX 83.9% (52/62)
+# financial （8 表） · simple EX 83.9% (52/62, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -19,13 +19,14 @@ card ──disp_id── disp
 ```
 - 列名是 **捷克语缩写**：`A2`=区名、`A11`=平均工资、`A4`=人口；`trans.operation` 里
   `'VYBER'`=现金取款、`'VKLAD'`=存款；`trans.type` 里 `'PRIJEM'`=贷方、`'VYDAJ'`=借方。
-- `client.birth_date` 是 `'1976-01-29'`；account.date 是 `'930101'`（YYMMDD）。
-  ⚠️ **这条是 Mini-Dev 版的写法，Dev 版已经全部改成 `'YYYY-MM-DD'`**（实测 trans/loan/card/account 都是）。
-  ⇒ **动手前先跑一句 `SELECT date FROM trans LIMIT 1` 确认，不要照抄 Mini-Dev 时代那份笔记。**
+- `client.birth_date` 是 `'1976-01-29'`。
+  ⛔ **已作废（第 14 轮推翻）**：Mini-Dev 时代写的「`account.date` 是 `'930101'`（YYMMDD）」在 dev 版**不成立** ——
+  dev 版 trans/loan/card/account 全是 `'YYYY-MM-DD'`（见上面必查第 1 条）。
+  ⇒ **动手前先跑一句 `SELECT date FROM trans LIMIT 1` 确认。**
 - ⚠️ **“list all the transactions …” 金标只给 1 列**（`idx 165`：我 `SELECT *` 给了 10 列 15140 行，金标是 **1 列** 15140 行）。
 - ⚠️ **“how many X **and** Y” 可能是 1 行 2 列**（`idx 172`：owner/disponent 数，金标用
   `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
-- 实测全量：**62 道 52 对 / 10 错（83.9%）**。
+- 实测全量（旧 dev 2024-06）：**62 道 52 对 / 10 错（83.9%）**。
 
 ## 惯例卡片（实测统计，n=106 道已提交题的金标；数据集 dev2025）
 
@@ -77,12 +78,11 @@ district T1 INNER JOIN account T2 ON T1.district_id = T2.district_id
   **`order` 是保留字，必须写 `"order"`**（173/188）。
 - ⭐ 本库累计 challenging **3/57**（含旧批次），是全库最低 ⇒ 今后遇到 financial 的 profile 题，
   先把题干抄在本子上**逐项数格子再写 SQL**。
-## ⚠️⚠️ 值层实测（D 类 15 道）：**钱有两套表，id 有三个**
+## ⚠️⚠️ 值层实测（D 类 15 道）：**id 有三个**
 
-- ⭐ `transactions_1k`（逐笔：`Price` / `Amount` / `Date`）vs `yearmonth`（月度汇总：`Consumption` / `Date='YYYYMM'`）：
-  `1477`（哪一年加油花得最多）金标走 **`yearmonth`**；`1529`（在加油站花了多少 + 2012 年 1 月花了多少）
-  金标全在 **`transactions_1k`**（`Price` 求和）。
-  ⇒ “spent / spend（花了多少）” 先想 **`transactions_1k.Price`**；“consumption（消费额）” 先想 **`yearmonth.Consumption`**。
+- ⛔ **本库没有 `transactions_1k` / `yearmonth`**（那是 `debit_card_specializing` 的表，`dev2025 idx 1477`/`1529` 也是那个库的题，
+  规则已记在 `debit_card_specializing.md`）——**本库的钱在 `trans.amount` / `loan.amount` / `order.amount` 上**，
+  别拿着“spent → `transactions_1k.Price`”这句去 financial 里找表。
 - ⭐ `107`/`174`：`account_id` / `disp_id` / `client_id` 别混 —— `174` 题干 “account owner number 130”
   金标是 **`account.account_id = 130`**，我用了 `disp_id`。
 - ⭐ “没有信用卡” = **`disp.type != 'OWNER'`**（`130`），不是“在 `card` 表里没有记录”。

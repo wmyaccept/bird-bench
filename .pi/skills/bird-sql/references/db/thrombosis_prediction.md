@@ -1,4 +1,4 @@
-# thrombosis_prediction （3 表） · simple EX 60.0% (30/50)
+# thrombosis_prediction （3 表） · simple EX 60.0% (30/50, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -32,7 +32,7 @@ Patient ──ID── Examination（就诊：Diagnosis / Symptoms / Thrombosis�
 - `Laboratory` 只覆盖 302 个患者（`Patient` 有 1238 个），大量列有 NULL。
 - 化验指标的正常范围在 `database_description` 里（如 `LDH < 500`、`IGG 900~2000`）。
 
-**⚠️⚠️ 全量实测（50 道：30 对 / 20 错，60%）——本库的最大坑是“三张表的 ID 并不真通”**
+**⚠️⚠️ 全量实测（旧 dev 2024-06，50 道：30 对 / 20 错，60%）——本库的最大坑是“三张表的 ID 并不真通”**
 
 | 表 | 行数 | 不同 ID | 能 JOIN 上 `Patient` 的行数 |
 |---|---|---|---|

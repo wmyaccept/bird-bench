@@ -1,4 +1,4 @@
-# card_games （6 表） · simple EX 62.4% (78/125)
+# card_games （6 表） · simple EX 62.4% (78/125, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 

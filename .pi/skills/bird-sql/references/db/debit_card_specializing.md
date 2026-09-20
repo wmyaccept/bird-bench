@@ -1,4 +1,4 @@
-# debit_card_specializing （5 表） · simple EX 79.1% (34/43)
+# debit_card_specializing （5 表） · simple EX 79.1% (34/43, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 

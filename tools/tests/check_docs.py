@@ -486,7 +486,8 @@ def main() -> int:
 
     # 现场文件提到“上一版/写反了…”时，同一处必须打 ⛔（否则读者会把旧结论当现行）
     TRIG = re.compile(r"上一版|写反了|曾写错|原先写的是|曾经写错|已过时"
-                      r"|旧笔记|旧结论|旧规则|旧口径|原来那条|原规则")
+                      r"|旧笔记|旧结论|旧规则|旧口径|原来那条|原规则"
+                      r"|Mini-Dev 版|Mini-Dev 时代|minidev 版|minidev 时代")
     naked = []
     for f in [*sorted((REF / "db").glob("*.md")), REF / "traps.md", REF / "checklist.md", REF / "shapes.md"]:
         lines = txt(f).splitlines()
@@ -496,6 +497,129 @@ def main() -> int:
             if TRIG.search(ln) and not marked:
                 naked.append(f"{f.name}:{i + 1}")
     check("现役文件提到旧版本时同一处有『⛔ 已作废』标记", not naked, "，".join(naked))
+
+    print("\n── P20 库档案硬约束：串味 / 陈年数字 / 不存在的表列")
+    arch = sorted((REF / "db").glob("*.md"))
+    check(f"库档案有 {len(arch)} 份（≥11）", len(arch) >= 11, str(len(arch)))
+    # 3.1 表头必须标数据集（表头数字来自旧 dev，卡片来自 dev2025）
+    head_bad = []
+    for f in arch:
+        line = txt(f).splitlines()[0]
+        if not re.search(r"simple EX [\d.]+%", line):
+            head_bad.append(f"{f.name}（没有 simple EX 表头）")
+        elif not re.search(r"旧 dev|dev2025|minidev", line):
+            head_bad.append(f"{f.name}：{line[:60]}")
+    check("每份档案表头都标了数据集（旧 dev / dev2025）", not head_bad, " ｜ ".join(head_bad))
+    # 3.2 手写「N 道 M 对」也必须标数据集
+    stat_bad = []
+    for f in arch:
+        for i, ln in enumerate(txt(f).splitlines(), 1):
+            # 只有声称「全量/全库成绩」的行会被读成"当前水平"，必须标数据集；
+            # 「首批 13 道」这类自带范围的批次不算。
+            if "全量" in ln and re.search(r"\d+\s*道[^。\n]{0,12}\d+\s*对", ln) and not re.search(
+                    r"旧 dev|dev2025|minidev|Mini-Dev", ln):
+                stat_bad.append(f"{f.name}:{i}")
+    check("档案里声称「全量」的手写成绩都标了数据集", not stat_bad, "，".join(stat_bad))
+    # 3.3 提到本库没有的表/列，必须落在否定语境
+    NEG_CTX = ("没有", "不成立", "不存在", "已作废", "no such column", "别去", "别拿",
+               "不要照抄", "别照抄", "直接报错")
+    FILEY = re.compile(r"\.(md|py|json|jsonl|ts|cjs|sqlite)$")
+    data_dir = ROOT / "data" / "DEV" / "dev_databases"
+    if not data_dir.exists():
+        print("  ⏭ SKIP 3.3/3.4（没有 data/DEV/dev_databases：这两个守卫需要真库 schema）")
+    else:
+        import sqlite3
+        own_tables, all_tables = {}, {}
+        for f in arch:
+            dbp = data_dir / f.stem / f"{f.stem}.sqlite"
+            if not dbp.exists():
+                own_tables[f.stem] = None
+                continue
+            con = sqlite3.connect(f"file:{dbp}?mode=ro", uri=True)
+            tabs = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            own_tables[f.stem] = tabs
+            all_tables[f.stem] = ({c.lower() for tb in tabs
+                                   for c in (r[1] for r in con.execute(f'PRAGMA table_info("{tb}")'))},
+                                  {tb.lower() for tb in tabs})
+            con.close()
+        missing_db = [f.name for f in arch if own_tables.get(f.stem) is None]
+        check("11 份档案对应的真库都在本地", not missing_db, "，".join(missing_db))
+        # 3.5 表头写的「N 表」== 真库用户表数（排除 sqlite_% 内部表 —— sqlite_sequence 也是 type='table'）
+        cnt_bad = []
+        for f in arch:
+            m = re.search(r"（(\d+) 表）", txt(f).splitlines()[0])
+            if own_tables.get(f.stem) is None:
+                continue
+            n_real = len([x for x in own_tables[f.stem] if not x.lower().startswith("sqlite_")])
+            if not m or int(m.group(1)) != n_real:
+                cnt_bad.append(f"{f.name}: 表头 {m.group(1) if m else '?'} vs 真库 {n_real}")
+        check("档案表头的「N 表」== 真库用户表数", not cnt_bad, " ｜ ".join(cnt_bad))
+        alien, alias = [], re.compile(r"^[A-Za-z]?\d+$")
+        for f in arch:
+            tabs = own_tables.get(f.stem)
+            if tabs is None:
+                continue
+            own_low = {x.lower() for x in tabs}
+            cols_all, tabs_all = all_tables[f.stem]
+            lines = txt(f).splitlines()
+            for i, ln in enumerate(lines, 1):
+                win = lines[max(0, i - 2):i]          # 否定常写在上一行（跨行句子）
+                if any(k in x for x in win for k in NEG_CTX):
+                    continue
+                for m in re.finditer(r"`([A-Za-z_][A-Za-z0-9_]*)`", ln):
+                    tok = m.group(1)
+                    if FILEY.search(tok) or alias.match(tok) or tok.lower() in own_low:
+                        continue
+                    others = [d for d, (c, tb) in all_tables.items() if d != f.stem and tok.lower() in tb]
+                    if others and tok.lower() not in cols_all:
+                        alien.append(f"{f.name}:{i} `{tok}`（属 {others[0]}）")
+                for m in re.finditer(r"`([A-Za-z_][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)`", ln):
+                    tb, cl = m.group(1).lower(), m.group(2).lower()
+                    if tb in own_low:
+                        continue
+                    others = [d for d, (c, tb2) in all_tables.items() if d != f.stem and tb in tb2]
+                    if others and (tb, cl) != ("", ""):
+                        alien.append(f"{f.name}:{i} `{m.group(0)}`（表属 {others[0]}）")
+        check(f"档案点名的「别库表」都落在否定语境（{len(alien)} 处违规）", not alien, " ｜ ".join(alien[:6]))
+        # 3.4 档案里的题号必须是本库的题（数据依赖；dev2025 编号）
+        qfile = ROOT / "data" / "DEV" / "dev_20251106.json"
+        if not qfile.exists():
+            print("  ⏭ SKIP 3.4（没有 dev_20251106.json）")
+        else:
+            import json
+            qs = json.loads(qfile.read_text(encoding="utf-8"))
+            # 白名单：只准「讲渲染误读」这类非题号数字，且必须在文件里仍然存在（过期即失败）
+            WL = {("student_club.md", "1000"): "讲 bird_query 渲染把 100.0 看成 1000",
+                  ("student_club.md", "100"): "同上"}
+            for (fn, num), why in WL.items():
+                f = REF / "db" / fn
+                check(f"白名单仍然需要（{fn} `{num}`：{why}）",
+                      f.exists() and f"`{num}`" in txt(f),
+                      "白名单过期了，删掉它（否则它会掩盖新问题）")
+            alien_idx, used_wl = [], set()
+            for f in arch:
+                lines = txt(f).splitlines()
+                for i, ln in enumerate(lines, 1):
+                    for m in re.finditer(r"`(\d{2,4})`", ln):
+                        num = m.group(1)
+                        if (f.name, num) in WL:
+                            used_wl.add((f.name, num))
+                            continue
+                        if int(num) >= len(qs):
+                            continue
+                        owner = qs[int(num)]["db_id"]
+                        if owner == f.stem:
+                            continue
+                        # 跨库/跨数据集题号必须**自证**：带 minidev 前缀，或当行点名它属于哪个库
+                        labeled = re.search(r"(mini\s*dev|minidev|mini)\s*idx\s*$",
+                                            ln[:m.start()], re.I)
+                        named = owner in ln or owner in lines[max(0, i - 2):i][0]
+                        if not (labeled or named):
+                            alien_idx.append(
+                                f"{f.name}:{i} `{num}` 实属 {owner}（既没标 minidev、也没点名库）")
+            check(f"档案里的题号都属于本库（或自证式的跨库引用）（{len(alien_idx)} 处越界）",
+                  not alien_idx, " ｜ ".join(alien_idx[:6]))
+            check("白名单全部被用到（没有僵尸条目）", used_wl == set(WL), f"未用到：{set(WL) - used_wl}")
 
     print("\n── P5 重交白名单：正文只准有一处，别处只能指路")
     SENTINEL = "<!-- canon:resubmit"        # 只许出现在正文那一处；别处引用标题不算

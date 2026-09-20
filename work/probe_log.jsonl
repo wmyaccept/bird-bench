@@ -1268,3 +1268,4 @@
 {"idx": 18, "db": "trains", "ds": "gen", "kind": "attrs", "detail": "the IDs of all the cars on train no.1 that have 2 wheels", "ts": "2026-09-20 00:20:06"}
 {"idx": 19, "db": "trains", "ds": "gen", "kind": "checks", "detail": "0,1,1b,2,2b,3,4,5,5b,8,8b,9,10,11,11b,12,13,13b", "ts": "2026-09-20 00:20:06"}
 {"idx": 19, "db": "trains", "ds": "gen", "kind": "attrs", "detail": "the shapes of all the head cars on the trains that run in the east direction", "ts": "2026-09-20 00:20:06"}
+{"idx": 1, "db": "financial", "ds": "dev2025", "kind": "run", "detail": "SELECT 'trans' t, amount FROM trans LIMIT 1", "ts": "2026-09-20 10:23:32"}

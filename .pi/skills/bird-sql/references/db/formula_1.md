@@ -1,4 +1,4 @@
-# formula_1 （13 表） · simple EX 75.2% (88/117)
+# formula_1 （13 表） · simple EX 75.2% (88/117, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -142,5 +142,4 @@ races ──circuitId── circuits
 - ⭐ `936` “fastest lap” 金标给的是 **`results.fastestLap`（名次）**，不是 `fastestLapTime`（时间）—— 两个相邻列，看题干的动词/名词。
 - ⭐ `889` “最后一场是哪年” 我 `MAX(year)`，金标 `ORDER BY year DESC LIMIT 1` 取 **`date`**（问“何时”就给日期列，不是年份）。
 - ⭐ 平均圈速要把 `'1:31.4'` **换算成秒**再平均（`942` 金标 `SUBSTR` + `INSTR` 拆分秒）；直接 `AVG(fastestLapTime)` 是对字符串求平均 ⇒ 0。
-- ⭐ `1024`/`1027` “top 5 的 id”：金标给 **`player_api_id`**（`1024`）/`Player_Attributes.player_api_id`（`1027`），且**并列要补第二排序键**（`player_api_id ASC`）。
 - ⭐ `996` “21 世纪头十年” = `year BETWEEN 2000 AND 2009`（我写成 `2010-12-31` ⇒ 多算一年）。

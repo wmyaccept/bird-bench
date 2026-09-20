@@ -1,4 +1,4 @@
-# student_club （8 表） · simple EX 91.1% (92/101)
+# student_club （8 表） · simple EX 91.1% (92/101, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -38,7 +38,7 @@ event.event_id            = attendance.link_to_event
 而 `ORDER BY COUNT(*) DESC LIMIT 1` 在我这里返回前者 → 形状对、值不对。
 这种并列只能靠运气，**不要在同一题上反复换写法**。
 
-**实测全量：113 道 103 对 / 10 错（91.2%，目前最好的库）**。补充实测坑：
+**实测全量（旧 dev 2024-06 早期快照，113 道）：103 对 / 10 错（91.2%）**（表头那行 `92/101` 是同一数据集的 simple 全量，两个快照别混）。补充实测坑：
 - **`zip_code` 没有 `country` 列**（只有 `zip_code, type, city, county, state, short_state`）——
   `1433` 问“which countries”我写了 `country` 直接报错；该库“国家”概念实际落在 `state` 上。
 - **`event` 没有 `url` 列**（只有 `event_id, event_name, event_date, type, notes, location, status`）——

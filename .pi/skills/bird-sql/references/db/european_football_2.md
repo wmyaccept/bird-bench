@@ -1,4 +1,4 @@
-# european_football_2 （7 表） · simple EX 73.8% (48/65)
+# european_football_2 （7 表） · simple EX 73.8% (48/65, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
@@ -24,7 +24,7 @@ Team   ──team_api_id─── Team_Attributes
 - `Player.birthday` 是 TEXT；`height/weight` 是 INTEGER；⚠️ **`Player` 表没有国籍/国家列**
   （“哪个国家的球员”只能绕 `Match` → `League` → `Country`，别硬 JOIN `Country`）。
 
-**⚠️⚠️ 已验证的修正（全量 65 道：48 对 / 17 错，73.8%）**
+**⚠️⚠️ 已验证的修正（旧 dev 2024-06 全量 65 道：48 对 / 17 错，73.8%）**
 
 1. ⚠️ **“某球员的某属性”——金标给的是全部历史记录，不是最新一条！**
 

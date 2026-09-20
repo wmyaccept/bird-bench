@@ -1,4 +1,4 @@
-# codebase_community （8 表） · simple EX 88.1% (133/151)
+# codebase_community （8 表） · simple EX 88.1% (133/151, 旧 dev 2024-06)
 
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
