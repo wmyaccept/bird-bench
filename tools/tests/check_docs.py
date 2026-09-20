@@ -362,6 +362,76 @@ def main() -> int:
           "冷启动五查" in t1_src and "没有任何已提交答案" in t1_src)
     check("write_card 有噪声下限（不许拿 1~2 道题写卡片）", "跳过写卡片" in t1_src)
 
+    # ⭐ T1+T2（本轮）：push 标记必须成对、不许嵌套；同义表必须真有落点；
+    #    做题路径不许写「看金标行数再改」；COUNT/JULIANDAY 只留一套默认。
+    PUSH_OPEN = re.compile(r"<!--\s*push\s+step=([0-9.]+)\s*-->")
+    PUSH_CLOSE = re.compile(r"<!--\s*/push\s*-->")
+    nest_bad, unbal = [], []
+    for f in sorted(REF.glob("*.md")):
+        # 剥围栏/行内代码：maintaining.md 用 `<!-- push … /push -->` 当语法示例，不算真标记
+        raw = re.sub(r"```.*?```", "", txt(f), flags=re.S)
+        raw = re.sub(r"`[^`]*`", "", raw)
+        depth, stack = 0, []
+        tokens = sorted(
+            [(m.start(), "open", m.group(1)) for m in PUSH_OPEN.finditer(raw)]
+            + [(m.start(), "close", None) for m in PUSH_CLOSE.finditer(raw)]
+        )
+        for pos, kind, step in tokens:
+            if kind == "open":
+                if depth > 0:
+                    nest_bad.append(f"{f.name}: nested push step={step} inside {stack[-1]}")
+                depth += 1
+                stack.append(step)
+            else:
+                if depth == 0:
+                    unbal.append(f"{f.name}: extra /push")
+                else:
+                    depth -= 1
+                    stack.pop()
+        if depth:
+            unbal.append(f"{f.name}: unclosed push depth={depth}")
+    check("push 标记不许嵌套（每个 push 块不能再含 push）", not nest_bad, " ｜ ".join(nest_bad[:4]))
+    check("push 标记成对（每个 push 恰好一个 /push）", not unbal, " ｜ ".join(unbal[:4]))
+    traps_blocks = [(s, b) for s, fn, b in _bird.push_blocks(None) if fn == "traps.md"]
+    traps_steps = {s for s, _ in traps_blocks}
+    check("traps.md 的 ①–④ 被推进 step=4（不再只推冷启动）",
+          "4" in traps_steps and any("## ①" in b and "## ④" in b for s, b in traps_blocks if s == "4"),
+          f"traps steps={sorted(traps_steps)}")
+    check("traps.md 的 ⓪ 概念定位被推进 step=3.5",
+          any(s == "3.5" and "概念先定位" in b for s, b in traps_blocks))
+    check("traps.md 的 ⓪-1 冷启动被推进 step=1",
+          any(s == "1" and "冷启动" in b for s, b in traps_blocks))
+    miss_syn = [p.name for p in sorted((REF / "db").glob("*.md"))
+                if not re.search(r"^## 同义表\s*$", txt(p), re.M)]
+    check("11 份库档案都有 ## 同义表（checklist 8b / 值层六问第 1 条的落点）",
+          not miss_syn, ",".join(miss_syn))
+    live_doing = [SKILL / "SKILL.md", REF / "traps.md", REF / "shapes.md",
+                  REF / "checklist.md", REF / "gold-style.md", REF / "calibration.md",
+                  *sorted((REF / "db").glob("*.md"))]
+    gold_look = []
+    GOLD_LOOK_RE = re.compile(
+        r"用金标行数反推|detail 说行数|失败了就换另一种写法|"
+        r"bird_score 的行数会立刻|先试行级，错了换|失败再换\*\*去重"
+    )
+    for f in live_doing:
+        for i, ln in enumerate(txt(f).splitlines(), 1):
+            if GOLD_LOOK_RE.search(ln):
+                gold_look.append(f"{f.name}:{i}: {ln.strip()[:70]}")
+    check("做题路径不再写「看金标行数再改 / 失败了等 score」",
+          not gold_look, " ｜ ".join(gold_look[:4]))
+    count_star_default = []
+    COUNT_STAR_RE = re.compile(r"先试(\*\*)?行数|先试 COUNT\(\*\)|没 DISTINCT 先试不去重")
+    for f in [REF / "traps.md", REF / "shapes.md", REF / "calibration.md",
+              REF / "checklist.md", SKILL / "SKILL.md"]:
+        for i, ln in enumerate(txt(f).splitlines(), 1):
+            if COUNT_STAR_RE.search(ln):
+                count_star_default.append(f"{f.name}:{i}: {ln.strip()[:70]}")
+    check("COUNT 默认不再写成先试 COUNT(*) / 先试行数",
+          not count_star_default, " ｜ ".join(count_star_default[:4]))
+    juli = txt(REF / "traps.md") + txt(REF / "calibration.md")
+    check("JULIANDAY 口径统一为「跨度用 JULIANDAY、年份差看档案」",
+          "跨度用" in juli and "年份差" in juli and "别自作主张用" not in juli)
+
     # ⭐ 类②「同一事实多处手写」：文档说的闸门数必须 == 代码常量（单一数据源）
     n_gates = _bird.N_GATES
     cn = {2: "两", 3: "三", 4: "四", 5: "五", 6: "六"}

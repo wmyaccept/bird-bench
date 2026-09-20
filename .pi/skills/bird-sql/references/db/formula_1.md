@@ -3,7 +3,8 @@
 ## ⚠️ 交题前必查（本库最容易翻车的几条）
 
 1. **粒度是混合的，别无脑 DISTINCT**：851(657→18) 要去重，而 956(**224 行**)/974(**5268**)/1010(**11340**)
-   是行级；849/855/921 的 url 类金标只有 **1 行**。先按去重写，detail 说行数差很多再改行级。
+   是行级；849/855/921 的 url 类金标只有 **1 行**。
+   “Which/Who 谁是…” 按**去重**写；“所有圈速/所有完赛记录”按**行级**写。不要等 score 再改粒度。
 2. **`qualifying.q1/q2/q3` 是 `'1:40.318'`**（分:秒.毫秒，**没有前导 `0:`**）。
    evidence 写的 `'0:01:40'` 直接 `=` 会 0 行 → 用 `LIKE '1:40%'`。
 3. **`position` 四张表都有，语义不同**：`results`(完赛)/`driverStandings`(积分榜)/`constructorStandings`/`qualifying`。
@@ -37,7 +38,7 @@ races ──circuitId── circuits
    | 1010 | Lewis Hamilton 的圈速记录 | **11340** | 1 | 行级 |
    | 849/855/921 | “Where can X be found” → url | **1** | 27/19/51 | 只有 1 行（未解释） |
 
-   ⇒ “Which/Who 谁是…” 先按**去重**写；一旦 detail 显示金标行数是几百上千，就是行级题。
+   ⇒ “Which/Who 谁是…” 按**去重**写；“所有圈速 / 所有完赛记录”按**行级**写（956/974/1010 量级是几百上千行）。
    **不要因为 card_games 的经验给 formula_1 无脑加 `DISTINCT`**（两个库粒度相反）。
 2. ⚠️ **`qualifying.q1/q2/q3` 的格式是 `'1:40.318'`（分:秒.毫秒），没有前导 `0:`**：
    evidence 里写的 `'0:01:40'`（H:MM:SS）**不能直接拿去 `=`**（实测 0 行），
@@ -62,6 +63,13 @@ races ──circuitId── circuits
 13. ⚠️ **表名是驼峰，不是 snake_case**（实测连续踩坑）：`constructorStandings`、`constructorResults`、
     `driverStandings`、`lapTimes`、`pitStops`。写 SQL 前先用 `bird_schema formula_1` 确认表名，
     不要凭直觉写 `constructor_standings` / `lap_times`（会直接 `no such table`）。
+
+## 同义表
+
+- `position` 四张表语义不同：`results.position`（完赛，退赛 NULL）vs `positionOrder`（最终排序）vs `grid`（发车格）vs `driverStandings.position`（积分榜，几乎总有值）。
+- `results.rank` = 最快圈速名次，不是完赛名次。
+- `nationality` 是 `'American'`（不是 `'America'`）。
+- 输出粒度混合：Which/Who → 去重；所有圈速/完赛记录 → 行级。不要按 card_games 的经验无脑 `DISTINCT`。
 
 ## 惯例卡片（实测统计，n=174 道已提交题的金标；数据集 dev2025）
 

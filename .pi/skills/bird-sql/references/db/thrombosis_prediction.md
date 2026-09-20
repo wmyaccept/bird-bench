@@ -111,6 +111,13 @@ WHERE <T1 上的条件> AND <T2/T3 上的条件>
 - ⭐ **诊断名一律 `=` 精确**（1264 `='APS'`、1289 `='SJS'` 金标；用 `LIKE '%X%'` 会吃进组合诊断行）；
   唯一例外是 `SLE` 有时写 `LIKE '%SLE%'`（1279）——两种在无组合行时结果相同。
 
+## 同义表
+
+- `Examination.ID` 与 `Patient.ID` 是**两套编号**（806 行里只有 70 行能 JOIN 上）→ 诊断/症状题先用 `Examination` 单表。
+- `Diagnosis` 在 `Patient` 和 `Examination` **都有、值不同**：Patient 参与 → `Patient.Diagnosis`；否则 → `Examination.Diagnosis`。
+- `RVVT` / `aCL IgA/IgG/IgM` / `KCT` / `LAC` / `ANA` / `Symptoms` / `Thrombosis` 在 **`Examination`**，`Laboratory` 里没有。
+- 日期：“exam / 就诊”优先 `Examination."Examination Date"`；“data first recorded in YYYY” = `Patient."First Date"`（不是 `Description`）。
+
 ## 惯例卡片（实测统计，n=163 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(DISTINCT) 34 / COUNT(列) 27 / COUNT(*) 7 / 无 95　⇒ 本库偏去重（34/68 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`

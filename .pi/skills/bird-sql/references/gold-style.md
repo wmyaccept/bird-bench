@@ -34,14 +34,14 @@ BIRD 的金标是人工写的，不是"标准答案生成器"，它会做很多�
    → 两种都可能。**先算出并列项有几个**：
    - 并列项少且题目问单个实体 → 先试 `ORDER BY ... LIMIT 1`
    - "按某个聚合值取极值"的题 → 先试 `HAVING 聚合 = (SELECT MAX(聚合) ...)`（返回全部并列）
-   - 失败了就换另一种写法，`bird_score` 的行数会立刻告诉你是 1 还是 N。
+   - 同一题只选一种：并列个数由 `run` 给出，不要等 `bird_score`。
 
 3. **SQLite 里 `NULL` 比任何值都小，`ORDER BY col ASC LIMIT 1` 会把 NULL 行排第一位。**
    实测 `idx 180`：问"第 19 站第二节排位赛最好圈速的车手姓氏"，真正最快的是 Räikkönen，
    但金标答案是 **Fisichella** —— 因为金标写的是 `ORDER BY q2 LIMIT 1`，而 Fisichella 的 q2
    是 `NULL`，NULL 排最前。
 
-   **但这条不能当铁律，两种写法都要试。** 反例 `idx 211`："最老的车手来自哪个国家"，
+   **默认排除 NULL 行**（`WHERE col IS NOT NULL` 或 `col = (SELECT MIN(col) ...)`，MIN 忽略 NULL）。反例 `idx 211`："最老的车手来自哪个国家"，
    全库有 1 个车手 `dob` 是 NULL（Ray Reed）：
 
    ```sql
@@ -52,8 +52,8 @@ BIRD 的金标是人工写的，不是"标准答案生成器"，它会做很多�
    ```
 
    → 做"最好/最早/最小"类题时：**先查这一列有没有 NULL**
-   （`SELECT COUNT(*) FROM t WHERE col IS NULL`）。有 NULL 就**准备两套写法**，
-   用 `bird_score` 一题一次试出来。
+   （`SELECT COUNT(*) FROM t WHERE col IS NULL`）。有 NULL 就在 SQL 里加
+   `WHERE col IS NOT NULL`（默认排除 NULL 行）；不要等 score 再改。
 
 4. **金标可能"忘了"实施题干里的某个限定条件。** 见 `idx 205`。题干里的限定词越绕
    （"when he was in track number less than 20"），金标越可能根本没写进 SQL。
@@ -65,12 +65,12 @@ BIRD 的金标是人工写的，不是"标准答案生成器"，它会做很多�
    **金标 4 行**：它只把该活动所有产生过支出的成员列了出来，那个限定词根本没写进 SQL。
    （`idx 33` 的 "not fundraisers" 同理，金标也是直接省了。）
 
-   → 先用**不带该条件**的版本试，行数对得上就用它。
+   → 限定词找不到对应列时，默认**不写进 SQL**（用 `run` 看候选行数是否离谱）；不要等 score 再改。
 
 5. **`question_id` 和下标完全无关。** 500 题里没有一个 `question_id` 等于它的下标。
    所有工具都用 `idx`，这是唯一可靠的定位方式。
 
-6. **重复行不影响判定。** 金标返回 15 行（12 个不重复值）时，你返回 `DISTINCT` 的 12 行**也算对**。
+6. **判定层**：加不加 `DISTINCT` 不影响 EX（见 `scoring.md`）。**生成层**：输出集合要不要去重看 `db/<库>.md`，别用判定层当借口漏写。
    反过来，少了任何一个不同的值就算错。（详见 `scoring.md`）
 
 7. **「for all the X who …, give their Y」⇒ 行级输出，不要去重、不要带 id。**

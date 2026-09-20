@@ -53,6 +53,14 @@ event.event_id            = attendance.link_to_event
 题干说 “budget more than forty” → 用 `budget.amount > 40`（**不是** `spent`，也不是 `planned_amount`）。
 `expense.cost` 才是“花了多少钱”（`incurred less than 50USD` → `expense.cost < 50`）。
 
+## 同义表
+
+- `budget.event_status`（不是 `status`；`status` 只在 `event` 表）。
+- “budget more than forty” → `budget.amount`（不是 `spent`，也没有 `planned_amount`）。
+- “花了多少钱 / incurred” → `expense.cost`。
+- `zip_code` **没有 `country` 列**（用 `state`）；`event` **没有 `url` 列**（用外键 `budget.link_to_event`）。
+- “full name” 有时 1 列有时 `first_name, last_name` 两列 → evidence 写了就按 evidence。
+
 ## 惯例卡片（实测统计，n=158 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 32 / COUNT(DISTINCT) 4 / COUNT(*) 1 / 无 121　⇒ 本库以 `COUNT(列)` 为主（32/37 计数题）⇒ 计数写 `COUNT(主表.主键列)`

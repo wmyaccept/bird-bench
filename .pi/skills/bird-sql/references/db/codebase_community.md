@@ -75,6 +75,15 @@ tags ──ExcerptPostId / WikiPostId── posts.Id
 用 `comments.PostId=107829` 会返回 **0 行**（该 id 是帖子的父帖 id）。
 凡是出现 "parent id / parent post"，先想 `posts.ParentId`。
 
+## 同义表
+
+- `posts.Score` vs `comments.Score`：**两张表都有**；题干没点 comments 就用 `posts.Score`。
+- `posts.CreaionDate`（官方拼错）vs `votes.CreationDate`（只到日）vs `badges.Date` / `comments.CreationDate`（带 `.0`）。
+- `BountyAmount` **只在 `votes`**，不在 posts。
+- “last to edit” **别用 `posts.LastEditorUserId`**（大量 NULL）→ 走 `postHistory` 按 `CreationDate DESC LIMIT 1`。
+- “parent id / parent post” → **`posts.ParentId`**，不是 `comments.PostId`。
+- evidence 点到哪张表的哪个列就用那个列，不要自己找“等价”写法（Tags LIKE vs 另一张表的同名列）。
+
 ## 惯例卡片（实测统计，n=186 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 54 / COUNT(DISTINCT) 10 / COUNT(*) 6 / 无 116　⇒ 本库以 `COUNT(列)` 为主（54/70 计数题）⇒ 计数写 `COUNT(主表.主键列)`

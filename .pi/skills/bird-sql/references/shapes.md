@@ -88,21 +88,21 @@ SELECT MAX(total) FROM (SELECT SUM(Consumption) AS total FROM yearmonth
 | "how many schools/customers/users"（数实体） | `COUNT(DISTINCT 实体ID)` | `dev idx 5` |
 | "how many transactions/comments/attendance"（数记录） | `COUNT(*)` | `idx 29`（"give their Y" 也是行级） |
 
-判错了的表现是"1 行 1 列但取值不同"（差 1、差几十）。**先试行级，错了换实体级**——
-实测 gold 更常用行级（`minidev idx 16`、`idx 24`、`idx 26`）。
+判错了的表现是"1 行 1 列但取值不同"（差 1、差几十）。
+**默认 `COUNT(主键列)`**（卡片空也按这个）；主语是实体且 JOIN 会扇出 → `COUNT(DISTINCT 实体id)`；
+主语是记录（transactions/comments/attendance）→ `COUNT(*)`。同一题只选一种，用 `run` 看候选行数是否离谱，不要等 score。
 
 ## A5. 列表类 —— "List the ⟨列⟩ of ⟨实体⟩"
 
 两个决策点：
 
-1. **输出哪一列？** 用金标行数反推：
+1. **输出哪一列？** 用 `run` 自己数候选列：
    ```sql
-   SELECT COUNT(DISTINCT 候选列) FROM ... WHERE ⟨条件⟩   -- 哪个等于金标行数就是它
+   SELECT COUNT(DISTINCT 候选列) FROM ... WHERE ⟨条件⟩
    ```
-   实测 `idx 346`：金标 25061 行，`name` 只有 17544 个不同值 ⇒ 金标给的是 `id`。
-   **"which cards / which posts" 这类，金标常常给 id 而不是 name。**
+   题干 "which cards / which posts" 常给 **id** 不是 name（实测 `minidev idx 346`：`name` 去重远少于行数 ⇒ 输出是 `id`）。
 2. **要不要带上实体的 id？** 题干 "give their Y" → **只给 Y**，别顺手带 id（实测 `idx 29`）。
-3. `DISTINCT` 不影响判定，但**影响你发现行数不一致**——先按行级写，不行再加。
+3. 输出集合要不要 `DISTINCT` **看当前库档案**，不要按判定层「重复行不影响 EX」来决定写不写。
 
 ## A6. 占比 / 比率 —— "percentage / ratio / proportion"
 
@@ -112,8 +112,8 @@ SELECT CAST(分子 AS FLOAT) / 分母 FROM ...             -- 比率
 ```
 
 - **整数除法陷阱**：`1/2` = 0，必须 CAST。
-- **分母口径**：先试**行数**（`COUNT(*)` / `SUM(CASE WHEN cond THEN 1 ELSE 0 END)`），
-  失败再换**去重实体数**。实测 `minidev idx 24`、`idx 26` 都是行数口径。
+- **分母口径**：默认跟惯例卡片（卡片空 → `COUNT(主键列)` / `SUM(CASE WHEN cond THEN 1 ELSE 0 END)`）；
+  主语是实体且 JOIN 会扇出才用去重实体数。实测 `minidev idx 24`、`idx 26` 都是行数口径。
 - 有时是"两个子查询相除/相减"：`SELECT (SELECT ...) / (SELECT ...)`。
 - 要求保留小数位时用 `ROUND(x, 3)`（实测 `minidev idx 413`）。
 
@@ -161,7 +161,7 @@ SELECT TYPEOF(col), COUNT(*), COUNT(col) FROM t GROUP BY 1; -- 有没有混类�
 金标用两表共有的 `CustomerID` 连到 `transactions_1k` 再连 `products`。
 `dev idx 15` 同型。
 
-**反推方法**：金标行数是已知的，把候选 JOIN 路径的行数各算一遍，命中那个数就锁定了。
+**验证方法**：用 `run` 把候选 JOIN 路径的行数各算一遍，空集 / 量级离谱的丢掉；不要等 score。
 
 ## A9. 差值 / 比较 —— "difference between A and B"、"Did X?"
 

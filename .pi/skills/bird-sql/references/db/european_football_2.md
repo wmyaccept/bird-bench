@@ -78,6 +78,13 @@ Team   ──team_api_id─── Team_Attributes
 
 **做题提示**：本库 50 道 moderate 里 13 道错，其中 **7 道是「计数去不去重」和「列数 1 还是 2」** —— 这两类占总错的 54%。
 
+## 同义表
+
+- 两套 ID：`Player.id`（内部）vs `Player.player_api_id`（FIFA API，金标常用）vs `player_fifa_api_id`（「top N 的 ID」可能给这个）。
+- `Player` **没有国籍列**：“某国的球员”只能绕 `Match→League→Country`，硬 JOIN 会炸成上万行。
+- `Player_Attributes` 一人多行历史快照：问“某球员的某属性”给**全部快照**（不要 `LIMIT 1`）；「前 N 名」反而要先 `DISTINCT player_api_id`。
+- `Team.id` vs `team_api_id`：连 `Team_Attributes` 用 `team_api_id`。
+
 ## 惯例卡片（实测统计，n=129 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 28 / COUNT(DISTINCT) 6 / COUNT(*) 2 / 无 93　⇒ 本库以 `COUNT(列)` 为主（28/36 计数题）⇒ 计数写 `COUNT(主表.主键列)`

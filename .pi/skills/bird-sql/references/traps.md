@@ -23,8 +23,9 @@
 
 ⭐ 与已有档案的区别只有"谁来蒸"：**有档案 ⇒ 读档案（第 0 步）；没有 ⇒ 现场蒸这五查**。
 两者产出的东西**同形**（表图 / 概念→列 / 值域 / 计数口径），都能直接喂给第 3.5 步的裁决。
+<!-- /push -->
 
-<!-- push step=4 -->
+<!-- push step=3.5 -->
 ## ⓪ 落笔之前：概念先定位（列名靠猜 = 最贵的错）
 
 - [ ] ⭐ ⭐ **「少给列」是本项目最大单类错 —— 写 SQL 前先看列数先验。** 实测（dev2025 全量 1534 道）：
@@ -59,6 +60,7 @@
       ④ 否则选**更专门**的那列（命中行数更少 / 取值集合更窄），**并把结论写进 `db/<库>.md`**。
 <!-- /push -->
 
+<!-- push step=4 -->
 ## ① 写 `SELECT` 的列时
 
 - [ ] **要 `DISTINCT` 吗？** 一个实体多行时，金标常常要**去重集合**：
@@ -108,7 +110,7 @@
 - [ ] ⭐ **“列出 A 以及它的 B（如果有）/ 以及 B 的分数” → 先试 `LEFT JOIN`**（实测 `california_schools 27`）：
       题干带 “if there is any”、“along with the score” 这类**可选属性**时，金标往往用 LEFT JOIN，
       没有该属性的实体（分数为 NULL）**也要出现在结果里**。
-      验证手法：金标行数 == **只按主表条件筛出的行数**（`27` 金标 8574 = 纯 `schools` 行数）→ 就是 LEFT JOIN。
+      判定：结果行数 == **只按主表条件筛出的行数**（`27`：8574 = 纯 `schools` 行数）→ 就是 LEFT JOIN。
 
 ## ③ 写 `WHERE` 的**值之前**（最容易翻车）
 
@@ -146,7 +148,7 @@
 |---|---|---|---|
 | 1 | **这套表是金标习惯用的那套吗？** 本库常有 2~4 套同义数据源 | 查 `db/<库>.md` 的「同义表」清单 | **70 道（34%）用了另一套表** ← 单项最大来源 |
 | 2 | **数的是“实体”还是“行”？** JOIN 之后 `COUNT(*)` 数的是行 | 改 `COUNT(主表.主键列)` | **53 道**：我 `COUNT(*)`、金标 `COUNT(列)` |
-| 3 | **要不要 `DISTINCT`？** | 主语是复数实体就先试 `COUNT(DISTINCT 实体id)` | 金标有我没有 **25 道**；我有金标没有 **27 道** |
+| 3 | **要不要 `DISTINCT`？** | 输出集合看档案；计数看惯例卡片（默认 `COUNT(主键列)`）。主语是实体且 JOIN 扇出才 `COUNT(DISTINCT 实体id)` | 金标有我没有 **25 道**；我有金标没有 **27 道** |
 | 4 | **百分比：`* 100` 写了吗？分母是哪一边？** | 分子、分母各写一句中文再落 SQL | 漏乘 **12 道**（另有分母方向错） |
 | 5 | **“最…的”要值还是要整行？** | 问值 → `= (SELECT MIN/MAX)`；问人/物 → `ORDER BY … LIMIT 1` | **16 道**：我用 `MAX/MIN`、金标 `ORDER BY … LIMIT` |
 | 6 | **NULL 会不会混进来？** | 平均/排序/JOIN 前想一遍 `IS NOT NULL` | 金标有、我漏了 **11 道** |
@@ -159,7 +161,7 @@
    “哪个**客户**”→ 整行。这一步决定了后面 `COUNT` 的形态和 `ORDER BY … LIMIT 1` 的用法。
 2. **再定表**：翻 `db/<库>.md` 的「同义表」清单，选金标习惯的那套。**本库实测 34% 的值错栽在这一步**。
 3. **再定分子/分母**：百分比题先用中文写出「分子 = …」「分母 = …」，**分母优先“没被 `WHERE` 收窄的那一侧”**。
-4. **最后才定去重与 NULL**：主实体是复数就先 `COUNT(DISTINCT 实体id)`；排序/平均前先想 NULL 会不会混进来。
+4. **最后才定去重与 NULL**：计数默认 `COUNT(主键列)`（卡片说 DISTINCT 或 JOIN 扇出实体才改）；排序/平均前先想 NULL 会不会混进来。
 
 → 逐条机器留痕入口：`checklist.md` 第 **8b** 条（核心条目，交答案必须勾）。
 
@@ -169,8 +171,8 @@
       先算两种：`SUM` 一把 vs **每个实体一行**。实测 `california_schools` `53`（How many test takers
       at the school/s）金标是 **每校一行、32 行**，不是 `SUM`。
       （只有 1 个样本 ⇒ 这是**触发你去两种都算**的检查项，不是定论；攒到第 2 例再升级成规则。）
-- [ ] **分母是"行数"还是"去重实体数"？** 先试行数（`COUNT(*)`）；evidence 写
-      `DIVIDE(SUM(x), COUNT(all ...))` 就按它抄。
+- [ ] **分母是"行数"还是"去重实体数"？** 默认跟惯例卡片走（卡片空 → `COUNT(主键列)`）；
+      evidence 写 `DIVIDE(SUM(x), COUNT(all ...))` 就按它抄。主语是实体且 JOIN 会扇出 → `COUNT(DISTINCT 实体id)`。
 - [ ] **是不是要"先按实体/月份汇总再取极值"？** 触发词：「某年的最高月 X」、
       「消费最少的客户」、「每个学校的平均分」（`dev idx 1`、`13`）。
 - [ ] **取极值时先查并列！** `superhero` 837（`MIN=5` 有 **10 个**并列）、
@@ -180,7 +182,7 @@
       两种写法金标都用过 —— 在 `ORDER BY … ASC LIMIT 1` 前面加 `WHERE 该列 IS NOT NULL`，
       或直接用 `WHERE col = (SELECT MIN(col) ...)`。
       实测 `california_schools` **40 / 43** 两道都栽在这（规则早就在，提交前没勾而已）。
-- [ ] ⭐ **“which X has the most/most number of …” 但金标行数 >1？** ⇒ 是**并列第一**：
+- [ ] ⭐ **“which X has the most/most number of …” 且 `run` 出并列多项？** ⇒ 是**并列第一**：
       金标用 `RANK()/DENSE_RANK() OVER (ORDER BY COUNT(...) DESC) … WHERE rank_num = 1`
       （实测 `california_schools` 68：金标 **3 行**，我 `LIMIT 1` → 1 行）。
 
@@ -219,8 +221,10 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       `SUM(IIF(Age>65,1,0)) * 100 / COUNT(T1.Id)`（分母是同一次 JOIN 的行）；672 金标更是直接
       `COUNT(users.Id)` **不去重**（数论坛帖子行），而 716 又要求 `COUNT(DISTINCT users.Id)` ——
       **先写“不去重的 `COUNT(列)`”，形状/值对不上再换 DISTINCT**。
-- [ ] ⭐ **日期列相减别自作主张用 `JULIANDAY`**：`codebase_community` 692 的金标就是 `T1.Date - T2.CreationDate`
-      （SQLite 取字符串的数字前缀 ⇒ 得到**年份差**），用 JULIANDAY 反而 0 分。
+- [ ] ⭐ **日期列相减：跨度用 `JULIANDAY`，年份差看本库档案**：
+      「至少 N 天 / 间隔 / 跨度」→ `JULIANDAY(a) - JULIANDAY(b) >= N`（SQLite 没有 `DATEDIFF`）。
+      「差几年」且本库日期是 `'YYYY-…'` 字符串 → 金标常直接 `Date - CreationDate`（取数字前缀 = 年份差；
+      `codebase_community` 692 用 JULIANDAY 反而 0 分）。**先看 `db/<库>.md` 同义表/值域，没有档案再按「跨度=JULIANDAY、年份差=字符串相减」。**
 - [ ] ⭐ **“average … per month” 的分母是 12**（不是“有数据的月份数”）：`codebase_community` 665 金标 `COUNT(T1.Id) / 12`。
       （同理：“per year” 想 12 个月 / “daily” 想 365。）
 - [ ] ⭐ ⭐ **字面量照题干/evidence 的写法抄，不要“替金标纠正大小写”**：`codebase_community` 640 题干写
@@ -254,9 +258,9 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
   ③ 题干说“percentage”就 `* 100`，说“ratio”就不乘；
   ④ ⚠️ **不要信 evidence 里的乘数**：1279 的 evidence 写 `MULTIPLY(…, 1.0)`，金标却是 `* 100.0` ——
      题干说 percentage 就一律 `* 100`（写成 `* 100.0` 或 `* 100 /` 均可）。
-- [ ] **两个日期相减 / “至少 N 天”用 `JULIANDAY`**：`JULIANDAY(a) - JULIANDAY(b) >= 365
-  （实测 1170：金标是 `T1.Admission='+'`（“initial hospital visit”）+ `INNER JOIN` + **`COUNT(DISTINCT T1.ID)`**，
-  而不是相关子查询取 `MIN(Examination Date)`）。跨度跨表计数一律 `COUNT(DISTINCT 实体id)`。
+- [ ] ⭐ **跨表计数「多少人/多少患者」用 `COUNT(DISTINCT 实体id)`**：实测 1170 金标是
+      `T1.Admission='+'`（“initial hospital visit”）+ `INNER JOIN` + **`COUNT(DISTINCT T1.ID)`**，
+      而不是相关子查询取 `MIN(Examination Date)`。跨度跨表计数一律 `COUNT(DISTINCT 实体id)`。
 
 - [ ] ⭐⭐ **`STRFTIME`/`LIKE` 的结果是字符串，年份比较必须用字符串字面量**：
       `STRFTIME('%Y',x) >= 1990`（整数）在 SQLite 里**恒为真**（两个无 affinity 的操作数按存储类排序：数字 < 文本），
@@ -277,6 +281,7 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       金标却是 **`SELECT T1.ID, T1.SEX … GROUP BY T1.SEX, T1.ID`**（行级两列）；
       1186 的 evidence 写 `YEAR(Description)`，金标用的是 **`Examination."Examination Date"`**。
       ⇒ **evidence 管“口径/阈值”，不管“输出形状”；形状看题干句式和 `db/<库>.md`**。
+<!-- /push -->
 
 ## ⑤ 提交前的最后一眼
 

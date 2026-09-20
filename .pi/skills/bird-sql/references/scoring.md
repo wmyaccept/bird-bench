@@ -49,5 +49,5 @@ res = 1 if set(predicted_res) == set(ground_truth_res) else 0
 - 报告分三个维度：总分、分难度（simple/moderate/challenging）、分数据库。
 - **两个口径要分清**：
   - `EX = 正确数 / 已作答数` ← 默认显示，衡量"做过的题里对了多少"
-  - `全量 EX = 正确数 / 500` ← 跑官方脚本时的口径，未作答按错计
+  - `全量 EX = 正确数 / 题目总数` ← 跑官方脚本时的口径，未作答按错计（minidev=500 / dev=1534）
 - 逐题明细在 `work/score/score_report.json`，含每题失败原因（detail）。

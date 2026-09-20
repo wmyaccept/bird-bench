@@ -141,6 +141,14 @@ JOIN `cards` 会把同一张卡的所有版本都算进去（我因此给出 3 �
   WHERE T3.name='Coldsnap' AND T1.language='Italian' ORDER BY T2.convertedManaCost DESC`（**155 行 = 全部意大利语行**）
   ⇒ ① `T2.name` 是 **`cards.name`（英文名）**，不是 `foreign_data.name`；② 这个「最高 cmc」的过滤**在金标里就失效了**（没 LIMIT/没 MAX）——遇到金标自己走样的题，形状对了也拿不到分。
 - **446**「percentage of the cards with cmc 10 in set of Abyssal Horror」金标：2 列 `（百分比, T1.name）`，范围是 **`cards.name='Abyssal Horror'`**（卡本身，不是整个 set），分母 `COUNT(T1.id)` = 3。
+## 同义表
+
+- `cards.type`（粗）vs `cards.types`（细）—— **两个都有**，题干说 type 先精确匹配粗列。
+- `cards.id`（整数主键）vs `cards.uuid`（外部 ID）vs `multiverseId`：“which cards” 金标常给 **`cards.id`**。
+- `foreign_data.language`（卡级外文印刷）vs `set_translations.language`（系列级翻译）—— 粒度不同，题面 "in Chinese Simplified" 先定粒度。
+- translated-name 题：金标可能给 **`cards.name`（英文名）** 而不是 `foreign_data.name`（`484`）。
+- 百分比范围是卡本身还是整个 set：`446` 范围是 `cards.name='Abyssal Horror'`，不是整个 set。
+
 ## 惯例卡片（实测统计，n=191 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 38 / COUNT(DISTINCT) 9 / COUNT(*) 6 / 无 138　⇒ 本库以 `COUNT(列)` 为主（38/53 计数题）⇒ 计数写 `COUNT(主表.主键列)`

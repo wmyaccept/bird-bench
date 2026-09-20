@@ -4,10 +4,10 @@
 ## ⚡ 决策速查（口径 —— “形状对、值不对”就是这么来的）
 - 条件在表 A、返回值在表 B 且两表无外键 ⇒ 金标**用共同的 key 硬连过去**（中间表可能不是你以为的那张）。
 - 「某年最高/最低的月消费」= **先按实体汇总（SUM），再取极值**，不是单行 `MAX`。
-- 百分比分母：**先试行数，再试去重实体数**；`* 100` 必须紧跟 `CAST`；实体级过滤放 `WHERE`，
-  **不要塞进 `CASE WHEN`**（分母会错）。
+- 百分比分母：默认跟惯例卡片（卡片空 → `COUNT(主键列)`）；主语是实体且 JOIN 扇出才去重；
+  `* 100` 必须紧跟 `CAST`；实体级过滤放 `WHERE`，**不要塞进 `CASE WHEN`**（分母会错）。
 - COUNT 题：默认 `COUNT(主表.主键列)`（本库惯例见惯例卡片）；主语是实体且 JOIN 会扇出 ⇒ `COUNT(DISTINCT 实体id)`。
-- 两日期相减 / 至少 N 天 ⇒ `JULIANDAY(a) - JULIANDAY(b) >= N`。
+- 「至少 N 天 / 间隔 / 跨度」⇒ `JULIANDAY(a) - JULIANDAY(b) >= N`；「差几年」且日期是 `'YYYY-…'` 字符串 ⇒ 看本库档案，常直接相减得年份差。
 - 数值区间默认**闭区间**（`BETWEEN a AND b`）；同一库要按 evidence/金标风格定端点。
 <!-- /push -->
 
@@ -83,8 +83,8 @@ SELECT CAST(COUNT(DISTINCT CASE WHEN c.Currency='EUR' THEN t.CustomerID END) AS 
 SELECT CAST(SUM(CASE WHEN c.Currency='EUR' THEN 1 ELSE 0 END) AS FLOAT)*100 / COUNT(*) FROM ...
 ```
 
-分子都是一样的（那天的 7 笔），只有分母不同。**先按行数算**（`COUNT(*)` / `SUM(CASE...)`），
-失败了再换去重实体口径。`idx 26`（"SVK 的 premium 占比" = 314/880 行）也是行数口径，印证了这个默认值。
+分子都是一样的（那天的 7 笔），只有分母不同。**默认跟惯例卡片**（卡片空 → `COUNT(主键列)` / `SUM(CASE...)`）；
+主语是实体且 JOIN 扇出才用去重实体口径。`idx 26`（"SVK 的 premium 占比" = 314/880 行）也是行数口径。
 
 ## 四、COUNT 类题要看清"去重与不去重导致的值不同"
 
@@ -97,7 +97,7 @@ SELECT CAST(SUM(CASE WHEN c.Currency='EUR' THEN 1 ELSE 0 END) AS FLOAT)*100 / CO
 - 反过来 `idx 116` 的 evidence 明写 "Should consider DISTINCT in the final result"。
 
 **启示**：evidence 里出现 "DISTINCT" 这类字眼，通常说明金标里真有 `DISTINCT`；
-没出现时，**先试不去重的行数**。
+没出现时，**默认 `COUNT(主键列)`**（不是先 `COUNT(*)` 再换）。
 
 ### 例外（实测，优先级高于上面那条）：题干的主语是**实体**、而 JOIN 会扇出时，用 `COUNT(DISTINCT 实体id)`
 

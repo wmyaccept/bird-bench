@@ -72,6 +72,20 @@ satscores ──cds ───┘
 - "type of education offered" → `EdOpsName`（实测 `idx 42` 命中，值为 `'Traditional'`）。
 - 考试优秀率：`Excellence rate = NumGE1500 / NumTstTakr`。
 
+## 同义表
+
+- `frpm."Educational Option Type"` vs `frpm."School Type"` vs `schools.EdOpsName`：
+  “continuation / type of educational option” → **`frpm."Educational Option Type"`**（值 `'Continuation School'`）；
+  与 `"School Type"` 命中的 `'Continuation High Schools'` **同一批 459 行**，两列任选。
+  ⚠️ 别用 `schools.EdOpsName`（另一套分类；“type of education offered” 才用它）。
+- “district code” → **`frpm."District Code"`**，不是 `schools.DOC`。
+- 学校名（与 frpm 联查）→ `frpm."School Name"`，金标常不绕 `schools`。
+- 地名 “in Riverside”：**两种都可能** `schools.County` vs `frpm."District Name" LIKE 'Riverside%'`（`25` 是后者）。
+- charter 资助：`schools.FundingType = 'Locally funded'`（`65`）vs `frpm."Charter Funding Type" = 'Directly funded'`（`4`）
+  ⇒ **哪张表的列值字面像题干就用哪张**。
+- 免费餐：`FRPM Count (Ages 5-17)` vs `Free Meal Count (Ages 5-17)`（两列都出现过）。
+- 地址：`Street` vs `StreetAbr`、`MailStreet` vs `MailStrAbr`（postal/mailing → `Mail*`；unabbreviated → 不带 `Abr`）。
+
 ## 惯例卡片（实测统计，n=89 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 13 / COUNT(*) 6 / COUNT(DISTINCT) 4 / 无 66　⇒ 本库以 `COUNT(列)` 为主（13/23 计数题）⇒ 计数写 `COUNT(主表.主键列)`

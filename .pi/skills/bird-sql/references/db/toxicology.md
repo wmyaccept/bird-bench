@@ -48,6 +48,13 @@ molecule ──molecule_id── atom / bond / connected
 
 ---
 
+## 同义表
+
+- `connected` 双向存储：每个 bond 两行（`A→B` 与 `B→A`），全库 10882 = 5441 × 2。数“连接/键”先除以 2 看合不合理。
+- 问一个 bond 的两端原子：金标常是 **2 行 × 1 列**，不是 1 行 × 2 列。
+- `molecule.label` `'+'`/`'-'`（致癌）vs `bond.bond_type` `'-'`/`'='`/`'#'`（键型）—— 同是符号、完全不同列。
+- `atom.element` 小写（`'cl'`/`'c'`/`'na'`）。
+
 ## 惯例卡片（实测统计，n=145 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 35 / COUNT(DISTINCT) 34 / COUNT(*) 3 / 无 73　⇒ 本库以 `COUNT(列)` 为主（35/72 计数题）⇒ 计数写 `COUNT(主表.主键列)`

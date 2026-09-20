@@ -28,6 +28,13 @@ card ──disp_id── disp
   `SUM(type='OWNER'), SUM(type='DISPONENT')` 一行出两个数；我 `GROUP BY type` 给了 2 行）。
 - 实测全量（旧 dev 2024-06）：**62 道 52 对 / 10 错（83.9%）**。
 
+## 同义表
+
+- `trans.type`（`'PRIJEM'`/`'VYDAJ'` 贷/借）vs `trans.operation`（`'VYBER'`/`'VKLAD'` 取现/存款）—— 两套分类，题干用词对哪套用哪套。
+- `disp.type`：`'OWNER'` vs `'DISPONENT'`（“how many X and Y” 常一行两列 `SUM(CASE)`）。
+- `district.A2`=区名、`A3`=region，别把区名当 region。
+- `client.birth_date` vs `account.date` / `trans.date` / `loan.date`：全是 `'YYYY-MM-DD'`（⛔ 已作废 Mini-Dev 的 `'930101'`）。
+
 ## 惯例卡片（实测统计，n=106 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(DISTINCT) 33 / COUNT(列) 26 / COUNT(*) 7 / 无 40　⇒ 本库偏去重（33/66 计数题）⇒ 计数先试 `COUNT(DISTINCT 实体id)`

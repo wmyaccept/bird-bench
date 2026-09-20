@@ -26,6 +26,12 @@ superhero ──id── hero_power ──power_id── superpower
   `720`（“over 15 powers”：金标 71 行 vs 我 102 行，已确认 `hero_power` 无重复行 —— 仍未解释）、
   `741`/`767`/`791`（极值/均值口径）。
 
+## 同义表
+
+- `superhero.full_name` 的 NULL 和 `'-'` 都表示「没有全名」。
+- “superpower” → `superpower.power_name`（首字母大写）；“attribute value” → `hero_attribute.attribute_value`。
+- 颜色三列：题干没要求名称时优先给 `eye_colour_id / hair_colour_id / skin_colour_id`（数字 id），不要自作聪明 JOIN `colour`。
+
 ## 惯例卡片（实测统计，n=129 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 37 / COUNT(*) 4 / 无 88　⇒ 本库以 `COUNT(列)` 为主（37/41 计数题）⇒ 计数写 `COUNT(主表.主键列)`

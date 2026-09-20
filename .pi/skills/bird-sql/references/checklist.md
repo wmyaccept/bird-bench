@@ -62,7 +62,7 @@
 - [ ] **8b. 值层六问过了一遍吗？（值错的最大来源）**  <!-- core -->
       ① **表**对不对（翻 `db/<库>.md` 的「同义表」清单 —— 实测 34% 的值错在这）
       ② 数**实体**还是数**行**（`COUNT(主表列)` vs `COUNT(*)`）
-      ③ `DISTINCT` 要不要（主语是复数实体就先试）
+      ③ `DISTINCT` 要不要（输出集合看档案；计数看惯例卡片，默认 `COUNT(主键列)`）
       ④ 百分比 `* 100` 写了吗 + 分子/分母各是哪一边
       ⑤ “最…的”要**值**还是要**整行**
       ⑥ NULL 防没防。
@@ -79,7 +79,7 @@
       行数不对 → 换 `WHERE col = (SELECT MIN/MAX(col) ...)`。
       ⚠️ **NULL 在 `ORDER BY ASC` 排最前** ⇒ 取“最小/最早”**光 `LIMIT 1` 会选到 NULL 行**：
       加 `WHERE 该列 IS NOT NULL`（实测 `california_schools` **40 / 43** 两道都是这个原因，规则本来就在，没勾就是白写）。
-- [ ] **11b. 题干问 “which X has the most …” 但金标行数 >1？** ⇒ 是**并列第一**，
+- [ ] **11b. 题干问 “which X has the most …” 且 `run` 出并列多项？** ⇒ 是**并列第一**，
       金标用 `RANK()/DENSE_RANK() ... WHERE rank_num = 1`（实测 `california_schools` 68：金标 **3 行**、我 `LIMIT 1` 1 行）。
 
 ## D. 最后一眼

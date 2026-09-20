@@ -30,6 +30,14 @@ yearmonth ──CustomerID──── customers（Date 'YYYYMM'，覆盖 2011-2
 - 我写 `FROM transactions` 直接 `no such table`，用 `yearmonth` 查某天 → **0 行**（空集是硬触发器）
 - `gasstations.Segment` 取值只有：`Value for money` / `Premium` / `Other` / `Noname` / `Discount`
 
+## 同义表
+
+- 时间条件两张表、范围**不重叠**：`yearmonth.Date` = `'YYYYMM'`（2011–2013 月度）vs `transactions_1k.Date` = `'YYYY-MM-DD'`（只有 2012-08 四天）。
+  问 2013 年的交易 → 金标常硬连 `yearmonth` 与 `transactions_1k`。
+- 消费额：`yearmonth.Consumption`（一人一月一行）vs 交易总额 `Amount * Price`（`Price` 是单价）。
+- 没有 `transactions` 表（写它会 `no such table`）；日度必须用 `transactions_1k`。
+- `customers.Segment`（`LAM`/`SME`/`KAM`）vs `gasstations.Segment`（`Value for money` / `Premium` / …）。
+
 ## 惯例卡片（实测统计，n=64 道已提交题的金标；数据集 dev2025）
 
 - 计数形态：COUNT(列) 10 / COUNT(*) 2 / COUNT(DISTINCT) 2 / 无 50　⇒ 本库以 `COUNT(列)` 为主（10/14 计数题）⇒ 计数写 `COUNT(主表.主键列)`
