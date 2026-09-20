@@ -81,6 +81,22 @@ DATASETS = {
         "pred_stem": "pred_dev2025",
         "answers": "answers_dev2025.json",
     },
+    # ⭐ T2 泛化测量集：**官方 train 集里的一批题**，库是 dev 之外的库 ⇒ 没有任何 db/<库>.md 档案。
+    #   用途：量「通用层（七步流程 + 四道闸门 + 跨库陷阱）在没见过的库上还剩多少」。
+    #   数据准备（一次性，手工，见 references/calibration.md 的复现步骤）：
+    #     train.json → data/GEN/gen.json（抽样出的题目，金标在 SQL 字段里，同 dev2025）
+    #     <库>.sqlite → data/GEN/databases/<库>/<库>.sqlite
+    #   约定：idx 0..N/2-1 是**零点对照臂**（只看 schema 直接写，不走流程），
+    #         idx N/2..N-1 是**skill 臂** —— 同一批题、配对比较。
+    "gen": {
+        "name": "泛化测量（官方 train 库，无档案）",
+        "dir": "GEN",
+        "questions": "gen.json",
+        "gold": None,                    # 金标就在题目 json 的 SQL 字段里
+        "pred_stem": "pred_gen",
+        "answers": "answers_gen.json",
+        "db_root": "databases",
+    },
 }
 
 
@@ -103,7 +119,7 @@ DATASET = DATASETS[DATASET_KEY]
 DATASET_NAME = DATASET["name"]
 
 DS_DIR = DATA_DIR / DATASET["dir"]
-DB_ROOT = DS_DIR / "dev_databases"
+DB_ROOT = DS_DIR / DATASET.get("db_root", "dev_databases")
 QUESTIONS_FILE = DS_DIR / DATASET["questions"]
 GOLD_FILE = (DS_DIR / DATASET["gold"]) if DATASET.get("gold") else None
 PRED_FILE_NAME = DATASET["pred_stem"] + ".json"
@@ -757,6 +773,15 @@ def cmd_conventions(args):
         fail(f"数据库 {args.db!r} 不存在。可用：{', '.join(available_dbs())}")
     stats = _convention_stats(args.db)
     if not stats:
+        # ⭐ T1（冷启动）：这里的空**不是**「这个库没有惯例」，而是「我们还没在这个库上答题」。
+        #   两者混在一起，人会把空统计当成结论，甚至拿它去写卡片（把 cache 写坏）。
+        if args.db:
+            fail(
+                f"{args.db} 上没有任何已提交答案 ⇒ 惯例统计为空（**不是**「这个库没有惯例」）。\n"
+                "  这个库还没建档时的正确动作：走 SKILL 第 0 步 / traps.md ⓪-1 的『冷启动五查』"
+                "（表数行数 / 列名与标注 / JOIN 命中率 / 值域脏值 / NULL 分布）现场蒸一份档案；\n"
+                "  等本库有 ≥5 道题提交后再回来 --write-card 刷新卡片（n 太小时卡片是噪声）。"
+            )
         fail("没有可统计的已提交题（conventions 只看已提交题的金标，避免污染未做的题）")
     if args.write_card and not (args.db or args.all):
         fail("--write-card 需要指定 --db <库> 或 --all")
@@ -764,6 +789,11 @@ def cmd_conventions(args):
         print(render_conventions(db, stats[db], args.examples))
         print()
         if args.write_card:
+            # ⭐ T1：n<3 的卡片没有统计意义，写进去只会把档案里的"惯例"变成噪声（且看起来像事实）
+            if stats[db]["n"] < 3:
+                print(f"  ⚠️ 跳过写卡片：{db} 只有 {stats[db]['n']} 道已提交题，统计无意义"
+                      f"（卡片会像事实一样被读）。先做题，攒到 ≥3 道再 --write-card。")
+                continue
             path = write_card(db, stats[db])
             print(f"  ✎ 惯例卡片已刷新 -> {path}（n={stats[db]['n']}）")
     print("读法：COUNT(列) 多 → 默认 `COUNT(主表.主键列)`；COUNT(DISTINCT) 多 → 这个库习惯去重；")
@@ -793,7 +823,7 @@ def cmd_audit(args):
         key = str(i)
         if key not in answers:
             continue
-        if args.difficulty and q["difficulty"] != args.difficulty:
+        if args.difficulty and q.get("difficulty") != args.difficulty:
             continue
         if args.db and q["db_id"] != args.db:
             continue
@@ -894,7 +924,7 @@ def cmd_audit(args):
     pri4: dict = {}
     bydb4: dict = {}
     for i, q, _g in rows4:
-        pri4.setdefault((q["db_id"], q["difficulty"]), []).append(gcol4[i])
+        pri4.setdefault((q["db_id"], q.get("difficulty")), []).append(gcol4[i])
         bydb4.setdefault(q["db_id"], []).append(i)
     p204 = {k: _pctl(v, 0.20) for k, v in pri4.items()}
     tpl4 = {}
@@ -921,7 +951,7 @@ def cmd_audit(args):
         if i not in mycol4:
             continue
         q = meta4.get(i)
-        lower = max(tpl4.get(i, 0), p204.get((q["db_id"], q["difficulty"]), 0.0)) if q else 0.0
+        lower = max(tpl4.get(i, 0), p204.get((q["db_id"], q.get("difficulty")), 0.0)) if q else 0.0
         if mycol4[i] < lower:
             if i in wrong4:
                 b_wrong += 1
@@ -1377,7 +1407,9 @@ def gold_ncol_prior(db_id: str, difficulty: str) -> Counter:
     """本库×难度的**已提交题**金标列数分布（只覆盖已提交题 —— P15 前提）。"""
     dist = Counter()
     for _i, q, g in _answered_gold(only_db=db_id):
-        if q["difficulty"] == difficulty:
+        # ⭐ T2：`difficulty` 不是所有数据集都有（官方 train 集就没有）⇒ 一律 .get，
+        #   缺失时算「未知档」这一档，而不是 KeyError 崩掉闸门 4。
+        if q.get("difficulty") == difficulty:
             dist[_gold_ncol(g)] += 1
     return dist
 
@@ -1398,16 +1430,19 @@ def attrs_lower_bound(idx: int) -> tuple:
     q = questions[idx]
     sims = similar_submitted(idx)
     tpl = min(x[2] for x in sims) if sims else 0
-    prior = gold_ncol_prior(q["db_id"], q["difficulty"])
+    difficulty = q.get("difficulty")      # ⭐ T2：train 集没有这个字段
+    prior = gold_ncol_prior(q["db_id"], difficulty)
     p20 = _pctl(list(prior.elements()), 0.20) if prior else 0.0
     lines = []
     if sims:
         lines.append("  同模板已提交题（题干相似度 >= %.2f；列数=它们的金标输出列数）：" % ATTRS_LOWER_THETA)
         for ratio, j, nc in sims:
             lines.append(f"    #{j}  相似 {ratio:.2f}  金标 {nc} 列  | {questions[j]['question'][:58]}…")
+    tag = q["db_id"] if difficulty is None else f"{q['db_id']}/{difficulty}"
     lines.append(
-        f"  本库×难度（{q['db_id']}/{q['difficulty']}）已提交题金标列数分布："
+        f"  本库×难度（{tag}）已提交题金标列数分布："
         f"{dict(sorted(prior.items()))}（P20={p20:.1f}）"
+        + ("　⚠️ 本数据集没有 difficulty 字段 ⇒ 这一支没有先验，下界只由同模板那支给" if difficulty is None else "")
     )
     return max(tpl, p20), "\n".join(lines)
 
@@ -1419,7 +1454,7 @@ def cmd_attrs(args):
         fail(f"idx 越界，合法范围 0–{len(questions) - 1}")
     q = questions[args.idx]
     lower, detail = attrs_lower_bound(args.idx)
-    print(f"#{args.idx}  {q['db_id']} / {q['difficulty']}")
+    print(f"#{args.idx}  {q['db_id']} / {q.get('difficulty') or '(本数据集无难度字段)'}")
     print(detail)
     # 展示用：放宽阈值，把“最像已提交题”的形状先验摆出来（**不参与闸门**，只供我估列数）
     loose = similar_submitted(args.idx, theta=ATTRS_DISPLAY_THETA, top=5)
@@ -1838,6 +1873,14 @@ def compare_ex(path: Path, pred_sql: str, gold_sqls, timeout: float = 30.0):
             if set(pred_rows) == set(rows):
                 return True, "ok" if k == 0 else f"ok（命中并列变体 #{k}）"
 
+        # ⭐ T2：金标推出**空集**时，别把责任说成"你的列数不对" —— 实测（官方 train 集 `trains`）
+        #   金标会用错列（`shape` vs `load_shape`）⇒ 金标为空、谁都答不对。这种题要显式标出来，
+        #   否则错题归因会被污染（复盘时会把金标缺陷当成自己的口径错）。
+        if gold_rows == [] and pred_rows != []:
+            return False, (
+                f"⚠️ 金标结果为空（0 行 0 列），你的预测有 {len(pred_rows)} 行 —— 金标 SQL 很可能"
+                "用错列/漏条件/漏 JOIN，**这道题的 EX 不该算在你的口径上**（别照着它改写法）"
+            )
         # 诊断信息要说清楚是「行数不对」还是「列数不对」还是「值不对」。
         # 官方判定是 set(元组) 相等，元组是按位置比的 —— 所以列顺序和列数一样重要。
         pred_cols = len(pred_rows[0]) if pred_rows else 0

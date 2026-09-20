@@ -20,6 +20,7 @@ SUITES = [
     ("惯例卡片可刷新且同源（P2）", [PY, "tools/tests/check_write_card.py"]),
     # 类③「失败开放」：喂不存在的键必须 rc=2（跑真 CLI，不是单元桩）
     ("失败关闭（P19：不存在的键）", [PY, "tools/tests/check_failclosed.py"]),
+    ("数据集健壮性（T2：字段缺失/金标为空）", [PY, "tools/tests/check_dataset_robustness.py"]),
 ]
 # 扩展套件要 node，单独放；⭐ 套件个数**只有这里一个出处**（N_SUITES），
 # 文档 / check_docs 想引用就引用它，别自己数（手抄必然漂移）。

@@ -1,0 +1,22 @@
+{
+  "0": "SELECT t.direction FROM trains t JOIN cars c ON c.train_id = t.id WHERE c.position = 2 AND c.shape = 'rectangle' GROUP BY t.direction ORDER BY COUNT(*) DESC LIMIT 1\t----- bird -----\ttrains",
+  "1": "SELECT COUNT(*) FROM (SELECT c.train_id FROM cars c JOIN trains t ON t.id = c.train_id WHERE t.direction = 'west' GROUP BY c.train_id HAVING SUM(CASE WHEN c.roof = 'none' THEN 1 ELSE 0 END) <= 1)\t----- bird -----\ttrains",
+  "2": "SELECT direction FROM (SELECT t.id, t.direction FROM trains t JOIN cars c ON c.train_id = t.id GROUP BY t.id, t.direction HAVING COUNT(c.id) = 3) GROUP BY direction ORDER BY COUNT(*) DESC LIMIT 1\t----- bird -----\ttrains",
+  "3": "SELECT COUNT(*) FROM trains WHERE direction = 'west'\t----- bird -----\ttrains",
+  "4": "SELECT COUNT(DISTINCT t.id) FROM trains t JOIN cars c ON c.train_id = t.id WHERE t.direction = 'east' AND c.position = 1 AND c.shape = 'rectangle'\t----- bird -----\ttrains",
+  "5": "SELECT COUNT(*) FROM cars WHERE train_id = 1\t----- bird -----\ttrains",
+  "6": "SELECT CAST(SUM(CASE WHEN t.direction = 'east' THEN 1 ELSE 0 END) AS FLOAT) * 100 / COUNT(*) FROM trains t WHERE t.id IN (SELECT c.train_id FROM cars c WHERE c.shape IN ('bucket', 'ellipse'))\t----- bird -----\ttrains",
+  "7": "SELECT CAST(COUNT(*) AS FLOAT) * 100 / (SELECT COUNT(*) FROM trains) AS pct, t.direction FROM trains t WHERE (SELECT MAX(c.position) FROM cars c WHERE c.train_id = t.id) >= 4 GROUP BY t.direction\t----- bird -----\ttrains",
+  "8": "SELECT t.id FROM trains t JOIN cars c ON c.train_id = t.id WHERE t.direction = 'east' GROUP BY t.id HAVING COUNT(c.id) < 4\t----- bird -----\ttrains",
+  "9": "SELECT COUNT(*) FROM cars c JOIN trains t ON t.id = c.train_id WHERE t.direction = 'east' AND c.roof = 'flat'\t----- bird -----\ttrains",
+  "10": "/* shape: 2x1 */ SELECT DISTINCT t.direction FROM trains t JOIN cars c ON c.train_id = t.id WHERE c.load_num = 0\t----- bird -----\ttrains",
+  "11": "/* shape: 1x1 */ SELECT t.direction FROM trains t JOIN cars c ON c.train_id = t.id WHERE c.shape = 'ellipse'\t----- bird -----\ttrains",
+  "12": "/* shape: 1x1 */ SELECT CAST(COUNT(c.id) AS FLOAT) / COUNT(DISTINCT t.id) FROM trains t JOIN cars c ON c.train_id = t.id WHERE t.direction = 'east'\t----- bird -----\ttrains",
+  "13": "/* shape: 1x1 */ SELECT COUNT(*) FROM trains t JOIN cars c ON c.train_id = t.id WHERE t.direction = 'east' AND c.position = 1 AND c.load_num = 3\t----- bird -----\ttrains",
+  "14": "/* shape: 1x1 */ SELECT COUNT(*) FROM cars WHERE cars.len = 'short' AND cars.shape = 'hexagon'\t----- bird -----\ttrains",
+  "15": "/* shape: 1x1 */ SELECT t.direction FROM trains t JOIN cars c ON c.train_id = t.id WHERE c.position = 2 AND c.load_shape = 'diamond'\t----- bird -----\ttrains",
+  "16": "/* shape: 2x1 */ SELECT t.direction FROM trains t GROUP BY t.direction HAVING COUNT(*) = (SELECT MAX(x.c) FROM (SELECT COUNT(*) AS c FROM trains GROUP BY direction) AS x)\t----- bird -----\ttrains",
+  "17": "/* shape: 2x1 */ SELECT DISTINCT wheels FROM cars WHERE cars.len = 'long'\t----- bird -----\ttrains",
+  "18": "/* shape: 3x1 */ SELECT cars.id FROM cars WHERE cars.train_id = 1 AND cars.wheels = 2\t----- bird -----\ttrains",
+  "19": "/* shape: 10x1 */ SELECT c.shape FROM trains t JOIN cars c ON c.train_id = t.id WHERE t.direction = 'east' AND c.position = 1\t----- bird -----\ttrains"
+}

@@ -348,6 +348,20 @@ def main() -> int:
                 bad_sink.append(f"落点文件不存在：{path}")
     check("注册表里的落点容器都真实存在（档案小节 / 文件）", not bad_sink, " ｜ ".join(bad_sink))
 
+    # ⭐ T1：SKILL 第 0 步说「没有档案就跑 traps ⓪-1 冷启动五查」—— 这个指针必须真的通
+    traps = txt(REF / "traps.md")
+    check("traps.md 有 ⓪-1 冷启动五查小节（SKILL 第 0 步指路的目标）", "## ⓪-1" in traps)
+    check("SKILL 第 0 步指路到 ⓪-1（没有档案时不是「无路可走」）", "⓪-1" in sk_txt)
+    check("五查的五项都在（表数/列名/JOIN 命中率/值域/NULL）",
+          all(k in traps for k in ("表数", "列名", "JOIN 命中率", "值域", "NULL")))
+    check("冷启动小节点明「档案是缓存不是依赖」+「conventions 在这是空的」",
+          "缓存" in traps and "没有任何已提交答案" in traps)
+    #    ⭐ T1：库存在但零答案时，conventions 必须给**冷启动口径**，不能说成「这库没惯例」
+    t1_src = (ROOT / "tools" / "bird.py").read_text(encoding="utf-8")
+    check("conventions 空库文案指路冷启动五查（不是「没有可统计的题」一句话）",
+          "冷启动五查" in t1_src and "没有任何已提交答案" in t1_src)
+    check("write_card 有噪声下限（不许拿 1~2 道题写卡片）", "跳过写卡片" in t1_src)
+
     # ⭐ 类②「同一事实多处手写」：文档说的闸门数必须 == 代码常量（单一数据源）
     n_gates = _bird.N_GATES
     cn = {2: "两", 3: "三", 4: "四", 5: "五", 6: "六"}
@@ -390,7 +404,13 @@ def main() -> int:
 
     print("\n── P8 SKILL.md 常驻预算（搬出去的知识必须还有落点）")
     budget = 14500  # 常驻上下文上限：SKILL.md 实测 18.3KB 时启用（P8），改小要先搬东西出去
-    size = (SKILL / "SKILL.md").stat().st_size
+    #   ⭐ 必须**按 LF 归一后**数字节：Windows 上 git（autocrlf）会把工作区 checkout 成 CRLF，
+    #   每行多 1 字节 ⇒ 同一个文件在不同机器上会得出不同的"字节数"，预算判定跟着漂移
+    #   （实测差 210 字节 = 210 行，Linux CI 过、Windows 挂）。
+    #   ⭐ 必须按**内容**（LF 归一后）数字节，不能用 stat().st_size：Windows 上 git（autocrlf）把
+    #   工作区 checkout 成 CRLF，每行多 1 字节 ⇒ 同一个文件在不同机器上"字节数"不同，预算判定跟着
+    #   漂移（实测差 210 = 行数：Linux CI 过、Windows 挂）。read_text 的通用换行已把 CRLF 折成 LF。
+    size = len((SKILL / "SKILL.md").read_text(encoding="utf-8").encode("utf-8"))
     check(
         f"SKILL.md ≤ {budget} 字节（现 {size}；超了就搬进 references/ 再指路）",
         size <= budget,

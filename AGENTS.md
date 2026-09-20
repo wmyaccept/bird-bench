@@ -41,6 +41,7 @@ SUBMISSION_PLAN.md                 打榜提交方案（待执行；含官方 gu
 | `minidev`（默认） | 500 | 148/250/102 | 快速迭代、调 skill |
 | `dev` | 1534 | 925/464/145 | **旧版 Dev（2024-06）**，已全量做完 simple |
 | `dev2025` | 1534 | **860/443/231** | **新版 Dev（2025-11-06 官方修订）← 后续以此为准** |
+| `gen` | 20 | 无（train 集没有该字段） | **泛化测量专用**：从官方 train（95 库）抽的**非 dev 库**题，无库档案、无金标复核；`data/GEN/gen.json` 由 `make_gen.py` 生成（idx 0–9 = 零点臂 / 10–19 = skill 臂）。结论见 `references/calibration.md` 的「泛化实测」小节 |
 
 - `dev` 与 `dev2025` **共用同一批数据库**，`question_id` 一一对应、**idx 顺序完全一致**。
 - 新版差异：question 变 11.9%、evidence 变 24.6%、**金标 SQL 变 29.4%**，并有
@@ -165,7 +166,8 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 套件各管一类（**数量以 `run_all.py` 的 `SUITES` 为准，不在文档里手抄**）：`check_docs.py` 文档一致性（含 P19 三类元缺陷的类级守卫：产物↔落点注册表 / 闸门数对账 / 源码不留字面量）、（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
 `check_brief_p4.py` 库档案整份送达（含投毒）、`check_write_card.py` 惯例卡片可刷新且与工具同源、
 `check_failclosed.py` **失败关闭**（给每个入口喂不存在的库/表/步骤/idx ⇒ 必须 `rc=2`，
-合法负结果走显式白名单）、
+合法负结果走显式白名单）、`check_dataset_robustness.py` **数据集健壮性**（题目字段缺失 / 金标自身为空
+—— 实测官方 train 集没有 `difficulty` 字段，闸门 4 会直接崩），
 `extension_smoke.cjs` 真加载扩展 + 真跑后端（四道闸门 / 参数 / 数据集隔离）。
 **断言数只由 `run_all.py` 打印，不写进文档**（手抄数字必然过期 —— 见 casebook 第 29/30/31 轮）。
 
