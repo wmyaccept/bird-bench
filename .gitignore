@@ -11,3 +11,6 @@ tools/official_eval/*.log
 
 # 提交包产物（可由 tools/make_submission.py 随时重打）
 work/submission/
+
+# 发信底稿：里面会填临时 API key，**禁止进仓库**（模板是 submission/EMAIL.md）
+submission/EMAIL.local.md

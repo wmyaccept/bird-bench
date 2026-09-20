@@ -5,6 +5,9 @@
 > 附件：① 代码 zip（`tools/make_submission.py` 产出）② dev 预测 SQL 文件（已在 zip 里，
 > 也可单独附一份，方便他们不复现就核对）。
 > 发送前把 `<...>` 全部填掉 —— 打包器会检查 README 里的占位符，但邮件里的要自己确认。
+>
+> ⚠️ **不要把真 key 写进这份文件**（它是 git 跟踪的）。发信时把本文件复制成
+> `submission/EMAIL.local.md`（已 gitignore）再填 key，从那份底稿发。
 
 ---
 
