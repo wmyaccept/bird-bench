@@ -8,3 +8,6 @@ __pycache__/
 
 # 官方评测脚本会写日志
 tools/official_eval/*.log
+
+# 提交包产物（可由 tools/make_submission.py 随时重打）
+work/submission/

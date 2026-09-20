@@ -1,13 +1,15 @@
-# BIRD 排行榜提交方案（待执行）
+# BIRD 排行榜提交方案
 
-> **状态：暂不执行。** 当前 skill / agent 还不成熟，Dev 集也没跑完。
-> 等决定要上 Test 榜时，再照本文档逐步执行。
+> **状态：打包器已落地（2026-09-20），唯一硬缺口是 `runner/`。**
+> 本文档 §0–§7 是决策分析（仍是有效的），**§8 是现在真正要执行的步骤**。
 >
-> - 本文档记录日期：**2026-09-14**
+> - 本文档记录日期：**2026-09-14**（§8 增补于 2026-09-20）
 > - 官方 Submission Guidelines 抓取日期：**2026-09-14**（原文全文见文末附录 A）
 > - 官方页面：https://bird-bench.github.io/ → 右下角 "Submission Guidelines" 按钮
 >   指向 Google Docs：`1Rs6d_pcs2vfqW4Ymub7Wb1XtBNlrc-WfH3T7U1ktuBo`
 > - 提交邮箱：**bird.bench23@gmail.com**（官方承诺 10 天内返回结果）
+> - 榜单现状（2026-09-20 复核）：leaderboard 已有 **New Dev** 列 = `dev_20251106` 口径，
+>   所以提交时报的 Dev 数字必须是 dev2025 全量，不是旧 dev。
 
 ---
 
@@ -206,8 +208,61 @@ compare_ex()          本地 EX 对比（在 dev 上验收 runner 用）
 
 ---
 
-## 附录 A：官方 Submission Guidelines 全文
+## 8. 现在怎么执行（2026-09-20 落地）
 
+### 8.1 已就位的部分
+
+| 产物 | 路径 | 作用 |
+|---|---|---|
+| 打包器 | `tools/make_submission.py` | 按清单打 zip + 硬自检（禁 `data/`、密钥扫描、体积、README 命令、占位符、dev 预测体检、可选空结果率实测） |
+| 官方面 README | `submission/README.md` | 英文，含安装/配置/运行/断点续跑/合规声明/Dev 成绩表 |
+| 包内清单 | `submission/CHECKLIST.md` | 逐条对账官方 13 项要求（进 zip 叫 `SUBMISSION.md`） |
+| 提交邮件 | `submission/EMAIL.md` | 英文邮件模板 + 发送前勾选 + 提交后时间线 |
+
+打包命令：
+
+```bash
+"D:/python/python" tools/make_submission.py              # 检查 + 打包（rc=0 才能发）
+"D:/python/python" tools/make_submission.py --dry-run    # 只检查
+"D:/python/python" tools/make_submission.py --check-run  # 额外真跑 dev 预测，实测空结果率
+```
+
+退出码：`0` 可提交 / `2` 有硬失败（不许提交）/ `3` 有警告（能打包但不该提交，典型就是缺 `runner/`）。
+
+### 8.2 唯一硬缺口：`runner/`
+
+官方 *"The Exp Team will run the codebase"* + *"make sure your code is successful on your dev
+evaluation (Required)"* ⇒ 交的不是预测文件，是**能在他们机器上跑出预测的代码**。
+我们现在的"方法"活在 pi（Node 包）里，官方不会装。所以要写一个纯 Python runner，接口定为：
+
+```bash
+python runner/run_bird.py --test-dir <dir> --questions <test.json> \
+       --out pred_test.json --log run_test.jsonl [--limit N] [--max-retries 3]
+```
+
+职责（全部复用 `tools/bird.py` 里已拆好的函数，不要重写数据层）：
+
+1. 读题（`test.json` 的 `SQL` 字段是空串，**绝不碰任何 gold**）
+2. 组装 prompt：system = `prompt/` 下的规则文本；user = question + evidence + schema 摘要 + 样例值
+3. 调 OpenAI 兼容 API（`BIRD_API_KEY` / `BIRD_BASE_URL` / `BIRD_MODEL`），抽 SQL
+4. `guard_sql()` 白名单 → `connect_readonly()` 试跑；**报错或空集回喂模型重写**（上限 N 次）
+5. `save_answers()` 原子写 + 每题 flush；已答 idx 跳过（断点续跑）
+6. 每题一行 JSONL 日志（idx/db_id/attempts/exec_ok/n_rows/latency/tokens/error）
+
+验收（提交前必须全过）：dev 子集 50 题跑通、异常率 < 5%、Ctrl+C 后续跑不重做、
+全新环境只 `pip install -r requirements.txt` 能跑、代码里无任何外发逻辑。
+
+### 8.3 发信前必须拿到的两个数字
+
+1. **dev2025 全量 EX**（`correct / 1534`，不是已答部分准确率）
+2. **dev 上的 prompt token 总数**（官方对 Type 3/4 明确要求提前报，用来估成本）
+
+两个数字都从 `runner` 的日志里直接算出来；EX 也可以先用
+`python tools/bird.py --dataset dev2025 score` 单独算（慢，十几分钟量级）。
+
+---
+
+## 附录 A：官方 Submission Guidelines 全文
 来源：https://docs.google.com/document/d/1Rs6d_pcs2vfqW4Ymub7Wb1XtBNlrc-WfH3T7U1ktuBo/
 （抓取于 2026-09-14，经代理下载；以下为原文，未改动）
 

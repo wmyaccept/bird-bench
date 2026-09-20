@@ -20,13 +20,15 @@
     casebook.md                    复盘账本（只记账，不放规则）
 tools/bird.py                      后端：唯一直接操作 SQLite 的地方
 tools/setup_data.py                数据准备：下载 + 选择性解压 + 嵌套 zip
+tools/make_submission.py           打官方提交包（清单 + 硬自检：禁 data/、扫密钥、体积、占位符、dev 预测体检）
  tools/official_eval/              BIRD 官方评测脚本（已打本地补丁）
 data/MINIDEV/                      Mini-Dev 500（开发用轻量集）
 data/DEV/                          官方 Dev 集 1534 题（对齐排行榜 Dev 列）
 work/answers.json                  minidev 的作答
 work/answers_dev.json              dev 的作答（**与 minidev 分开**，idx 体系不同）
 work/score/                        评测产物（pred 文件 + 逐题明细）
-SUBMISSION_PLAN.md                 打榜提交方案（待执行；含官方 guideline 全文）
+submission/                        给官方的材料：README.md（英文，进 zip）/ CHECKLIST.md（进 zip）/ EMAIL.md（发信模板）
+SUBMISSION_PLAN.md                 打榜提交方案（§0–§7 决策分析；§8 = 现在怎么执行；含官方 guideline 全文）
 ```
 
 > **skill 的组织原则**（改的时候别破坏它）：
