@@ -63,6 +63,8 @@ MUST_FAIL = [
     ("list --db <不存在的库>", ["list", "--db", "no_such_db"], "不存在"),
     ("run <不存在的库>", ["run", "no_such_db", "SELECT 1"], "不存在"),
     ("answer <越界 idx>", ["answer", "999999", "/* shape: 1x1 */ SELECT 1"], "越界"),
+    # 2026-09-20：--pred 是个新入口，同样得 fail-closed
+    ("score --pred <不存在的文件>", ["score", "--pred", "no_such_pred_file.json"], "找不到预测文件"),
 ]
 
 # 合法的负结果（rc=0）—— 附理由，防"把白名单当万能借口"

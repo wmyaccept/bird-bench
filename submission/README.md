@@ -1,8 +1,8 @@
 # BIRD Test Set Submission — Agentic API-only Text-to-SQL
 
-<!-- 状态：README 模板已就位；**runner 未落地**，命令以 runner 的 CLI 规格为准。
-     打包器 tools/make_submission.py 会在缺 runner 时给出警告，并在 README 里留有
-     未填占位符（<...>）时直接硬失败 —— 所以这份文件不可能被"忘了填"就发出去。 -->
+<!-- 状态：runner 已落地（2026-09-20），本文件的命令与 runner/run_bird.py 的 CLI 一致。
+     打包器 tools/make_submission.py 会在缺 runner、或本文件还留有未填占位符（<FILL ...>）/
+     内部备注时直接硬失败 —— 所以这份文件不可能被"忘了填"就发出去。 -->
 
 ## 1. What this is
 
@@ -25,8 +25,10 @@ deterministic tooling:
 pip install -r requirements.txt
 ```
 
-`tools/bird.py` uses only the Python standard library. The only third-party dependency is the
-OpenAI client used by the runner.
+`tools/bird.py` and `runner/` use only the Python standard library (the HTTP call is plain
+`urllib.request`). The only third-party dependency in `requirements.txt` is `func-timeout`, and
+that is needed **only** by the official evaluation script under `tools/official_eval/`, not by the
+runner.
 
 ## 3. Configuration
 
@@ -35,6 +37,10 @@ export BIRD_API_KEY="<your key>"          # key you provide for this evaluation
 export BIRD_BASE_URL="<openai-compatible endpoint>"
 export BIRD_MODEL="<model name>"
 ```
+
+Defaults if unset: `BIRD_BASE_URL=https://api.deepseek.com`, `BIRD_MODEL=deepseek-chat`. They can
+also be passed as `--api-key/--base-url/--model`. The runner talks to `POST {base_url}/chat/completions`
+with `Authorization: Bearer <key>` — i.e. any OpenAI-compatible endpoint works.
 
 ## 4. Running on the test set
 
@@ -46,17 +52,23 @@ python runner/run_bird.py \
     --log       run_test.jsonl
 ```
 
+`--test-dir` must contain `<db_id>/<db_id>.sqlite` per database. Optional flags:
+`--column-meaning column_meaning.json` (see §8), `--max-retries N` (default 2),
+`--samples N` (sample values per column, default 3), `--only-idx 1,2,3`, `--timeout SECONDS`.
+
 Resume after a crash / interruption — the same command continues where it stopped
-(already-answered indices are skipped, see `--resume`, on by default):
+(already-answered indices are skipped; resume is on by default, `--no-resume` redoes everything):
 
 ```bash
 python runner/run_bird.py --test-dir ... --questions ... --out pred_test.json --log run_test.jsonl
 ```
 
-Smoke test on a few questions before a full run:
+Smoke test on a few questions before a full run (also useful to eyeball the exact prompt we send,
+without spending any API call):
 
 ```bash
 python runner/run_bird.py --test-dir ... --questions ... --out pred_smoke.json --limit 5
+python runner/run_bird.py --test-dir ... --questions ... --out x.json --dump-prompt 0
 ```
 
 ## 5. Output format
@@ -73,12 +85,16 @@ A single JSON file, one entry per question, in the exact format consumed by the 
 Required by the guidelines so that a failed run can be restarted instead of starting over:
 
 - `--log run_test.jsonl`: one JSON object per question —
-  `idx, db_id, attempts, sql, exec_ok, n_rows, latency_s, prompt_tokens, completion_tokens, error`
+  `idx, db_id, attempts, sql, exec_ok, n_rows, latency_s, prompt_tokens, completion_tokens,
+  error, errors` (`errors` is the per-attempt error list, `error` the last one)
 - every SQL is executed on a **read-only** connection (`file:...?mode=ro` + `PRAGMA query_only`)
-  before being written out; execution errors and empty results are fed back to the model for a
-  bounded number of retries (`--max-retries`, default 3)
+  **and** passes a single-statement/`SELECT|WITH` whitelist before execution; execution errors and
+  empty results are fed back to the model for a bounded number of retries (`--max-retries`,
+  default 2)
 - the output file is written atomically and flushed after every question, so an interruption never
   loses more than the question in flight
+- the runner exits with code 2 (not 0) if nothing could be written — a broken path can never look
+  like a successful run
 
 ## 7. Compliance statement
 
@@ -94,21 +110,28 @@ Required by the guidelines so that a failed run can be restarted instead of star
   from the test set. No dev gold SQL is embedded in the prompt: it contains prose rules and
   per-database notes (column meanings, join paths, value conventions), not example gold queries.
   If you prefer a prompt that does not use dev-derived notes at all, we can ship the same runner
-  with `prompt/` reduced to the generic rules only (`SKILL.md`, `traps.md`, `checklist.md`).
+  with `prompt/` reduced to the two generic rule files only (`traps.md`, `shapes.md`).
+  Note on what is **not** in the prompt: our internal agent workflow (tool names, submission gates)
+  is deliberately excluded — the runner's system prompt contains SQL-writing rules and per-database
+  notes only.
 
 ## 8. `column_meaning.json`
 
-**We do not need `column_meaning.json` for testing.** Column semantics are derived from the
-databases themselves (declared types, distinct sample values, join-path probing) together with the
-per-question `evidence` field. (If you prefer us to use it, it is a one-line prompt change.)
+**Yes — we use it if you provide it.** The runner accepts `--column-meaning column_meaning.json` and
+renders the human-annotated column meanings for the database of the current question. It falls back
+to the per-table description files that ship with the public dev databases
+(`<db>/database_description/*.csv`, the dev counterpart of `column_meaning.json`), which is what our
+dev numbers were produced with. Without either source the runner still works (declared types +
+distinct sample values + the per-question `evidence` field), but fidelity to our dev setting is best
+when the descriptions are available.
 
 ## 9. Dev results (reproducible)
 
 | Item | Value |
 |---|---|
 | Dev split used | `bird_sql_dev_20251106` (the cleaner 2025-11-06 development split, 1534 questions) |
-| EX (full-set, `correct / 1534`) | **<FILL: dev EX>** |
-| Dev SQL file | `dev_pred/dev2025_pred.json` (1534 lines, official pred format) |
+| EX (full-set, `correct / 1534`) | **70.47% (1081 / 1534)** |
+| Dev SQL file | `dev_pred/dev2025_pred.json` (1534 entries, official pred format) |
 | Empty / error rate on dev | **<FILL: %>** (guideline threshold is 5%) |
 | Prompt tokens on dev | **<FILL: total prompt tokens>** (total = prompt + completion: **<FILL>**) |
 

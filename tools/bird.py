@@ -1727,6 +1727,19 @@ def cmd_score(args):
     if not answers:
         fail("还没有任何作答，先用 answer 命令记录几题")
 
+    # --pred：拿任意一份官方格式的预测文件算 EX（官方复现我们的 dev 成绩就走这条路）
+    if getattr(args, "pred", None):
+        pp = Path(args.pred)
+        if not pp.exists():
+            fail(f"找不到预测文件：{pp}")
+        try:
+            answers = json.loads(pp.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            fail(f"预测文件不是合法 JSON：{e}")
+        if not isinstance(answers, dict):
+            fail("预测文件应是 {idx: 'SQL\\t----- bird -----\\tdb_id'} 的 JSON 对象")
+        print(f"用 --pred 指定的预测文件：{pp}（{len(answers)} 条）")
+
     results = []
     for idx_str, payload in sorted(answers.items(), key=lambda kv: int(kv[0])):
         idx = int(idx_str)
@@ -1804,7 +1817,10 @@ def cmd_score(args):
             ordered[key] = answers[key]
         else:
             ordered[key] = f"SELECT 'UNANSWERED'\t----- bird -----\t{question['db_id']}"
-    write_json_atomic(pred_file, ordered)
+    # ⚠️ --pred 时**不写任何产物**：调用方已经有那份文件了，再写就会用「只算了几条的 answers」
+    #    覆盖掉全量预测/报告（2026-09-20 真实踩过：3 条的小样本评分把 1534 条的产物覆盖了）。
+    if not getattr(args, "pred", None):
+        write_json_atomic(pred_file, ordered)
 
     unanswered = len(ordered) - len(answers)
     if unanswered:
@@ -1822,6 +1838,9 @@ def cmd_score(args):
         )
 
     report_file = SCORE_DIR / "score_report.json"
+    if getattr(args, "pred", None):
+        print(f"\n注：--pred 只报数，不写 {pred_file.name} / {report_file.name}（避免用局部结果覆盖全量产物）")
+        return
     write_json_atomic(
         report_file,
         {
@@ -2053,6 +2072,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("score", help="算官方口径的 EX")
     p.add_argument("--db")
+    p.add_argument("--pred", help="用指定的预测文件算（默认用 work/answers*.json）")
     p.add_argument("--difficulty", choices=["simple", "moderate", "challenging"])
     p.add_argument("--list-wrong", type=int, default=10, help="列出前 N 道错题及原因")
     p.add_argument("--timeout", type=float, default=30.0)

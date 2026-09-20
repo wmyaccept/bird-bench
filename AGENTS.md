@@ -21,6 +21,7 @@
 tools/bird.py                      后端：唯一直接操作 SQLite 的地方
 tools/setup_data.py                数据准备：下载 + 选择性解压 + 嵌套 zip
 tools/make_submission.py           打官方提交包（清单 + 硬自检：禁 data/、扫密钥、体积、占位符、dev 预测体检）
+runner/                            给官方的纯 Python runner（run_bird.py / prompt.py / llm.py，零第三方依赖）
  tools/official_eval/              BIRD 官方评测脚本（已打本地补丁）
 data/MINIDEV/                      Mini-Dev 500（开发用轻量集）
 data/DEV/                          官方 Dev 集 1534 题（对齐排行榜 Dev 列）

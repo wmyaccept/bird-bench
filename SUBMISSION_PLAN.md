@@ -1,6 +1,6 @@
 # BIRD 排行榜提交方案
 
-> **状态：打包器已落地（2026-09-20），唯一硬缺口是 `runner/`。**
+> **状态：打包器 + runner 都已落地（2026-09-20），唯一没做的是"真调一次 API"。**
 > 本文档 §0–§7 是决策分析（仍是有效的），**§8 是现在真正要执行的步骤**。
 >
 > - 本文档记录日期：**2026-09-14**（§8 增补于 2026-09-20）
@@ -229,36 +229,48 @@ compare_ex()          本地 EX 对比（在 dev 上验收 runner 用）
 
 退出码：`0` 可提交 / `2` 有硬失败（不许提交）/ `3` 有警告（能打包但不该提交，典型就是缺 `runner/`）。
 
-### 8.2 唯一硬缺口：`runner/`
+### 8.2 runner（✅ 2026-09-20 已落地：`runner/`）
 
 官方 *"The Exp Team will run the codebase"* + *"make sure your code is successful on your dev
 evaluation (Required)"* ⇒ 交的不是预测文件，是**能在他们机器上跑出预测的代码**。
-我们现在的"方法"活在 pi（Node 包）里，官方不会装。所以要写一个纯 Python runner，接口定为：
+我们现在的"方法"活在 pi（Node 包）里，官方不会装。所以剥离出了一个纯 Python runner：
+
+| 文件 | 职责 |
+|---|---|
+| `runner/run_bird.py` | 主循环：读题 → 组 prompt → 调模型 → 只读试跑 → 回喂重写 → 落盘 + 日志 |
+| `runner/prompt.py` | system = 任务说明 + `traps.md` + `shapes.md` + `db/<库>.md`；user = 题目 + evidence + schema + 人工标注 |
+| `runner/llm.py` | OpenAI 兼容 `/chat/completions`，**纯 `urllib`**（零第三方依赖）+ 退避重试 + token 统计 |
 
 ```bash
 python runner/run_bird.py --test-dir <dir> --questions <test.json> \
-       --out pred_test.json --log run_test.jsonl [--limit N] [--max-retries 3]
+       --out pred_test.json --log run_test.jsonl \
+       [--limit N] [--max-retries 2] [--only-idx 1,2] [--column-meaning cm.json] \
+       [--dump-prompt 0] [--mock mock.jsonl]
 ```
 
-职责（全部复用 `tools/bird.py` 里已拆好的函数，不要重写数据层）：
+几个设计取舍（都是有意的）：
 
-1. 读题（`test.json` 的 `SQL` 字段是空串，**绝不碰任何 gold**）
-2. 组装 prompt：system = `prompt/` 下的规则文本；user = question + evidence + schema 摘要 + 样例值
-3. 调 OpenAI 兼容 API（`BIRD_API_KEY` / `BIRD_BASE_URL` / `BIRD_MODEL`），抽 SQL
-4. `guard_sql()` 白名单 → `connect_readonly()` 试跑；**报错或空集回喂模型重写**（上限 N 次）
-5. `save_answers()` 原子写 + 每题 flush；已答 idx 跳过（断点续跑）
-6. 每题一行 JSONL 日志（idx/db_id/attempts/exec_ok/n_rows/latency/tokens/error）
+- **system 里不放 `SKILL.md`/`checklist.md`**：那两份讲的是我们的 agent 流程（bird_* 工具、四道闸门、
+  `--checks` 留痕），对一台只会写 SQL 的模型是噪音。知识本身（traps/shapes/库档案）才进 prompt。
+- **只读闸门复用 `tools/bird.py` 的 `guard_sql`**，不另写一份 —— 两处实现必然漂移。
+- **执行失败/0 行会回喂重写**（`--max-retries`，默认 2）：官方把空输出算作异常，5% 阈值硬卡。
+- **每题原子落盘** ⇒ Ctrl+C 也能续跑；`--mock` 让"不联网不花额度"也能验流程。
+- 失败关闭：路径不对 / 一条都没写成 → rc=2，不会"跑了但什么都没做"还报成功。
 
-验收（提交前必须全过）：dev 子集 50 题跑通、异常率 < 5%、Ctrl+C 后续跑不重做、
-全新环境只 `pip install -r requirements.txt` 能跑、代码里无任何外发逻辑。
+验收（`tools/tests/check_runner.py`，离线 29 条 + 3 条投毒；已接入 `run_all.py`）：
+预测文件官方格式 / 日志字段齐全（含 token）/ 续跑不重做且字节不变 / 空结果回喂重写 /
+只读闸门拦写操作（且证明确实是 `guard_sql` 拦的，不是 `mode=ro` 连接兼的）/ 路径错 rc=2。
+
+**还没做的：真调一次 API。** 需要 `BIRD_API_KEY`（用户的 DeepSeek 官方 key）。
+真跑通过后，README 里两个 `<FILL>`（空结果率、prompt token 数）才能填上。
 
 ### 8.3 发信前必须拿到的两个数字
 
-1. **dev2025 全量 EX**（`correct / 1534`，不是已答部分准确率）
-2. **dev 上的 prompt token 总数**（官方对 Type 3/4 明确要求提前报，用来估成本）
+1. **dev2025 全量 EX** = **70.47%（1081/1534）** ✅ 已算出（`work/score/score_report.json`）
+2. **dev 上的 prompt token 总数** —— 要真跑一次 runner 才有（`--log` 的 `prompt_tokens` 求和）
 
-两个数字都从 `runner` 的日志里直接算出来；EX 也可以先用
-`python tools/bird.py --dataset dev2025 score` 单独算（慢，十几分钟量级）。
+第 1 个也可用 `python tools/bird.py --dataset dev2025 score --pred <任意官方格式预测文件>` 复现
+（官方复现我们的 dev 成绩就走这条命令）。
 
 ---
 

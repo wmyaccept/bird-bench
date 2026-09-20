@@ -1,152 +1,33 @@
 {
-  "dataset": "泛化测量（官方 train 库，无档案）",
-  "dataset_key": "gen",
-  "answered": 20,
-  "unanswered": 0,
-  "total_questions": 20,
-  "correct": 15,
-  "ex_percent": 75.0,
-  "ex_percent_full_set": 75.0,
+  "dataset": "BIRD Dev 2025-11-06 修订版（1534，SQLite）",
+  "dataset_key": "dev2025",
+  "answered": 3,
+  "unanswered": 1531,
+  "total_questions": 1534,
+  "correct": 0,
+  "ex_percent": 0.0,
+  "ex_percent_full_set": 0.0,
   "results": [
     {
       "idx": 0,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
+      "db_id": "california_schools",
+      "difficulty": "challenging",
+      "correct": false,
+      "detail": "列数不同（预测 1 行 1 列 / 金标 1 行 10 列）"
     },
     {
       "idx": 1,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
+      "db_id": "california_schools",
+      "difficulty": "moderate",
+      "correct": false,
+      "detail": "行数相同但取值不同（预测 3 行 1 列 / 金标 3 行 1 列）"
     },
     {
       "idx": 2,
-      "db_id": "trains",
-      "difficulty": "unknown",
+      "db_id": "california_schools",
+      "difficulty": "challenging",
       "correct": false,
-      "detail": "行数不同（预测 1 行 1 列 / 金标 2 行 1 列）"
-    },
-    {
-      "idx": 3,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 4,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 5,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 6,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 7,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": false,
-      "detail": "列数不同（预测 2 行 2 列 / 金标 10 行 1 列）"
-    },
-    {
-      "idx": 8,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 9,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 10,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 11,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 12,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 13,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": false,
-      "detail": "行数相同但取值不同（预测 1 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 14,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 15,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": false,
-      "detail": "列数不同（预测 1 行 1 列 / 金标 0 行 0 列）"
-    },
-    {
-      "idx": 16,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 17,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": false,
-      "detail": "行数不同（预测 2 行 1 列 / 金标 1 行 1 列）"
-    },
-    {
-      "idx": 18,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
-    },
-    {
-      "idx": 19,
-      "db_id": "trains",
-      "difficulty": "unknown",
-      "correct": true,
-      "detail": "ok"
+      "detail": "列数不同（预测 5 行 1 列 / 金标 5 行 14 列）"
     }
   ]
 }
