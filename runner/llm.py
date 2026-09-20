@@ -19,7 +19,7 @@ import urllib.error
 import urllib.request
 
 DEFAULT_BASE_URL = "https://api.deepseek.com"
-DEFAULT_MODEL = "deepseek-chat"
+DEFAULT_MODEL = "deepseek-flash"   # DeepSeek 现行正式名（`deepseek-chat` 是遗留名，官方已宣布下线）
 RETRY_STATUS = {408, 409, 425, 429, 500, 502, 503, 504}
 
 
@@ -31,6 +31,7 @@ class LLMClient:
     def __init__(self, model: str | None = None, api_key: str | None = None,
                  base_url: str | None = None, temperature: float = 0.0,
                  timeout: float = 180.0, http_retries: int = 4,
+                 thinking: str = "disabled",
                  mock=None, verbose: bool = False):
         self.model = model or os.environ.get("BIRD_MODEL") or DEFAULT_MODEL
         self.api_key = api_key or os.environ.get("BIRD_API_KEY") or ""
@@ -38,6 +39,7 @@ class LLMClient:
         self.temperature = temperature
         self.timeout = timeout
         self.http_retries = http_retries
+        self.thinking = thinking          # disabled / enabled / default
         self.mock = mock                  # Callable[[list[dict]], str] | None
         self.verbose = verbose
         if not self.mock and not self.api_key:
@@ -58,6 +60,11 @@ class LLMClient:
             "max_tokens": max_tokens,
             "stream": False,
         }
+        # DeepSeek 的 `deepseek-flash` **默认开思考模式**（响应带 reasoning_content）：
+        # 难题会思考十几分钟（实测单题 1107s），且 reasoning tokens 按输出计费。
+        # 默认显式关掉 —— 与本项目 dev 成绩产生的口径一致（agent 当时 reasoning=off）。
+        if self.thinking in ("disabled", "enabled"):
+            payload["thinking"] = {"type": self.thinking}
         body = json.dumps(payload).encode("utf-8")
         url = f"{self.base_url}/chat/completions"
         headers = {

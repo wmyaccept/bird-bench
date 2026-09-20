@@ -2274,3 +2274,36 @@ SKILL 第 0 步指路；`conventions` 在"库存在但零已提交答案"时改�
 
 **不动的（T3，需另拍板）**：traps 轶事体积、硬规则 6 的 1 分钟时限、A7 挂在 A6 下。
 
+## 第 53 轮（2026-09-21）｜**runner 真跑 dev：第一个可复现的数字**
+
+**做了什么**：给 runner 接上 DeepSeek 官方 API（`https://api.deepseek.com` + `deepseek-flash`），
+真跑 dev2025 全量 1534 题。
+
+**结果**：**EX 72.43%（1111/1534）**，simple 78.95 / moderate 75.40 / challenging 42.42；
+异常率 **0.78%**（12 空结果、0 报错）；prompt **34,251,163** + completion 122,325；
+单进程 **42.8 分钟**，无需 GPU。
+
+⚠️ 这不等于「比 agent 好」：agent 的 70.47% 是 pi + grok-4.6，runner 是 deepseek-flash，**模型不同**。
+两者预测几乎不重叠（1534 题里只有 **11 条** SQL 相同）—— 说明「同一个 skill 文本」在换执行器后行为差得很大。
+
+**三个发现**
+
+1. **`deepseek-flash` 默认开思考模式**（响应带 `reasoning_content`，计费含 `reasoning_tokens`）。
+   同一题输出 token 是 **281 vs 54**（相差 5 倍）而 SQL 等价。⇒ runner 新增 `--thinking {disabled,enabled,default}`，
+   **默认 `disabled`** —— 与本项目 dev 成绩产生的口径一致（agent 当时 `PI_REASONING_LEVEL=off`）。
+2. **我先把一次 1107 秒的卡顿误判成「思考模式」**。直接 A/B 以后发现两模式都只要 1–3 秒：
+   那一次是**服务器瞬时卡顿**（只生成 311 token 却花了 18 分钟）。
+   ⇒ 教训：**n=1 不能归因**，尤其不能拿一个单点去改默认值。
+3. **`dev_pred` 该交哪份**：README 原先写 agent 的 70.47% 并附带 agent 的 `answers_dev2025.json`，
+   但官方跑的是 runner。若只换数字不换文件，报的 EX 与附的 SQL **互相对不上**（就是档案串味的同一类错）。
+   ⇒ 改成附 **runner 的输出**（`work/runner_pred_dev2025.json`）+ runner 的 EX，三者同源。
+
+**新增守卫（`check_docs.py`）**：提交 README 声明的 `BIRD_MODEL` == `runner/llm.py` 的 `DEFAULT_MODEL`；
+`--thinking` 默认必须是 `disabled`；`thinking` 必须真的透传进 payload（不能只加个 CLI 参数）；
+README 必须有思考模式声明。
+投毒 3/3 全红且字节还原（模型名漂移 / 默认值改 enabled / thinking 没透传）。
+
+**仍未做**：给官方的包内 SUBMISSION.md（即仓库里 submission/CHECKLIST.md）还缺团队名/联系邮箱（需人填），
+以及临时 key（需人给）；
+越卡/超时保护：单次 LLM 调用无硬上界（`urlopen(timeout=60)` 拦不住慢速响应）。
+

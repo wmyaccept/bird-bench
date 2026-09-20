@@ -195,6 +195,8 @@ def main() -> int:
     ap.add_argument("--model", default=None, help="默认取 BIRD_MODEL")
     ap.add_argument("--temperature", type=float, default=0.0)
     ap.add_argument("--max-tokens", type=int, default=2048)
+    ap.add_argument("--thinking", choices=["disabled", "enabled", "default"], default="disabled",
+                    help="DeepSeek 思考模式：disabled=直出 SQL（默认，与 dev 成绩口径一致）/ enabled / default（服务端默认）")
     ap.add_argument("--max-retries", type=int, default=2, help="执行失败/空结果时回喂重写的次数")
     ap.add_argument("--samples", type=int, default=3, help="schema 里每列给几个样例值")
     ap.add_argument("--timeout", type=float, default=60.0, help="单条 SQL 的执行超时")
@@ -247,6 +249,7 @@ def main() -> int:
     try:
         client = LLMClient(model=args.model, api_key=args.api_key, base_url=args.base_url,
                            temperature=args.temperature, timeout=args.timeout,
+                           thinking=args.thinking,
                            mock=(lambda msgs: mock.take(-1)) if mock else None,
                            verbose=args.verbose)
     except LLMError as e:
@@ -263,6 +266,7 @@ def main() -> int:
 
     print(f"runner: {len(questions)} 题 / 已答 {len(questions) - len(todo)} / 待跑 {len(todo)}")
     print(f"  model={client.model} base_url={client.base_url} prompt_dir={prompt_dir}")
+    print(f"  thinking={client.thinking}（DeepSeek 的 flash 默认开思考，长题会拖到十几分钟）")
     if mock:
         print("  ⚠️ mock 模式：不联网、不花额度，只验证流程（结果不可用于报分）")
 

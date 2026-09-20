@@ -432,6 +432,24 @@ def main() -> int:
     check("JULIANDAY 口径统一为「跨度用 JULIANDAY、年份差看档案」",
           "跨度用" in juli and "年份差" in juli and "别自作主张用" not in juli)
 
+    # ⭐ 本轮（runner 真跑）：提交材料声明的默认模型/思考模式 == runner 代码真值。
+    #    这是「同一事实两处手写」的又一实例：README 说 BIRD_MODEL=deepseek-flash，
+    #    代码里却是 deepseek-chat，官方照 README 跑就跑到了另一个（遗留）模型。
+    llm_src = (ROOT / "runner" / "llm.py").read_text(encoding="utf-8")
+    sub_readme = (ROOT / "submission" / "README.md").read_text(encoding="utf-8")
+    m_code = re.search(r'DEFAULT_MODEL\s*=\s*"([^"]+)"', llm_src)
+    m_doc = re.search(r"`BIRD_MODEL=([^`]+)`", sub_readme)
+    check("提交 README 声明的默认模型 == runner/llm.py 的 DEFAULT_MODEL",
+          bool(m_code and m_doc and m_code.group(1) == m_doc.group(1)),
+          f"code={m_code.group(1) if m_code else None} readme={m_doc.group(1) if m_doc else None}")
+    rb_src = (ROOT / "runner" / "run_bird.py").read_text(encoding="utf-8")
+    check("runner 的 --thinking 默认 disabled（flash 默认开思考，长题会拖到十几分钟）",
+          re.search(r'"--thinking".{0,240}?default="disabled"', rb_src, re.S) is not None)
+    check("思考模式真的透传进 payload（不是只加个 CLI 参数）",
+          'payload["thinking"]' in llm_src and "self.thinking" in llm_src)
+    check("提交 README 写了思考模式声明（官方据此复现我们的 dev 口径）",
+          "thinking disabled" in sub_readme)
+
     # ⭐ 类②「同一事实多处手写」：文档说的闸门数必须 == 代码常量（单一数据源）
     n_gates = _bird.N_GATES
     cn = {2: "两", 3: "三", 4: "四", 5: "五", 6: "六"}

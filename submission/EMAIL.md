@@ -24,9 +24,11 @@ Text-to-SQL system** (no GPU required; closed-source LLM accessed via an OpenAI-
 
 **Summary**
 - Dev split used: `bird_sql_dev_20251106` (the 2025-11-06 development split), 1534 questions
-- Dev EX (full set, correct / 1534): **<FILL>**
-- Empty/error rate on dev: **<FILL>%** (below the 5% threshold)
-- Prompt tokens on dev: **<FILL>** (prompt + completion: **<FILL>**)
+- Dev EX (full set, correct / 1534): **72.43% (1111 / 1534)**
+- Empty/error rate on dev: **0.78%** (12 empty, 0 runtime errors; below the 5% threshold)
+- Prompt tokens on dev: **34,251,163** (prompt + completion: **34,373,488**)
+- LLM call mode: non-thinking (`--thinking disabled`); one pass plus up to 2 rewrites when the SQL
+  fails to execute or returns no rows
 - `column_meaning.json`: **not needed** — we derive column semantics from the databases
   (types, distinct sample values, join probing) plus the per-question `evidence`
 - Runtime: Python 3.9+, `pip install -r requirements.txt`; no Java/JDK/Node/CUDA
@@ -35,8 +37,8 @@ Text-to-SQL system** (no GPU required; closed-source LLM accessed via an OpenAI-
 
 **API key** (please use for this evaluation only; we will reset it after the evaluation terminates)
 - `BIRD_API_KEY`: `<FILL: temporary key>`
-- `BIRD_BASE_URL`: `<FILL: endpoint>`
-- `BIRD_MODEL`: `<FILL: model name>`
+- `BIRD_BASE_URL`: `https://api.deepseek.com`
+- `BIRD_MODEL`: `deepseek-flash`
 
 Please let us know if anything in the archive is unclear or if you need a different format.
 

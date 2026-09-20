@@ -41,7 +41,7 @@ MANIFEST = [
     ("tools/setup_data.py", "tools/setup_data.py"),
     ("tools/official_eval/", "tools/official_eval/"),
     ("prompt/", "submission/prompt/"),          # 方法 = prompt 文本（由 make_submission 生成）
-    ("dev_pred/dev2025_pred.json", "work/answers_dev2025.json"),
+    ("dev_pred/dev2025_pred.json", "work/runner_pred_dev2025.json"),
 ]
 
 # prompt 目录只放"推理时真的会读"的文本；casebook/calibration/maintaining 是内部账本，不进去。

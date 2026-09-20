@@ -1,9 +1,5 @@
 # BIRD Test Set Submission — Agentic API-only Text-to-SQL
 
-<!-- 状态：runner 已落地（2026-09-20），本文件的命令与 runner/run_bird.py 的 CLI 一致。
-     打包器 tools/make_submission.py 会在缺 runner、或本文件还留有未填占位符（<FILL ...>）/
-     内部备注时直接硬失败 —— 所以这份文件不可能被"忘了填"就发出去。 -->
-
 ## 1. What this is
 
 An **API-only** agentic Text-to-SQL pipeline. There is **no GPU requirement and no special
@@ -38,7 +34,7 @@ export BIRD_BASE_URL="<openai-compatible endpoint>"
 export BIRD_MODEL="<model name>"
 ```
 
-Defaults if unset: `BIRD_BASE_URL=https://api.deepseek.com`, `BIRD_MODEL=deepseek-chat`. They can
+Defaults if unset: `BIRD_BASE_URL=https://api.deepseek.com`, `BIRD_MODEL=deepseek-flash`. They can
 also be passed as `--api-key/--base-url/--model`. The runner talks to `POST {base_url}/chat/completions`
 with `Authorization: Bearer <key>` — i.e. any OpenAI-compatible endpoint works.
 
@@ -130,10 +126,12 @@ when the descriptions are available.
 | Item | Value |
 |---|---|
 | Dev split used | `bird_sql_dev_20251106` (the cleaner 2025-11-06 development split, 1534 questions) |
-| EX (full-set, `correct / 1534`) | **70.47% (1081 / 1534)** |
+| Model / mode | `deepseek-flash` via `https://api.deepseek.com`, thinking disabled (`--thinking disabled`) |
+| EX (full-set, `correct / 1534`) | **72.43% (1111 / 1534)** |
 | Dev SQL file | `dev_pred/dev2025_pred.json` (1534 entries, official pred format) |
-| Empty / error rate on dev | **<FILL: %>** (guideline threshold is 5%) |
-| Prompt tokens on dev | **<FILL: total prompt tokens>** (total = prompt + completion: **<FILL>**) |
+| Empty / error rate on dev | **0.78%** (12 empty of 1534, 0 runtime errors; guideline threshold is 5%) |
+| Prompt tokens on dev | **34,251,163** (total = prompt + completion: **34,373,488**) |
+| Wall time on dev | ~43 minutes, single process, no GPU |
 
 Reproduce locally (requires the dev databases, which are public):
 
