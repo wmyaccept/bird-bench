@@ -748,13 +748,26 @@ def main() -> int:
 
     print("\n── 链接有效性（含 casebook —— P7 修完后不再有豁免）")
     broken = []
+    # ⭐ 包内名：打包器把 submission/CHECKLIST.md 装成 SUBMISSION.md、submission/README.md 装成
+    #    README.md 等。**从 MANIFEST 现算**，不手写白名单（手写必然漏，且漏了会假红）。
+    import importlib.util as _ilu
+    _sp = _ilu.spec_from_file_location("_mk_docs", ROOT / "tools" / "make_submission.py")
+    _mk_docs = _ilu.module_from_spec(_sp)
+    sys.modules["_mk_docs"] = _mk_docs
+    _sp.loader.exec_module(_mk_docs)
+    #    顺序是 (zip 内路径, 仓库来源) —— 与 `for dst, src in MANIFEST` 一致。
+    zip_names = {Path(dst).name for dst, _src in _mk_docs.MANIFEST}
+
     for f in [SKILL / "SKILL.md", *sorted(REF.glob("*.md")), *sorted((REF / "db").glob("*.md"))]:
         for target in re.findall(r"`([a-zA-Z0-9_./-]+\.md)`", txt(f)):
             name = target.split("/")[-1]
             cands = [REF / name, REF / target, REF / "db" / name,
-                     SKILL / name, ROOT / name, ROOT / "tools" / name, ROOT / "data" / name]
-            if not any(c.exists() for c in cands):
-                broken.append(f"{f.name} -> {target}")
+                     SKILL / name, ROOT / name, ROOT / "tools" / name, ROOT / "data" / name,
+                     #   提交材料也在仓库里（原先漏了 → `submission/EMAIL.md` 这类是误报）
+                     ROOT / "submission" / name, ROOT / target]
+            if target in zip_names or any(c.exists() for c in cands):
+                continue
+            broken.append(f"{f.name} -> {target}")
     check("所有 .md 引用都真实存在（不许指向已删文件）", not broken, "; ".join(broken))
 
     if warn:

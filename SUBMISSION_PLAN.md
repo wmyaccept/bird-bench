@@ -1,9 +1,17 @@
 # BIRD 排行榜提交方案
 
-> **状态：打包器 + runner 都已落地（2026-09-20），唯一没做的是"真调一次 API"。**
-> 本文档 §0–§7 是决策分析（仍是有效的），**§8 是现在真正要执行的步骤**。
+> **状态：✅ 已于 2026-09-21 提交给 bird.bench23@gmail.com（Type 3，API Call）。等官方回结果。**
+> 本文档 §0–§7 是决策分析，**§8 是执行记录**。
 >
-> - 本文档记录日期：**2026-09-14**（§8 增补于 2026-09-20）
+> - **本次提交存档**：`work/submission/bird_submission_20260921.zip`
+>   （28 文件 / 0.20 MB / sha256 `3e813cbf9281c37527dd32df7105159c595115f6afa26060ddd32ca405293e7f`）
+> - **报出的 dev 成绩**（runner 实测，非 agent）：EX **72.43%（1111/1534）**、异常率 **0.78%**、
+>   prompt **34,251,163** tokens；模型 `deepseek-flash` + `https://api.deepseek.com`，`--thinking disabled`
+> - **待办**：① 评测完在 DeepSeek 控制台**作废临时 key**（邮件里承诺过）
+>   ② 官方回结果后回填到 `references/casebook.md`
+>   ⚠️ **评测期间不要提前作废 key** —— 官方 Exp Team 会用它跑 test。
+>
+> - 本文档记录日期：**2026-09-14**（§8 增补于 2026-09-20，提交记录于 2026-09-21）
 > - 官方 Submission Guidelines 抓取日期：**2026-09-14**（原文全文见文末附录 A）
 > - 官方页面：https://bird-bench.github.io/ → 右下角 "Submission Guidelines" 按钮
 >   指向 Google Docs：`1Rs6d_pcs2vfqW4Ymub7Wb1XtBNlrc-WfH3T7U1ktuBo`

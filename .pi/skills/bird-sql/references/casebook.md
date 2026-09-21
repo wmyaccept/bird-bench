@@ -2361,3 +2361,27 @@ SUBMISSION.md）的**标题和引言都是中文**（“包内容与官方要求
 新增守卫：进 zip 的 README.md / SUBMISSION.md 不得含中文或中文标点（范围不含 U+2014）。
 同时向官方**主动声明** `prompt/` 里的规则文本是中文（那是给模型读的，不是给人读的）。
 
+## 第 55 轮（2026-09-21）｜**已提交官方评测**
+
+**动作**：把 `bird_submission_20260921.zip`（28 文件 / 0.20 MB / sha256 `3e813cbf…`）
++ dev 预测发给 `bird.bench23@gmail.com`（Type 3 — Evaluation via API Call）。
+
+**包内容**：`README.md` / `SUBMISSION.md`（均纯英文）+ `requirements.txt` + `runner/`（3 个）
++ `tools/`（8 个，含官方评测脚本）+ `prompt/`（13 个 = traps + shapes + 11 张库卡）
++ `dev_pred/dev2025_pred.json`（1534 条）。
+
+**向官方报的数**（全部来自 runner 实跑，不是 agent）：
+EX **72.43%（1111/1534）** / 异常率 **0.78%** / prompt **34,251,163** tokens；
+模型 `deepseek-flash` @ `api.deepseek.com`，`--thinking disabled`。
+
+**提交前最后一轮修正（都是“对外口径”类）**：
+- `prompt/` 只装 runner 真正读的文件（清掉 SKILL/checklist 的合规矛盾）
+- README §3 的 `BIRD_BASE_URL`/`BIRD_MODEL` 写具体值（否则官方换个模型就复现不了）
+- 进 zip 的 README/SUBMISSION 改纯英文（原先标题是中文）
+- 发信底稿与仓库隔离：`submission/EMAIL.local.md` 进 .gitignore
+
+**待办**：评测结束后作废临时 key；结果回来后在 casebook 记一轮。
+**教训**：导出邮件正文时错用了**裸 CR**（`\r`）当换行 ⇒ 粘进邮件全挤在一起。
+跟换行有关的输出，**下完结论前先数字节**（`\r\n` / `\r` / `\n` 各多少个）—— 与我当时写的
+“CRLF，记事本友好”并不相符。
+
