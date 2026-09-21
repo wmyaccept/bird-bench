@@ -442,6 +442,20 @@ def main() -> int:
     check("提交 README 声明的默认模型 == runner/llm.py 的 DEFAULT_MODEL",
           bool(m_code and m_doc and m_code.group(1) == m_doc.group(1)),
           f"code={m_code.group(1) if m_code else None} readme={m_doc.group(1) if m_doc else None}")
+    #    §3 的 export 块必须写**具体** endpoint/model（不能留占位符）：官方就是照它跑，
+    #    留 `<model name>` 他们就可能换个模型，和 README 报的 EX 对不上。key 除外（不能在包里）。
+    m_burl_code = re.search(r'DEFAULT_BASE_URL\s*=\s*"([^"]+)"', llm_src)
+    m_burl_doc = re.search(r'export BIRD_BASE_URL="([^"]+)"', sub_readme)
+    check("README §3 的 export BIRD_BASE_URL 是具体值（不是占位符）",
+          bool(m_burl_doc) and "<" not in m_burl_doc.group(1), repr(m_burl_doc.group(1) if m_burl_doc else None))
+    check("README §3 的 endpoint == runner/llm.py 的 DEFAULT_BASE_URL",
+          bool(m_burl_code and m_burl_doc and m_burl_code.group(1) == m_burl_doc.group(1)),
+          f"code={m_burl_code.group(1) if m_burl_code else None} readme={m_burl_doc.group(1) if m_burl_doc else None}")
+    m_mdl_export = re.search(r'export BIRD_MODEL="([^"]+)"', sub_readme)
+    check("README §3 的 export BIRD_MODEL 是具体值且 == 代码默认（不是 <model name>）",
+          bool(m_mdl_export and m_code and "<" not in m_mdl_export.group(1)
+               and m_mdl_export.group(1) == m_code.group(1)),
+          repr(m_mdl_export.group(1) if m_mdl_export else None))
     rb_src = (ROOT / "runner" / "run_bird.py").read_text(encoding="utf-8")
     check("runner 的 --thinking 默认 disabled（flash 默认开思考，长题会拖到十几分钟）",
           re.search(r'"--thinking".{0,240}?default="disabled"', rb_src, re.S) is not None)

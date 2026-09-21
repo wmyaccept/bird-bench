@@ -29,9 +29,9 @@ runner.
 ## 3. Configuration
 
 ```bash
-export BIRD_API_KEY="<your key>"          # key you provide for this evaluation
-export BIRD_BASE_URL="<openai-compatible endpoint>"
-export BIRD_MODEL="<model name>"
+export BIRD_API_KEY="<the temporary key we provide in the submission email>"
+export BIRD_BASE_URL="https://api.deepseek.com"   # the endpoint our dev numbers were produced with
+export BIRD_MODEL="deepseek-flash"                # the model our dev numbers were produced with
 ```
 
 Defaults if unset: `BIRD_BASE_URL=https://api.deepseek.com`, `BIRD_MODEL=deepseek-flash`. They can
