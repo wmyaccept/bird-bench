@@ -456,6 +456,15 @@ def main() -> int:
           bool(m_mdl_export and m_code and "<" not in m_mdl_export.group(1)
                and m_mdl_export.group(1) == m_code.group(1)),
           repr(m_mdl_export.group(1) if m_mdl_export else None))
+    #    进 zip 的两份说明文件必须纯英文：中文（含中文标点）对 Exp Team 是噪音，
+    #    也会让人怀疑“这包到底给谁看的”。范围不含 U+2014（—）等西文标点；
+    #    prompt/ 里的规则文本是**给模型读的**，不管。
+    CJK = re.compile(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]")
+    for dst, rel in (("README.md", "submission/README.md"),
+                     ("SUBMISSION.md", "submission/CHECKLIST.md")):
+        hits = sorted({m.group(0) for m in CJK.finditer((ROOT / rel).read_text(encoding="utf-8"))})
+        check(f"进 zip 的 {dst} 是纯英文（无中文/中文标点）", not hits,
+              f"{len(hits)} 种：{''.join(hits[:12])}")
     rb_src = (ROOT / "runner" / "run_bird.py").read_text(encoding="utf-8")
     check("runner 的 --thinking 默认 disabled（flash 默认开思考，长题会拖到十几分钟）",
           re.search(r'"--thinking".{0,240}?default="disabled"', rb_src, re.S) is not None)

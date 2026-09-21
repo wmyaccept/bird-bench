@@ -110,6 +110,9 @@ Required by the guidelines so that a failed run can be restarted instead of star
   Note on what is **not** in the prompt: our internal agent workflow (tool names, submission gates)
   is deliberately excluded — `prompt/` contains exactly the three things `runner/prompt.py`
   loads (`traps.md`, `shapes.md`, one card per database) and no other file from our notes.
+- **Language of the prompt:** the two rule files and the per-database notes under `prompt/` are
+  written in Chinese. They are read by the LLM, not by a human operator; everything the Exp Team
+  reads or runs (`README.md`, `SUBMISSION.md`, `runner/`, `tools/`) is in English.
 
 ## 8. `column_meaning.json`
 

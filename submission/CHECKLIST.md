@@ -1,6 +1,7 @@
-# SUBMISSION.md — 包内容与官方要求逐条对照
+# SUBMISSION.md — archive contents and requirement mapping
 
-> 这份文件进 zip（给官方的 Exp Team 看）。中文备注在 `>` 里，正式内容用英文。
+> This file is part of the archive. It lists what the archive contains and maps each official
+> submission requirement to where it is satisfied. `README.md` has the commands to run.
 
 ## What is in this archive
 
@@ -12,7 +13,7 @@ runner/                      the agentic runner (entry point: runner/run_bird.py
 tools/bird.py                schema / sampling / read-only execution / EX comparison (stdlib only)
 tools/setup_data.py          official-URL downloader (no upload logic)
 tools/official_eval/         the official evaluation scripts
-prompt/                      the prompt text = our method (rules + one card per database)
+prompt/                      exactly the files the runner reads: traps.md + shapes.md + db/<db_id>.md
 dev_pred/dev2025_pred.json   our predicted SQL on the dev split (official pred format)
 ```
 

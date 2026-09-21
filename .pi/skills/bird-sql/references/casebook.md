@@ -2355,4 +2355,9 @@ prompt 只含 SQL 规则 + 库笔记」。**两者正面矛盾，且合规审查
 `export BIRD_MODEL="<model name>"`，而 README 另一处又声称 dev EX 72.43% 来自 `deepseek-flash` ——
 官方照 §3 跑就可能换个模型，报的数就复现不了。key 只能留占位符（不能进包），
 但 endpoint / model 必须写死并与代码默认值一致（已加两条守卫 + 投毒）。
+**第三十六条**：**进 zip 给官方看的文件必须是纯英文**。`submission/CHECKLIST.md`（包内叫
+SUBMISSION.md）的**标题和引言都是中文**（“包内容与官方要求逐条对照”），而那正是官方 Exp Team
+第一眼看到的东西。修法：标题/引言改英文，库内仍叫 `checklist.md` 但包内呈现全英文；
+新增守卫：进 zip 的 README.md / SUBMISSION.md 不得含中文或中文标点（范围不含 U+2014）。
+同时向官方**主动声明** `prompt/` 里的规则文本是中文（那是给模型读的，不是给人读的）。
 
