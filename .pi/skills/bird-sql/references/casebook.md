@@ -2410,3 +2410,8 @@ Model Track）；一个榜上同一种方法最多留两条；上榜单要往 `b
 4. **自检要能区分“站点本身就不齐”和“我弄坏了”**：标签配对要**与基线比增量**（我们应为
    +2 `<tr>`/+13 `<td>`），而不是绝对相等（基线自己 `</td>` 就多 90）。
 
+**结果**：PR **#241** 已开（分支 `add-wmyaccept-sql-leaderboard`，仅 `index.html` +35/-0），等 merge。
+插入的两行：EX 榜 69.59（落在 Claude Opus 4.6 Baseline 70.15 与 PB-SQL 69.26 之间）、
+R-VES 榜 67.73（落在 CSC-SQL+XiYanSQL-32B 67.84 与 CSC-SQL+Qwen2.5-7B 67.47 之间）。
+**官方 test set = 1789 题**，与 dev 1534 不同口径。
+

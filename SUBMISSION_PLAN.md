@@ -1,7 +1,7 @@
 # BIRD 排行榜提交方案
 
-> **状态：✅ 2026-09-21 提交 → ✅ 2026-10-02 官方回信给出 test 成绩。**
-> **官方归我们进 overall track（不是 Single Trained Model Track）；当前进行中：往 leaderboard 提 PR（§9）。**
+> **状态：✅ 2026-09-21 提交 → ✅ 2026-10-02 官方回信给出 test 成绩 → ✅ 2026-10-02 提 PR #241 上榜单（等 merge）。**
+> **官方归我们进 overall track（不是 Single Trained Model Track）。**
 > 本文档 §0–§7 是决策分析，**§8 是提交执行记录，§9 是上榜单**。
 >
 > **官方 test 成绩（附件 `predict_test_result`，1789 题 = 949 simple / 555 moderate / 285 challenging）**
@@ -347,6 +347,30 @@ https://github.com/bird-bench/bird-bench.github.io 提 PR。
 - diff 规模：仅 `index.html`，**+35 行 / 0 删除**；标签配对自检 +2 `<tr>`/+13 `<td>`，
   **没有引入新的不齐**（基线自身 `</td>` 比 `<td>` 多 90，是站点自己的注释块）。
 - **官方 test set 是 1789 题**（949/555/285），此题量与旧 dev 1534 不同——口径看榜内 "New Dev" 徽章。
+
+### 9.5 PR 记录
+
+| 项 | 值 |
+|---|---|
+| PR | **#241** — https://github.com/bird-bench/bird-bench.github.io/pull/241 |
+| 分支 | `wmyaccept/bird-bench.github.io` : `add-wmyaccept-sql-leaderboard` |
+| 提交 | `c4dca74` “Add wmyaccept-SQL to Overall leaderboard (EX 69.59 / R-VES 67.73)” |
+| 变更 | 仅 `index.html`，**+35 / -0** |
+| 开出日期 | 2026-10-02 |
+| 状态 | 等维护者 merge（参照 #240：纯加行的 PR，通常很快） |
+
+**推送已核对**：远端 blob sha = 本地 HEAD blob
+`b527278325917b106d3caf340c10269638d10509`（本地文件因 Windows checkout 是 CRLF，仓库内存 LF，非差异）。
+
+**续改方式**：clone 在 `D:\tmp\bird\site`（已配 `fork` remote）。若维护者要改格式，
+往**同一分支追加 commit** 再 push，PR 自动更新——**不要新开 PR、不要删分支**。
+
+```bash
+cd "D:/tmp/bird/site"
+git -c http.proxy= -c http.sslBackend=openssl -c http.version=HTTP/1.1 push fork HEAD:add-wmyaccept-sql-leaderboard
+```
+
+> 本机 TLS 不稳，这两个变通参数 + 最多 3 次重试是固定套路（首次即成功属于运气好）。
 
 ---
 
