@@ -274,11 +274,57 @@ python runner/run_bird.py --test-dir <dir> --questions <test.json> \
 
 ### 8.3 发信前必须拿到的两个数字
 
-1. **dev2025 全量 EX** = **70.47%（1081/1534）** ✅ 已算出（`work/score/score_report.json`）
+> ❗**口径警告（2026-09-21 发信后回填）**：最终报给官方的是 **72.43%（1111/1534）**，
+> 来自**官方 runner 真跑**的那一份 `work/runner_pred_dev2025.json`，复现命令：
+> ```bash
+> "D:/python/python" tools/bird.py --dataset dev2025 score --pred work/runner_pred_dev2025.json
+> ```
+> 下面第 1 条写的 **70.47%（1081/1534）** 是更早用**本 agent 做题产出的**那一份
+> （`work/answers_dev2025.json` → `work/score/score_report.json`）。**两份口径不同，别混用**：
+> 官方会自己跑 runner，所以报的、README 里写的、必须都是 runner 的数字。
+
+1. **dev2025 全量 EX** = **70.47%（1081/1534）** ⚠️ 旧口径（agent 产出；见上方警告）
 2. **dev 上的 prompt token 总数** —— 要真跑一次 runner 才有（`--log` 的 `prompt_tokens` 求和）
 
 第 1 个也可用 `python tools/bird.py --dataset dev2025 score --pred <任意官方格式预测文件>` 复现
 （官方复现我们的 dev 成绩就走这条命令）。
+
+---
+
+## 9. 上榜单（2026-10-02 官方回信后新增）
+
+**官方回复要点**：成绩在附件 `predict_test_result` 里；**我们归 overall track**（不是 Single Trained
+Model Track）；一个榜上同一种方法最多留两条；上榜单要往
+https://github.com/bird-bench/bird-bench.github.io 提 PR。
+
+### 9.1 榜单仓库的真实结构（已 clone 核对）
+
+- 仓库就**一个 `index.html`**（~340 KB），所有榜单都是里面的 `<table>`；另有
+  `script/leaderboard-toggle.min.js` 切换 overall / single-model 两个 tab。
+- overall tab 里有 3 张表：**表 0 = EX 主榜（我们要进的）**、表 1 = R-VES、表 2 = Mini-Dev；
+  single-model tab 是表 3。
+- PR 平常就改 `index.html` 一处（参照 PR #240：只加了一行 <tr>）。
+
+### 9.2 表 0 的行格式与两条很容易弄错的约定
+
+1. **排序是按 Test (%) 降序**，不是按日期；前两行 `Human Performance` 固定在最上面，
+   我们的行必须插在它们**之后**。
+2. ❗**新 dev（20251106）的条目必须带 `new-dev-badge` 徽章**：
+   ```html
+   <!-- Dev 列：徽章可见 + 分数；Test 列：同样的 span 但要 visibility:hidden（仅为列对齐） -->
+   <td ...><span class="new-dev-badge" data-tooltip="Evaluated on BIRD Dev 20251106">New Dev</span><br>72.43</td>
+   <td ...><span class="new-dev-badge" style="visibility:hidden">New Dev</span><br>62.xx</td>
+   ```
+   我们报的 72.43 正是新 dev 口径，**不带徽章就会被读成旧 dev**。
+   实测：表 0 的 9 条新 dev 行**全部不用 `<b>`** 包 Test 分数（旧 dev 行也只有 2/123 用），
+   所以我们也不加粗。
+3. Code 列放外链：`<td ...><a href="URL">[link]</a></td>`；Size 列闭源模型填 `UNK`；
+   Oracle Knowledge 列我们用了 evidence ⇒ `✔️`。
+
+### 9.3 工具
+
+插入脚本：`D:\tmp\bird\insert_row.py`（按 Test 降序自动定位、幂等、自检降序未坏），
+仓库 clone 在 `D:\tmp\bird\site`（**属于临时产物，不进本仓库**）。
 
 ---
 
