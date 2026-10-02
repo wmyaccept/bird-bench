@@ -1,17 +1,25 @@
 # BIRD 排行榜提交方案
 
-> **状态：✅ 已于 2026-09-21 提交给 bird.bench23@gmail.com（Type 3，API Call）。等官方回结果。**
-> 本文档 §0–§7 是决策分析，**§8 是执行记录**。
+> **状态：✅ 2026-09-21 提交 → ✅ 2026-10-02 官方回信给出 test 成绩。**
+> **官方归我们进 overall track（不是 Single Trained Model Track）；当前进行中：往 leaderboard 提 PR（§9）。**
+> 本文档 §0–§7 是决策分析，**§8 是提交执行记录，§9 是上榜单**。
+>
+> **官方 test 成绩（附件 `predict_test_result`，1789 题 = 949 simple / 555 moderate / 285 challenging）**
+>
+> | 指标 | simple | moderate | challenging | **total** |
+> |---|---|---|---|---|
+> | **EX** | 76.61 | 66.67 | 51.93 | **69.59** |
+> | Soft F1 | 77.27 | 68.01 | 54.75 | 70.81 |
+> | **R-VES** | 75.37 | 63.05 | 51.37 | **67.73** |
 >
 > - **本次提交存档**：`work/submission/bird_submission_20260921.zip`
 >   （28 文件 / 0.20 MB / sha256 `3e813cbf9281c37527dd32df7105159c595115f6afa26060ddd32ca405293e7f`）
 > - **报出的 dev 成绩**（runner 实测，非 agent）：EX **72.43%（1111/1534）**、异常率 **0.78%**、
 >   prompt **34,251,163** tokens；模型 `deepseek-flash` + `https://api.deepseek.com`，`--thinking disabled`
-> - **待办**：① 评测完在 DeepSeek 控制台**作废临时 key**（邮件里承诺过）
->   ② 官方回结果后回填到 `references/casebook.md`
->   ⚠️ **评测期间不要提前作废 key** —— 官方 Exp Team 会用它跑 test。
+> - **待办**：① 提 leaderboard PR（§9）② 评测完在 DeepSeek 控制台**作废临时 key**
+>   ③ 上榜后回填 `references/casebook.md`
 >
-> - 本文档记录日期：**2026-09-14**（§8 增补于 2026-09-20，提交记录于 2026-09-21）
+> - 本文档记录日期：**2026-09-14**（§8 增补于 2026-09-20；提交记录于 2026-09-21；test 成绩与 §9 于 2026-10-02）
 > - 官方 Submission Guidelines 抓取日期：**2026-09-14**（原文全文见文末附录 A）
 > - 官方页面：https://bird-bench.github.io/ → 右下角 "Submission Guidelines" 按钮
 >   指向 Google Docs：`1Rs6d_pcs2vfqW4Ymub7Wb1XtBNlrc-WfH3T7U1ktuBo`
@@ -323,8 +331,22 @@ https://github.com/bird-bench/bird-bench.github.io 提 PR。
 
 ### 9.3 工具
 
-插入脚本：`D:\tmp\bird\insert_row.py`（按 Test 降序自动定位、幂等、自检降序未坏），
-仓库 clone 在 `D:\tmp\bird\site`（**属于临时产物，不进本仓库**）。
+插入脚本：`D:\tmp\bird\insert_row.py`（按最后一列降序自动定位、幂等、支持两张表；
+`--revert` 从 git 还原），仓库 clone 在 `D:\tmp\bird\site`（**临时产物，不进本仓库**）。
+
+### 9.4 实际插入的两行（2026-10-02）
+
+| 榜 | 位置 | 内容 |
+|---|---|---|
+| 表 0 Overall EX | 70.15（Claude Opus 4.6 Baseline）与 69.26（PB-SQL）之间 | Dev 72.43（带 new-dev 徽章）/ **Test 69.59** |
+| 表 1 Overall R-VES | 67.84（CSC-SQL + XiYanSQL-32B）与 67.47（CSC-SQL + Qwen2.5-7B）之间 | **R-VES 67.73** |
+
+- **同一个方法进两个榜是常态**（GrainSQL / DataGallery / SiriusAI / AskData 都在两榜里）。
+- **站点没有 Soft F1 榜**（只在正文提了一句“We include Soft-F1 and R-VES metrics”），
+  所以 70.81 这个数无处可报。
+- diff 规模：仅 `index.html`，**+35 行 / 0 删除**；标签配对自检 +2 `<tr>`/+13 `<td>`，
+  **没有引入新的不齐**（基线自身 `</td>` 比 `<td>` 多 90，是站点自己的注释块）。
+- **官方 test set 是 1789 题**（949/555/285），此题量与旧 dev 1534 不同——口径看榜内 "New Dev" 徽章。
 
 ---
 
