@@ -4,10 +4,10 @@
 ## ⚡ 决策速查（口径 —— “形状对、值不对”就是这么来的）
 - 条件在表 A、返回值在表 B 且两表无外键 ⇒ 金标**用共同的 key 硬连过去**（中间表可能不是你以为的那张）。
 - 「某年最高/最低的月消费」= **先按实体汇总（SUM），再取极值**，不是单行 `MAX`。
-- 百分比分母：默认跟惯例卡片（卡片空 → `COUNT(主键列)`）；主语是实体且 JOIN 扇出才去重；
+- 百分比分母：默认 `COUNT(主键列)`（第 57 轮起**没有库级卡片可查**）；主语是实体且 JOIN 扇出才去重；
   `* 100` 必须紧跟 `CAST`；实体级过滤放 `WHERE`，**不要塞进 `CASE WHEN`**（分母会错）。
-- COUNT 题：默认 `COUNT(主表.主键列)`（本库惯例见惯例卡片）；主语是实体且 JOIN 会扇出 ⇒ `COUNT(DISTINCT 实体id)`。
-- 「至少 N 天 / 间隔 / 跨度」⇒ `JULIANDAY(a) - JULIANDAY(b) >= N`；「差几年」且日期是 `'YYYY-…'` 字符串 ⇒ 看本库档案，常直接相减得年份差。
+- COUNT 题：默认 `COUNT(主表.主键列)`；主语是实体且 JOIN 会扇出 ⇒ `COUNT(DISTINCT 实体id)`。
+- 「至少 N 天 / 间隔 / 跨度」⇒ `JULIANDAY(a) - JULIANDAY(b) >= N`；「差几年」⇒ 先 `SELECT` 看一眼日期列的存储格式（现场查），`'YYYY-…'` 字符串常可直接相减。
 - 数值区间默认**闭区间**（`BETWEEN a AND b`）；同一库要按 evidence/金标风格定端点。
 <!-- /push -->
 
@@ -83,7 +83,7 @@ SELECT CAST(COUNT(DISTINCT CASE WHEN c.Currency='EUR' THEN t.CustomerID END) AS 
 SELECT CAST(SUM(CASE WHEN c.Currency='EUR' THEN 1 ELSE 0 END) AS FLOAT)*100 / COUNT(*) FROM ...
 ```
 
-分子都是一样的（那天的 7 笔），只有分母不同。**默认跟惯例卡片**（卡片空 → `COUNT(主键列)` / `SUM(CASE...)`）；
+分子都是一样的（那天的 7 笔），只有分母不同。**默认 `COUNT(主键列)`**（或 `SUM(CASE...)`）；
 主语是实体且 JOIN 扇出才用去重实体口径。`idx 26`（"SVK 的 premium 占比" = 314/880 行）也是行数口径。
 
 ## 四、COUNT 类题要看清"去重与不去重导致的值不同"
@@ -149,7 +149,7 @@ SELECT (SELECT COUNT(*)                     FROM ... ) AS c_all,
 
 ## ⭐ 泛化实测：无档案的新库（`trains`，20 题两臂）—— 结论：**增益测不出来，但测出了 4 个工具缺陷**
 
-**为什么要测**：11 份库档案占了决策路径近一半的字节。如果 Test 换库，这些知识还算不算数？
+**为什么要测**：当时 11 份库档案（第 57 轮已全部删除）占了决策路径近一半的字节。如果 Test 换库，这些知识还算不算数？
 「通用层（七步流程 + 四道闸门 + 跨库陷阱）在没有档案的库上还有多少增益」一直是**未验证的假设**。
 
 **协议（可复现）**
@@ -182,7 +182,8 @@ SELECT (SELECT COUNT(*)                     FROM ... ) AS c_all,
 `check_dataset_robustness.py` 回归；② 金标为空集时旧诊断说成"列数不同" ⇒ 复盘会把自己的口径错归因给金标、
 或把金标缺陷当成自己的错 ⇒ 改成显式标「金标很可能用错列，这道题的 EX 不该算在你的口径上」；
 ③ SKILL 预算用 `stat().st_size` 量 ⇒ Windows（autocrlf=CRLF）虚高 210 字节，同一文件在不同机器上判定不同；
-④ 用**非主数据集**刷 `conventions --write-card` 会把库档案的 n 写小（`check_brief_p4` 抓到）。
+④ 用**非主数据集**去做那份惯例统计，会把档案里的 n 写小（当年 `check_brief_p4` 抓到；
+   第 57 轮整套卡片机制已废除 —— 库事实不再落盘，见 `maintaining.md` canon:dbknowledge）。
 
 **局限（引用时必须一起说）**：n=10/臂；本库无难度字段 ⇒ 闸门 4 退化为"只查条数==列数"；
 `gen` 的 force_rate=50%（该指标只能按数据集/批次读）；idx 16 的并列口径**受 idx 2 错题明细污染**。

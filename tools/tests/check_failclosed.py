@@ -3,7 +3,7 @@
 
 为什么单独立一个套件：这类缺陷的形态是"查不到就安静地返回空"，而空结果**读起来像正常**：
   · `brief --step 3`   → “没有带 push 标记的片段”（真话，但像"这一步没东西要读"）
-  · `brief <打错的库>`  → “还没有 db/x.md 档案”（把它当成"新库还没建档"，照样退出 0）
+  · `brief <库名>`      → 第 57 轮起 `brief` 不接受库参数（库知识不预写）⇒ 必须 rc=2
   · `list --db <打错的库>` → “筛选后 0 题”（像"这个库已经做完了"）
 所以判据不是"有没有报错文案"，而是**退出码**：`fail()` 一律 `rc=2`。
 （`rc=1` 是 python 自己崩了 —— 语法错误/异常，也算不合格，本测试同样不认。）
@@ -49,8 +49,8 @@ def run(argv: list[str]) -> tuple[int, str]:
 MUST_FAIL = [
     ("brief --step 3（该步骤没有内容）", ["brief", "--step", "3"], "没有 step=3"),
     ("brief --step 9（从未有过）", ["brief", "--step", "9"], "没有 step=9"),
-    ("brief <不存在的库>", ["brief", "no_such_db"], "既不是本地库"),
-    ("brief <存在的库> --step 9", ["brief", "financial", "--step", "9"], "没有 step=9"),
+    ("brief <任意库名>（第 57 轮起不接受库参数）", ["brief", "no_such_db"], "unrecognized arguments"),
+    ("brief <存在的库> --step 9", ["brief", "financial", "--step", "9"], "unrecognized arguments"),
     ("tables <不存在的库>", ["tables", "no_such_db"], "不存在"),
     ("schema <存在的库> --table <不存在的表>", ["schema", "financial", "--table", "no_such_table"], "不存在"),
     ("desc <不存在的库>", ["desc", "no_such_db"], "不存在"),

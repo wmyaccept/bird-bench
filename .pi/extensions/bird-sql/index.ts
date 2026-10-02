@@ -506,21 +506,20 @@ export default function (pi: ExtensionAPI) {
     name: "bird_brief",
     label: "BIRD Brief",
     description:
-      "决策点推送：把 references 知识库（带 <!-- push step=N --> 标记的片段）与**整份**当前库档案（必查 + 连接图与坑 + 值域陷阱/补充 + 惯例卡片）推到眼前。换库做第一题之前先跑一次 " +
-      "bird_brief db_id=<库>；卡在某一步时用 step 只推那一步。知识库是唯一数据源，所以它推出来的就是文档里写着的。",
-    promptSnippet: "把知识库与当前库档案推到决策点（换库先跑，step 可只推某一步）",
+      "决策点推送：把 references 知识库（带 <!-- push step=N --> 标记的片段）推到眼前。" +
+      "⛔ 第 57 轮起**不接受库参数** —— 本方法不预写任何库知识（库事实每次现场查），所以没有『当前库档案』这回事。" +
+      "卡在某一步时用 step 只推那一步。知识库是唯一数据源，所以它推出来的就是文档里写着的。",
+    promptSnippet: "把知识库推到决策点（step 可只推某一步；不接受库名）",
     promptGuidelines: [
-      "换库第一题之前必须 bird_brief db_id=<库> —— 否则等于靠语感猜库级写法，实测这是准确率最大的单一来源。",
+      "brief 没有库参数：喂一个库名会被当成非法参数拒绝（因为库档案机制已废除）。",
       "step 的合法取值由后端 available_steps() 现场生成（`bird.py brief --help` 可查），文档里不手抄；喂一个没有内容的 step 会失败关闭，不会静默返回空。",
     ],
     parameters: Type.Object({
-      db_id: Type.Optional(Type.String({ description: "数据库 id（给出时推**整份**库档案：必查 + 连接图与坑 + 值域陷阱/补充 + 惯例卡片）" })),
       step: Type.Optional(Type.String({ description: "只推某一步的片段（合法值见 bird.py brief --help，由 available_steps() 生成）" })),
       dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["brief"];
-      if (params.db_id) args.push(params.db_id);
       if (params.step) args.push("--step", params.step);
       return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
     },
@@ -562,31 +561,20 @@ export default function (pi: ExtensionAPI) {
     label: "BIRD Conventions",
     description:
       "用**已提交题的金标**统计这个库的写作惯例：计数形态（COUNT(列)/DISTINCT/COUNT(*)）、主表（FROM 第一张）、SELECT DISTINCT 比例、*100、输出列数分布、JOIN 数分布。" +
-      "换库第 0.5 步必跑 —— 惯例是分布问题，只能用统计回答，不能靠回忆猜。只统计已提交题，不会把未做的题漏进来。" +
-      "write_card=true 时把**同一份统计**写回 db/<库>.md 的惯例卡片（卡片 = 工具输出，改一处不会漂移）。",
-    promptSnippet: "查这个库自己的写法惯例（计数形态 / 主表 / DISTINCT 比例），只统计已提交题",
+      "⛔ 第 57 轮起**降级为复盘专用**：它读的是 dev 金标（已知题库的先验）⇒ 做题时不许用它（卡片机制已废除）。",
+    promptSnippet: "复盘用：统计已提交题的写法惯例（做题时不许用）",
     promptGuidelines: [
-      "结论写进 db/<库>.md 的惯例卡片；主表'几乎总是 X'就直接照用，'主表不固定'说明本库是错题重灾区，写 SQL 前必须单独确认主表。",
-      "卡片数字会随做题漂移 —— 每批题做完用 write_card=true（配 all=true 刷全部库）刷新，不要手改卡片里的数字。",
+      "这只在每批题做完后的复盘里用（对比金标口径），做题时用 bird_cols / bird_find 现场查，不要提前用金标先验。",
     ],
     parameters: Type.Object({
       db: Type.Optional(Type.String({ description: "只看某个库，例如 card_games" })),
       examples: Type.Optional(Type.Number({ description: "每个库打印几条计数题金标作形状示范，默认 2" })),
-      write_card: Type.Optional(
-        Type.Boolean({
-          description:
-            "把同一份统计写回 db/<库>.md 的惯例卡片（替换从『## 惯例卡片』到下一个二级标题之间的内容）。需配 db 或 all。",
-        }),
-      ),
-      all: Type.Optional(Type.Boolean({ description: "配合 write_card：刷新所有已有档案的库" })),
       dataset: DatasetType,
     }),
     async execute(_toolCallId, params, signal, _onUpdate, ctx) {
       const args = ["conventions"];
       if (params.db) args.push("--db", params.db);
       if (params.examples !== undefined) args.push("--examples", String(params.examples));
-      if (params.write_card) args.push("--write-card");
-      if (params.all) args.push("--all");
       return toResult(await getBackend(ctx).call(ctx, withDataset(args, params.dataset), signal));
     },
   });

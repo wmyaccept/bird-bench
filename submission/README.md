@@ -9,10 +9,22 @@ deterministic tooling:
 
 | Layer | Files | What it does |
 |---|---|---|
-| Prompt (the method) | `prompt/traps.md`, `prompt/shapes.md`, `prompt/db/<db_id>.md` | rules distilled from our dev-set error analysis, plus one short card per database — **exactly the files `runner/prompt.py` reads, nothing else** |
+| Prompt (the method) | `prompt/traps.md`, `prompt/shapes.md` | database-agnostic rules distilled from our dev-set error analysis — **exactly the files `runner/prompt.py` reads, nothing else** |
 | Runner | `runner/run_bird.py` | loop: build prompt → call LLM → validate → execute read-only → retry → log |
+| Runtime reconnaissance | `runner/prompt.py` | per question, queries the **current** database: full value lists for low-cardinality columns + reverse lookup of the literals in the question/evidence (no stored per-database notes) |
 | Data layer | `tools/bird.py` | schema introspection, sample values, read-only execution, EX comparison |
 | Local evaluator | `tools/official_eval/` | the official evaluation scripts (unmodified except a marked local patch) |
+
+### Version note (please read before comparing numbers)
+
+| Version | Prompt | Evaluated? |
+|---|---|---|
+| sent 2026-09-21 | `traps.md` + `shapes.md` + one hand-written card per dev database (`prompt/db/<db_id>.md`) | **yes — official test EX 69.59** |
+| current `HEAD` | `traps.md` + `shapes.md` + **runtime reconnaissance** (no per-database file at all) | **not yet evaluated** |
+
+The hand-written cards only ever described the 11 databases of the public dev split, so they cannot
+transfer to the hidden test databases. The current version removes them entirely: everything
+database-specific is read from the database itself, per question, at inference time (see §7).
 
 ## 2. Environment
 
@@ -103,16 +115,24 @@ Required by the guidelines so that a failed run can be restarted instead of star
   and the runner never reads any `*_gold.sql` / `dev.json` content.
 - **Disclosure:** the prompt text in `prompt/` was distilled from our own error analysis on the
   public dev split (i.e. from *our wrong predictions* and the public dev questions/evidence), not
-  from the test set. No dev gold SQL is embedded in the prompt: it contains prose rules and
-  per-database notes (column meanings, join paths, value conventions), not example gold queries.
-  If you prefer a prompt that does not use dev-derived notes at all, we can ship the same runner
-  with `prompt/` reduced to the two generic rule files only (`traps.md`, `shapes.md`).
-  Note on what is **not** in the prompt: our internal agent workflow (tool names, submission gates)
-  is deliberately excluded — `prompt/` contains exactly the three things `runner/prompt.py`
-  loads (`traps.md`, `shapes.md`, one card per database) and no other file from our notes.
-- **Language of the prompt:** the two rule files and the per-database notes under `prompt/` are
-  written in Chinese. They are read by the LLM, not by a human operator; everything the Exp Team
-  reads or runs (`README.md`, `SUBMISSION.md`, `runner/`, `tools/`) is in English.
+  from the test set. No dev gold SQL is embedded in the prompt: it contains prose rules, not example
+  gold queries.
+- **No per-database knowledge is stored anywhere.** The current version contains no per-database
+  file, table, or lookup of any kind — `prompt/` is exactly two generic rule files. Everything
+  database-specific is obtained by querying the database of the current question at inference time
+  (`runner/prompt.py`, function `reconnaissance`): (a) for every column whose distinct-value count
+  is small, the **actual value list**; (b) for the entities mentioned in the question/evidence, a
+  word-boundary reverse lookup that reports where each one really lives, or an explicit `NOT FOUND`.
+  Both are read-only `SELECT`s on the same database the question is about. This is why the method
+  cannot "memorise" the dev databases: there is nothing to memorise.
+  (The version evaluated on 2026-09-21 did ship `prompt/db/<db_id>.md` cards for the public dev
+  databases; see the version note in §1.)
+- Note on what is **not** in the prompt: our internal agent workflow (tool names, submission gates)
+  is deliberately excluded — `prompt/` contains exactly the two files `runner/prompt.py` loads
+  (`traps.md`, `shapes.md`) and no other file from our notes.
+- **Language of the prompt:** the two rule files under `prompt/` are written in Chinese. They are
+  read by the LLM, not by a human operator; everything the Exp Team reads or runs (`README.md`,
+  `SUBMISSION.md`, `runner/`, `tools/`) is in English.
 
 ## 8. `column_meaning.json`
 
@@ -125,6 +145,10 @@ distinct sample values + the per-question `evidence` field), but fidelity to our
 when the descriptions are available.
 
 ## 9. Dev results (reproducible)
+
+These numbers were produced by the **evaluated 2026-09-21 version** (rule files + dev-database
+cards). The current HEAD replaces the cards with runtime reconnaissance and has **not** been
+re-evaluated yet; treat the table below as the submission-time measurement.
 
 | Item | Value |
 |---|---|
@@ -155,6 +179,6 @@ SUBMISSION.md              what is inside the archive + requirement-by-requireme
 requirements.txt           dependencies (see §2)
 runner/                    the runner (entry point: run_bird.py)
 tools/                     data layer + the official evaluation scripts
-prompt/                    exactly the files the runner reads: traps.md + shapes.md + db/<db_id>.md
+prompt/                    exactly the files the runner reads: traps.md + shapes.md (no per-database file)
 dev_pred/dev2025_pred.json our predicted SQL on the dev split
 ```

@@ -11,6 +11,8 @@
   ⑦ 打包器的 `--check-run` 跑在 **dev2025** 上（bird.py 在导入时固化数据集目录，
      原先写成 import 之后 setdefault ⇒ 自检静默地在 MINIDEV 的库上算空结果率）
   ⑧ 提交包里的 `prompt/` **正好**是 runner 读的那几份（不许把内部 agent 流程装进去）
+  ⑨ 运行时侦察真的在工作（取词 / 反查 / 低基数列全量取值 / NOT FOUND）—— 它是
+     "预写库档案"的替代品：旧档案在隐藏 test 库上命中率恒为 0，侦察对任何库都成立
 
 用法：python tools/tests/check_runner.py
 """
@@ -63,12 +65,15 @@ def main() -> int:
         shutil.rmtree(FIX)
     subprocess.run([PY, "tools/tests/make_fixture.py", "--out", str(FIX)],
                    cwd=ROOT, capture_output=True)
-    # 最小 prompt 目录：只放 runner 会读的两份规则 + 一张库档案
+    # 最小 prompt 目录：只放 runner 会读的两份规则。
+    # ⚠️ 故意再塞一张**毒档案** prompt/db/demo.md：方法已改成"运行时查库"，
+    #    runner 绝不能再读它 —— 下面 ⑥ 的断言就是那道闸门（碰到就红）。
     (FIX / "prompt/db").mkdir(parents=True, exist_ok=True)
     (FIX / "prompt/traps.md").write_text("# rules\n- check value spelling\n", encoding="utf-8")
     (FIX / "prompt/shapes.md").write_text("# shapes\n- count questions return one number\n",
                                           encoding="utf-8")
-    (FIX / "prompt/db/demo.md").write_text("# demo\n- Currency is 'EUR'/'CZK'\n", encoding="utf-8")
+    (FIX / "prompt/db/demo.md").write_text(
+        "# demo\n- POISON_CARD_MARKER Currency is 'EUR'/'CZK'\n", encoding="utf-8")
 
     q = json.loads((FIX / "MINIDEV/mini_dev_sqlite.json").read_text(encoding="utf-8"))
     good0 = "SELECT COUNT(*) FROM customers WHERE Currency='EUR'"
@@ -143,7 +148,10 @@ def main() -> int:
                     "--log", str(FIX / "r2.jsonl"), expect_rc=0)
     check("--dump-prompt 打出 system+user", "===== system" in r4.stdout
           and "## Schema" in r4.stdout, r4.stdout[:200])
-    check("prompt 里带上了库档案", "Currency is 'EUR'/'CZK'" in r4.stdout)
+    check("prompt 里**没有**库档案（毒档案 POISON_CARD_MARKER 不许出现）",
+          "POISON_CARD_MARKER" not in r4.stdout and "Currency is 'EUR'/'CZK'" not in r4.stdout)
+    check("schema 把低基数列的全量取值列出来（侦察第一层，卡片的主力信息）",
+          "ALL 2 values: EUR | CZK" in r4.stdout, r4.stdout[:300])
     check("prompt 里带上了 evidence", "## Evidence" in r4.stdout)
     check("prompt 里带上了 evidence 正文", "ratio = count(Currency='EUR')" in r4.stdout)
 
@@ -189,12 +197,11 @@ def main() -> int:
     _spec.loader.exec_module(_mk)
     _pfiles, _ = _mk.build_prompt_dir()
     _names = sorted(dst for _, dst in _pfiles)
-    _want = sorted([f"prompt/{n}" for n in _mk.PROMPT_FILES]
-                   + [f"prompt/db/{p.name}" for p in
-                      sorted((ROOT / ".pi" / "skills" / "bird-sql" / "references" / "db")
-                             .glob("*.md"))])
-    check("提交包的 prompt/ == runner 真正读的文件（traps+shapes+库卡）",
+    _want = sorted(f"prompt/{n}" for n in _mk.PROMPT_FILES)
+    check("提交包的 prompt/ == runner 真正读的文件（只有 traps+shapes）",
           _names == _want, f"多/少：{sorted(set(_names) ^ set(_want))[:4]}")
+    check("打包器不再把任何库专属档案装进包（prompt/ 里不许有子目录）",
+          not any("/" in n[len("prompt/"):] for n in _names), str(_names[:6]))
     check("提交包的 prompt/ 不含内部 agent 流程文件（SKILL/checklist/…）",
           not any(n.endswith(("SKILL.md", "checklist.md", "scoring.md", "diagnosis.md",
                               "gold-style.md", "naming-traps.md", "sqlite-and-data.md",
@@ -202,6 +209,32 @@ def main() -> int:
                   for n in _names), str(_names[:4]))
     check("打包器的 PROMPT_FILES 直接取自 runner 常量（唯一出处，不会漂移）",
           "from runner.prompt import RULES_FILES as PROMPT_FILES" in "\n".join(pack_lines))
+
+    print("\n── ⑨ 运行时侦察：取词 / 反查 / 值域全量（替代预写库档案的那一层）")
+    sys.path.insert(0, str(ROOT))
+    from runner import prompt as pm                                       # noqa: E402
+    dbp = FIX / "MINIDEV/dev_databases/demo/demo.sqlite"
+    sch = pm.schema_block(dbp, samples=3, low_card_max=12)
+    check("低基数列（≤12 去重值）列出全部取值，高基数列才只给样例",
+          "ALL 2 values: EUR | CZK" in sch and "Date TEXT   ALL 2 values: 201201" in sch,
+          sch[:300])
+    check("low_card_max=0 退回旧行为（只给样例，不列全量）",
+          "ALL 2 values" not in pm.schema_block(dbp, samples=3, low_card_max=0))
+    check("取词：引号内字面量优先级最高",
+          pm.extract_terms("x", "the code 'SVK' applies")[:1] == ["SVK"])
+    check("取词：句首大写的普通词不算实体（Percentage of ... 这类不该被反查）",
+          "Percentage" not in pm.extract_terms("Percentage of premium stations?", ""))
+    check("取词：SQL 函数名不算实体（evidence 里的 Max(Reputation)）",
+          pm.extract_terms("x", "highest reputation refers to Max(Reputation)") == [])
+    r5 = pm.reconnaissance(dbp, "How many of the customers are Slovakian?", "", schema_text=sch)
+    check("库里根本没有的字面量 → 显式 NOT FOUND（最有用的一路信号）",
+          "NOT FOUND" in r5["text"] and r5["scanned"] > 0, r5["text"][:200])
+    r6 = pm.reconnaissance(dbp, "who pays in CZK?", "", schema_text="")
+    check("命中时给出去重真值 + 计数", "customers.Currency" in r6["text"] and "'CZK'" in r6["text"],
+          r6["text"][:300])
+    r7 = pm.reconnaissance(dbp, "who pays in CZK?", "", schema_text=sch)
+    check("schema 里已经看得见的值不再重复查（省时间，不影响信息量）",
+          r7["text"] == "", r7["text"][:200])
 
     print(f"\n════ 通过 {pass_n} / 失败 {fail_n} ════")
     return 1 if fail_n else 0

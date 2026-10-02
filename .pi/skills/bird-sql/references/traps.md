@@ -6,23 +6,28 @@
 ---
 
 <!-- push step=1 -->
-## ⓪-1 冷启动：这个库**没有档案**时（Test 里的巨型库、任何新库）
+## ⓪-1 库结构五查（**每次都要做**：Test 里的巨型库、任何新库，包括 dev 库）
 
-> 档案是**缓存**，不是依赖。没有 `db/<库>.md` 时**不要**凭语感写 SQL，也不要跳过——
-> 花 3 分钟跑这**五查**，得到的东西就是一份现场档案（做完顺手补进 `db/<库>.md`）。
-> ⚠️ 这时 `conventions` **帮不上忙**：它只统计**已提交题**的金标，新库上是空的
-> （工具会明说「本库没有任何已提交答案」——那**不是**「这库没有惯例」，别当结论用）。
+> ⛔ **本方法不预写任何库知识。** 曾经有 11 份 `db/<库>.md` 手写档案，已全部删除 ——
+> 它们把 dev 库的取值/表名/金标统计写死成文件，在隐藏 test 库上命中率**恒为 0**：
+> 看起来像知识，实际是把方法背成了题库（提交版 runner 也因此丢掉了这几分）。
+> 现在库事实**一律现场查**，五查得到的东西就是一份“当场蒸出来的档案”，只是**不落盘**。
+> ⚠️ 这时 `conventions` **帮不上忙**（它只统计**已提交题**的金标，新库上是空的）；
+> 它读的是 dev 金标 = 已知题库的先验 ⇒ **只在第 7 步复盘时用，不许拿来写 SQL**。
 
 | # | 查什么 | 怎么查（工具） | 拿到了什么 |
 |---|---|---|---|
 | 1 | **表数 / 每表行数** | `bird_schema <db>`（一览） | 谁是事实表（行数大）、谁是维表 |
 | 2 | **列名 + 人工标注含义** | `bird_schema <db> table=<表>`（或 `descriptions=true`） | 概念落在哪一列（**别猜英文列名**） |
 | 3 | **JOIN 命中率** | 拿候选键各查两边 `COUNT(DISTINCT)`，比对得上多少 | 连接路径能不能用（实测 `thrombosis_prediction` 只有 9% 能连上） |
-| 4 | **值域 / 脏值** | `SELECT DISTINCT 列 … LIMIT 20` | 值怎么写：`'Yes'/'Y'/1`、日期格式、带空格的脏值 |
+| 4 | **值域 / 脏值** | `SELECT DISTINCT 列 … LIMIT 13` | 值怎么写：`'Yes'/'Y'/1`、日期格式、带空格的脏值 |
 | 5 | **NULL 与 0 的分布** | `bird_cols`（报每列的非空行数/去重数） | `COUNT(列)` vs `COUNT(*)`、`AVG` 要不要先排除 NULL |
 
-⭐ 与已有档案的区别只有"谁来蒸"：**有档案 ⇒ 读档案（第 0 步）；没有 ⇒ 现场蒸这五查**。
-两者产出的东西**同形**（表图 / 概念→列 / 值域 / 计数口径），都能直接喂给第 3.5 步的裁决。
+⭐ **提交版 runner 把其中两查自动化了**（`runner/prompt.py`，见 README §3）：
+去重值 ≤12 的列**把全部取值列进 schema**（第 4 查的下推），题干里的字面量**逐词反查落在哪一列**
+（第 2+4 查的下推，查不到就显式写 `NOT FOUND`）。做题时用 `bird_cols` / `bird_find` 做同样的事。
+
+📤 **产出不落盘**：现场用完即弃。库特有的事实**随库消失**，写下来只会在别的库上被人误用。
 <!-- /push -->
 
 <!-- push step=3.5 -->
@@ -57,7 +62,7 @@
       ③ 多列命中但**行集合相同** → 任选（差异一定在别处）：实测 `california_schools` 1
       的 `frpm."School Type" LIKE '%Continuation%'` 与 `"Educational Option Type"='Continuation School'`
       **都是 459 行、diff=0** —— 我当时把错因归到列上，真实错因是 **NULL 未排除**；
-      ④ 否则选**更专门**的那列（命中行数更少 / 取值集合更窄），**并把结论写进 `db/<库>.md`**。
+      ④ 否则选**更专门**的那列（命中行数更少 / 取值集合更窄），**并把裁决依据写成 SQL 注释**（不落盘）。
 <!-- /push -->
 
 <!-- push step=4 -->
@@ -66,7 +71,7 @@
 - [ ] **要 `DISTINCT` 吗？** 一个实体多行时，金标常常要**去重集合**：
       `card_games` 🔴 最强（387: 187→**10**、444: 1052→**95**）；`toxicology` 输出原子对时也要。
       **反例**：`formula_1` 是混合粒度（956: 金标 **224 行**是行级）；`european_football_2` 的属性查询
-      **不能**去重也不要 `LIMIT 1`（金标给全部快照）。→ **先按当前库档案 `db/<db_id>.md` 的"必查"决定。**
+      **不能**去重也不要 `LIMIT 1`（金标给全部快照）。→ **按题干问的是“集合”还是“一个”决定。**
 - [ ] **列数 = 题干提到几个概念？** 三种偏差都实测过：
       - 金标**少给**：`card_games` 435「How many X? List out the id」→ 只要 id（1 列）
       - 金标**多给**：`toxicology` 264「labels for TR000, TR001 and TR002」→ **2 列**（多一个实体 id）
@@ -77,9 +82,9 @@
 - [ ] ⭐⭐ **计数形态三选一：默认 `COUNT(主表.主键列)`**（不是 `COUNT(*)`、也不是 `COUNT(DISTINCT)`）。
       实测（数字会涨，以 `conventions --db <库>` 的 `n=` 为准）`COUNT(列)` 全面占优（codebase 46 / superhero 21 / student_club 25 /
       card_games 18 / california 29 …），`COUNT(DISTINCT)` 只在 **financial（23）和 thrombosis（29）** 常见，
-      `COUNT(*)` 很少。⇒ **先看 `db/<库>.md` 末的“惯例卡片”，再决定**：
-      - 本库以 `COUNT(列)` 为主 → `COUNT(T1.主键列)`（如 `COUNT(T1.member_id)`、`COUNT(T2.driverId)`）
-      - 本库以 `COUNT(DISTINCT)` 为主 / evidence 明写 distinct → `COUNT(DISTINCT T1.主键列)`
+      `COUNT(*)` 很少。⇒ **默认形态按“数的是实体还是行”定**（这是通用口径，不靠库档案）：
+      - 数**实体**（患者/客户/成员）→ `COUNT(T1.主键列)`（如 `COUNT(T1.member_id)`、`COUNT(T2.driverId)`）
+      - evidence 明写 distinct、或 JOIN 会把实体扇出成多行 → `COUNT(DISTINCT T1.主键列)`
       - 题干主语是**实体**且 JOIN 会扇出 → 也要去重（`codebase_community` 709：`COUNT(DISTINCT posts.Id)`=2，`COUNT(*)`=4 错）
 - [ ] ⭐ **列的顺序 = 题干提到的顺序**（`set()` 判定 ⇒ **列序不同也是 0 分**）：
       实测 `california_schools` 81：列集合一模一样，我写 `School, City, Low Grade`、
@@ -88,7 +93,7 @@
 
 ## ② 写 `FROM` / `JOIN` 时
 
-- [ ] ⭐⭐ **主表先定，再写 JOIN**：`FROM` 第一张表按 `db/<库>.md` 的惯例卡片选。
+- [ ] ⭐⭐ **主表先定，再写 JOIN**：`FROM` 第一张表按“**题目问的那个实体在哪张表**”定。
       多表库里**主表决定行宇宙**：`thrombosis_prediction` 三表整体 ID 覆盖率 1238 / 302 / **70**
       ⇒ 选错表就是换了候选集，**形状再对值也必不同**（本轮 42 道错题里 20 道与此相关）。
 - [ ] ⭐ **表集合最小化**：只 JOIN 题干真正用到的表。实测 `california_schools` 24：我多 JOIN 了一张
@@ -146,9 +151,9 @@
 
 | # | 问自己什么 | 该改什么 | 实测（205 道里的道数） |
 |---|---|---|---|
-| 1 | **这套表是金标习惯用的那套吗？** 本库常有 2~4 套同义数据源 | 查 `db/<库>.md` 的「同义表」清单 | **70 道（34%）用了另一套表** ← 单项最大来源 |
+| 1 | **我用的是哪一套表？** 本库常有 2~4 套同义数据源（`results`/`races`、`Customer`/`customers`…） | `bird_cols` 按**列名**捞候选表，再对候选表名跑一次 `bird_cols`（值域一并比） | **70 道（34%）用了另一套表** ← 单项最大来源 |
 | 2 | **数的是“实体”还是“行”？** JOIN 之后 `COUNT(*)` 数的是行 | 改 `COUNT(主表.主键列)` | **53 道**：我 `COUNT(*)`、金标 `COUNT(列)` |
-| 3 | **要不要 `DISTINCT`？** | 输出集合看档案；计数看惯例卡片（默认 `COUNT(主键列)`）。主语是实体且 JOIN 扇出才 `COUNT(DISTINCT 实体id)` | 金标有我没有 **25 道**；我有金标没有 **27 道** |
+| 3 | **要不要 `DISTINCT`？** | 默认 `COUNT(主键列)`；主语是实体且 JOIN 扇出才 `COUNT(DISTINCT 实体id)` | 金标有我没有 **25 道**；我有金标没有 **27 道** |
 | 4 | **百分比：`* 100` 写了吗？分母是哪一边？** | 分子、分母各写一句中文再落 SQL | 漏乘 **12 道**（另有分母方向错） |
 | 5 | **“最…的”要值还是要整行？** | 问值 → `= (SELECT MIN/MAX)`；问人/物 → `ORDER BY … LIMIT 1` | **16 道**：我用 `MAX/MIN`、金标 `ORDER BY … LIMIT` |
 | 6 | **NULL 会不会混进来？** | 平均/排序/JOIN 前想一遍 `IS NOT NULL` | 金标有、我漏了 **11 道** |
@@ -159,9 +164,9 @@
 
 1. **先写答案主语**：一句话写清“我到底数什么/给什么”——“多少**患者**”→ 实体；“多少**条记录**”→ 行；
    “哪个**客户**”→ 整行。这一步决定了后面 `COUNT` 的形态和 `ORDER BY … LIMIT 1` 的用法。
-2. **再定表**：翻 `db/<库>.md` 的「同义表」清单，选金标习惯的那套。**本库实测 34% 的值错栽在这一步**。
+2. **再定表**：用 `bird_cols` 按列名捞候选表（同义数据源常有 2~4 套），按 evidence 点名的列选。**实测 34% 的值错栽在这一步**。
 3. **再定分子/分母**：百分比题先用中文写出「分子 = …」「分母 = …」，**分母优先“没被 `WHERE` 收窄的那一侧”**。
-4. **最后才定去重与 NULL**：计数默认 `COUNT(主键列)`（卡片说 DISTINCT 或 JOIN 扇出实体才改）；排序/平均前先想 NULL 会不会混进来。
+4. **最后才定去重与 NULL**：计数默认 `COUNT(主键列)`（JOIN 扇出实体才改 `DISTINCT`）；排序/平均前先想 NULL 会不会混进来。
 
 → 逐条机器留痕入口：`checklist.md` 第 **8b** 条（核心条目，交答案必须勾）。
 
@@ -171,7 +176,7 @@
       先算两种：`SUM` 一把 vs **每个实体一行**。实测 `california_schools` `53`（How many test takers
       at the school/s）金标是 **每校一行、32 行**，不是 `SUM`。
       （只有 1 个样本 ⇒ 这是**触发你去两种都算**的检查项，不是定论；攒到第 2 例再升级成规则。）
-- [ ] **分母是"行数"还是"去重实体数"？** 默认跟惯例卡片走（卡片空 → `COUNT(主键列)`）；
+- [ ] **分母是"行数"还是"去重实体数"？** 默认 `COUNT(主键列)`；
       evidence 写 `DIVIDE(SUM(x), COUNT(all ...))` 就按它抄。主语是实体且 JOIN 会扇出 → `COUNT(DISTINCT 实体id)`。
 - [ ] **是不是要"先按实体/月份汇总再取极值"？** 触发词：「某年的最高月 X」、
       「消费最少的客户」、「每个学校的平均分」（`dev idx 1`、`13`）。
@@ -221,10 +226,11 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       `SUM(IIF(Age>65,1,0)) * 100 / COUNT(T1.Id)`（分母是同一次 JOIN 的行）；672 金标更是直接
       `COUNT(users.Id)` **不去重**（数论坛帖子行），而 716 又要求 `COUNT(DISTINCT users.Id)` ——
       **先写“不去重的 `COUNT(列)`”，形状/值对不上再换 DISTINCT**。
-- [ ] ⭐ **日期列相减：跨度用 `JULIANDAY`，年份差看本库档案**：
+- [ ] ⭐ **日期列相减：跨度用 `JULIANDAY`，年份差先看日期列的存储格式**（现场 `SELECT` 一眼）：
       「至少 N 天 / 间隔 / 跨度」→ `JULIANDAY(a) - JULIANDAY(b) >= N`（SQLite 没有 `DATEDIFF`）。
       「差几年」且本库日期是 `'YYYY-…'` 字符串 → 金标常直接 `Date - CreationDate`（取数字前缀 = 年份差；
-      `codebase_community` 692 用 JULIANDAY 反而 0 分）。**先看 `db/<库>.md` 同义表/值域，没有档案再按「跨度=JULIANDAY、年份差=字符串相减」。**
+      `codebase_community` 692 用 JULIANDAY 反而 0 分）。**默认口径：「跨度=JULIANDAY、年份差=字符串相减」；
+      但先 run 一眼该日期列的取值格式（第 0.5 步）——格式是 `'YYYYMM'` 就只能字符串相减。**
 - [ ] ⭐ **“average … per month” 的分母是 12**（不是“有数据的月份数”）：`codebase_community` 665 金标 `COUNT(T1.Id) / 12`。
       （同理：“per year” 想 12 个月 / “daily” 想 365。）
 - [ ] ⭐ ⭐ **字面量照题干/evidence 的写法抄，不要“替金标纠正大小写”**：`codebase_community` 640 题干写
@@ -280,7 +286,7 @@ triggered ability）金标返回的是 **`rulings.text` 本身**（2059 行）�
       1225 “List and group all patients by sex”的 evidence 写 `GROUP_CONCAT(DISTINCT ID)`，
       金标却是 **`SELECT T1.ID, T1.SEX … GROUP BY T1.SEX, T1.ID`**（行级两列）；
       1186 的 evidence 写 `YEAR(Description)`，金标用的是 **`Examination."Examination Date"`**。
-      ⇒ **evidence 管“口径/阈值”，不管“输出形状”；形状看题干句式和 `db/<库>.md`**。
+      ⇒ **evidence 管“口径/阈值”，不管“输出形状”；形状看题干句式和 `shapes.md`**。
 <!-- /push -->
 
 ## ⑤ 提交前的最后一眼

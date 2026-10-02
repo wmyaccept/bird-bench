@@ -81,7 +81,7 @@ DATASETS = {
         "pred_stem": "pred_dev2025",
         "answers": "answers_dev2025.json",
     },
-    # ⭐ T2 泛化测量集：**官方 train 集里的一批题**，库是 dev 之外的库 ⇒ 没有任何 db/<库>.md 档案。
+    # ⭐ T2 泛化测量集：**官方 train 集里的一批题**，库是 dev 之外的库（本方法对它们无预写知识）。
     #   用途：量「通用层（七步流程 + 四道闸门 + 跨库陷阱）在没见过的库上还剩多少」。
     #   数据准备（一次性，手工，见 references/calibration.md 的复现步骤）：
     #     train.json → data/GEN/gen.json（抽样出的题目，金标在 SQL 字段里，同 dev2025）
@@ -89,7 +89,7 @@ DATASETS = {
     #   约定：idx 0..N/2-1 是**零点对照臂**（只看 schema 直接写，不走流程），
     #         idx N/2..N-1 是**skill 臂** —— 同一批题、配对比较。
     "gen": {
-        "name": "泛化测量（官方 train 库，无档案）",
+        "name": "泛化测量（官方 train 库，dev 之外）",
         "dir": "GEN",
         "questions": "gen.json",
         "gold": None,                    # 金标就在题目 json 的 SQL 字段里
@@ -496,7 +496,7 @@ def cmd_find(args):
             print("没有任何列含有该词 → 换同义词再试，或这个词其实是**列名**概念")
             print("(列名概念用 `schema <db> --table <表>` 通读列名，别只 grep 关键词)")
         else:
-            print(f"共 {found} 列命中。命中 ≥2 列时：挑与题干措辞最一致的，把结论写进 db/<库>.md")
+            print(f"共 {found} 列命中。命中 ≥2 列时：挑与题干措辞最一致的，当场用它写 SQL")
     finally:
         con.close()
 
@@ -550,7 +550,7 @@ def cmd_cols(args):
         if not hit:
             print("没有列名匹配 → 概念可能藏在**取值**里，改用 `find <db> <词>`；或换同义说法再试。")
         elif hit > 1:
-            print("命中多列 → 裁决顺序：evidence 点名 > 行集合相同则任选 > 更专门的那列（结论写回 db/<库>.md）。")
+            print("命中多列 → 裁决顺序：evidence 点名 > 行集合相同则任选 > 更专门的那列。")
     finally:
         con.close()
 
@@ -641,8 +641,8 @@ def _answered_gold(only_db: str | None = None) -> list[tuple[int, dict, str]]:
 def _convention_stats(only_db: str | None = None) -> dict[str, dict]:
     """按库统计已提交题金标的写法惯例。
 
-    ⭐ 单一数据源：控制台输出（cmd_conventions）与写回 db/<库>.md 的惯例卡片
-    （write_card）都由这一份统计渲染 —— 不再出现“工具一套数、卡片另一套数”。
+    ⚠️ 它统计的是 **dev 金标的写法** —— 属于「已知题库的先验」，不是通用方法的一部分：
+    只用于**复盘**（看错题集中在哪种形状），不许拿它当写 SQL 的依据，也不进提交包。
     """
     from collections import Counter
 
@@ -716,57 +716,11 @@ def render_conventions(db: str, st: dict, examples: int = 0) -> str:
     return "\n".join(out)
 
 
-def render_card(db: str, st: dict) -> str:
-    """惯例卡片：写回 db/<库>.md 的那一段（与 render_conventions 同一份统计）。"""
-    n = st["n"]
-    ncol = " / ".join(f"{k}列×{v}" for k, v in sorted(st["ncol"].items()))
-    njoin = ", ".join(f"{k}:{v}" for k, v in sorted(st["njoin"].items()))
-    cnt = {k: v for k, v in st["count"].most_common()}
-    forms = " / ".join(f"{k} {v}" for k, v in cnt.items() if k != "无")
-    return "\n".join(
-        [
-            f"{CARD_MARK}（实测统计，n={n} 道已提交题的金标；数据集 {DATASET_KEY}）",
-            "",
-            f"- 计数形态：{forms} / 无 {cnt.get('无', 0)}　⇒ {_count_advice(st)}",
-            f"- 主表（FROM 第一张）：{' / '.join(f'{k} {v}' for k, v in st['main'].most_common())}"
-            f"　⇒ {_main_advice(st)}",
-            f"- `SELECT DISTINCT`：{st['distinct']}/{n}　|　`*100`：{st['x100']}"
-            f"　|　`BETWEEN`：{st['between']}",
-            f"- 输出列数分布：{ncol}",
-            f"- JOIN 数分布：{njoin}",
-            "",
-            f"> 由 `bird_conventions db={db} write_card=true` 生成（与工具输出同源），重跑即刷新；"
-            f"数字不要手改。",
-        ]
-    )
-
-
-def write_card(db: str, st: dict) -> Path:
-    """把惯例卡片写回 db/<库>.md：替换从 `## 惯例卡片` 到下一个二级标题之间的内容。"""
-    path = REFS / "db" / f"{db}.md"
-    if not path.exists():
-        fail(
-            f"没有库档案 {path}（惯例卡片写在档案末尾）—— 先用 bird_schema 摸清库结构，"
-            f"按 references/db/ 里其它库的样子建一份，再刷新卡片"
-        )
-    text = path.read_text(encoding="utf-8", errors="replace")
-    card = render_card(db, st)
-    i = text.find(CARD_MARK)
-    if i < 0:
-        new = text.rstrip() + "\n\n" + card + "\n"          # 没卡片过 ⇒ 追加
-    else:
-        j = text.find("\n## ", i + len(CARD_MARK))
-        new = text[:i] + card + (text[j:] if j >= 0 else "\n")
-    if new != text:
-        path.write_text(new, encoding="utf-8")
-    return path
-
-
 def cmd_conventions(args):
-    """换库第 0.5 步：用**已提交题的金标**统计本库的写作惯例（把猜惯例换成查惯例）。
+    """【复盘用】用**已提交题的金标**统计本库的写作惯例，定位错题的形状偏差点。
 
     只统计形状/口径（计数形态、主表、DISTINCT、*100、区间写法…），不产出答案。
-    `--write-card` 把**同一份统计**写回 db/<库>.md 的惯例卡片（卡片 = 工具输出）。
+    ⛔ 不要在做题时用它（它读的是 dev 金标 = 已知题库的先验，在隐藏 test 库上恒为空）。
     """
     if args.db and args.db not in available_dbs():
         # ⭐ P19：库名不存在 ≠ 这个库没做过题（旧文案会说"没有可统计的已提交题"，指向错误的修法）
@@ -774,31 +728,16 @@ def cmd_conventions(args):
     stats = _convention_stats(args.db)
     if not stats:
         # ⭐ T1（冷启动）：这里的空**不是**「这个库没有惯例」，而是「我们还没在这个库上答题」。
-        #   两者混在一起，人会把空统计当成结论，甚至拿它去写卡片（把 cache 写坏）。
+        #   两者混在一起，人会把空统计当成结论。本方法不预写库知识，所以这正是常态。
         if args.db:
             fail(
                 f"{args.db} 上没有任何已提交答案 ⇒ 惯例统计为空（**不是**「这个库没有惯例」）。\n"
-                "  这个库还没建档时的正确动作：走 SKILL 第 0 步 / traps.md ⓪-1 的『冷启动五查』"
-                "（表数行数 / 列名与标注 / JOIN 命中率 / 值域脏值 / NULL 分布）现场蒸一份档案；\n"
-                "  等本库有 ≥5 道题提交后再回来 --write-card 刷新卡片（n 太小时卡片是噪声）。"
+                "  这本来就是常态：本方法不预写任何库知识，库信息一律运行时现场查；\n"
+                "  要有可统计的金标，得先在本库提交过题（所以它只用于复盘，不用于写 SQL）。"
             )
         fail("没有可统计的已提交题（conventions 只看已提交题的金标，避免污染未做的题）")
-    if args.write_card and not (args.db or args.all):
-        fail("--write-card 需要指定 --db <库> 或 --all")
-    for db in sorted(stats, key=lambda d: -stats[d]["n"]):
-        print(render_conventions(db, stats[db], args.examples))
-        print()
-        if args.write_card:
-            # ⭐ T1：n<3 的卡片没有统计意义，写进去只会把档案里的"惯例"变成噪声（且看起来像事实）
-            if stats[db]["n"] < 3:
-                print(f"  ⚠️ 跳过写卡片：{db} 只有 {stats[db]['n']} 道已提交题，统计无意义"
-                      f"（卡片会像事实一样被读）。先做题，攒到 ≥3 道再 --write-card。")
-                continue
-            path = write_card(db, stats[db])
-            print(f"  ✎ 惯例卡片已刷新 -> {path}（n={stats[db]['n']}）")
     print("读法：COUNT(列) 多 → 默认 `COUNT(主表.主键列)`；COUNT(DISTINCT) 多 → 这个库习惯去重；")
     print("      主表分布决定『FROM 第一张表』选谁；JOIN 数大 → 金标常用 WITH 多步聚合。")
-    print("      卡片与这里同源：`conventions --db <库> --write-card` 刷新后数字必然一致。")
 
 
 def cmd_audit(args):
@@ -1228,7 +1167,7 @@ def is_concept_probe(p: dict) -> bool:
 
 REFS = Path(os.environ["BIRD_REFS"]) if os.environ.get("BIRD_REFS") else (
     ROOT / ".pi" / "skills" / "bird-sql" / "references"
-)  # 覆盖点给测试用（tools/tests/*）：把惯例卡片写进临时目录，不动真档案
+)  # 覆盖点给测试用（tools/tests/*）：把 references 指到临时目录
 PUSH_RE = re.compile(r"<!--\s*push\s+step=([0-9.]+)\s*-->(.*?)<!--\s*/push\s*-->", re.S)
 
 
@@ -1256,38 +1195,6 @@ def available_steps() -> list[str]:
     return sorted(steps, key=lambda x: float(x))
 
 
-CARD_MARK = "## 惯例卡片"
-
-
-def brief_for_db(db_id: str) -> tuple[str | None, str | None]:
-    """当前库档案：返回 (必查小节, **整个档案文本**)。
-
-    ⭐ 不再按小节名“猜”要推什么：整份档案都推，新增小节会自动送到眼前。
-    位置猜测正是缺陷源头 —— 曾经夹在必查与惯例卡片之间的『值域陷阱』（card_games）、
-    『补充（第 24 轮实测 40 道 moderate）』（thrombosis，53 行）**永远不会被送达**。
-    """
-    path = REFS / "db" / f"{db_id}.md"
-    if not path.exists():
-        return None, None
-    text = path.read_text(encoding="utf-8", errors="replace").strip()
-    return _must_section(text), text
-
-
-def _must_section(text: str) -> str | None:
-    """档案里的『交题前必查』小节（交题瞬间要回放的那几条）。"""
-    m = re.search(r"##\s*[^\n]*交题前必查[^\n]*\n(.*?)(?=\n##\s|\Z)", text, re.S)
-    return m.group(1).strip() if m else None
-
-
-def _card_section(text: str) -> str | None:
-    """档案里的『惯例卡片』小节。"""
-    i = text.find(CARD_MARK)
-    if i < 0:
-        return None
-    j = text.find("\n## ", i + len(CARD_MARK))
-    return text[i : j if j >= 0 else len(text)].strip()
-
-
 def cmd_brief(args):
     """决策点推送：把知识库真正递到我眼前，而不是指望我“主动去读”。"""
     step = None if args.step in (None, "all") else str(args.step)
@@ -1301,26 +1208,6 @@ def cmd_brief(args):
             f"  实际有内容的步骤：{'/'.join(ok)}\n"
             "  想要某一步没有内容 ⇒ 去对应 references/*.md 里用 <!-- push step=N --> 包住要推的内容。"
         )
-    if args.db_id:
-        # ⭐ P19（类③）：库名不存在必须**失败关闭**。旧行为是把它当成"新库还没建档"，
-        #   推完知识库就退出 0 —— 打错库名的人会以为自己拿到了档案（静默说谎）。
-        #   判据要宽一点：**要么本地有库、要么有档案** —— 只判库会误伤「只有档案没有数据」
-        #   的测试床（fixture），而它确实能推出值得读的档案。
-        if args.db_id not in available_dbs() and not (REFS / "db" / f"{args.db_id}.md").exists():
-            fail(
-                f"{args.db_id!r} 既不是本地库、也没有 db/{args.db_id}.md 档案（brief 不会为它推「档案」）。\n"
-                f"  可用库：{', '.join(available_dbs())}"
-                f"  已有档案：{', '.join(sorted(q.stem for q in (REFS / 'db').glob('*.md')))}"
-            )
-        _, profile = brief_for_db(args.db_id)
-        print(f"╔══ 库档案 {args.db_id} ══")
-        if profile:
-            print(f"（整份档案 {len(profile.splitlines())} 行，全文送上 —— 不按小节名筛，"
-                  f"避免中间新增的小节静默丢失）")
-            print(profile)
-        else:
-            print(f"⚠️ 库存在、但还没有 db/{args.db_id}.md 档案：先用 bird_schema 摸清库结构，再建一份")
-        print()
     blocks = push_blocks(step)
     print(f"╔══ 知识库推送（step={step or 'all'}，共 {len(blocks)} 段）══")
     for s, name, body in blocks:
@@ -1664,20 +1551,6 @@ def cmd_answer(args):
         total = len(answers)
     print(f"已记录第 {args.idx} 题（{db_id}），当前完成 {total} 题 -> {ANSWERS_FILE}")
 
-    # ══ 知识推送的最后一环：交题瞬间回放本库必查与惯例 ══
-    must, profile = brief_for_db(db_id)
-    if profile:
-        card = _card_section(profile)
-        if card:
-            lines = [ln for ln in card.splitlines() if ln.startswith("- ")]
-            if lines:
-                print("📌 惯例回放：" + " ｜ ".join(ln[2:].strip() for ln in lines[:2]))
-    if must:
-        items = [ln.strip() for ln in must.splitlines() if re.match(r"^\d+\.", ln.strip())]
-        if items:
-            print(f"📌 必查回放（{len(items)} 条，下一题前过一眼）：")
-            for it in items:
-                print("   " + it[:150])
     db_probes = [p for ps in probes.values() for p in ps if p.get("db") == db_id]
     if not any(is_concept_probe(p) for p in db_probes):
         print(
@@ -1988,16 +1861,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--for", dest="for_idx", help="把这次探针记给这些 idx（逗号分隔）")
     p.set_defaults(func=cmd_cols)
 
-    p = sub.add_parser("conventions", help="用已提交题的金标统计本库写作惯例（换库第 0.5 步）")
+    p = sub.add_parser("conventions",
+                       help="【复盘用】用已提交题的金标统计本库写作惯例；它统计的是 dev 金标，"
+                            "属于复盘产物，不参与写 SQL、也不进提交包")
     p.add_argument("--db", help="只看某个库")
     p.add_argument("--examples", type=int, default=2, help="每个库打印几条计数题金标作形状示范")
-    p.add_argument(
-        "--write-card",
-        dest="write_card",
-        action="store_true",
-        help="把同一份统计写回 db/<库>.md 的惯例卡片（卡片 = 工具输出，单一数据源）",
-    )
-    p.add_argument("--all", action="store_true", help="配合 --write-card：刷新所有库的卡片")
     p.set_defaults(func=cmd_conventions)
 
     p = sub.add_parser("audit", help="复盘：按失败类型与结构特征差异归因已提交的错题")
@@ -2006,8 +1874,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--list", type=int, default=3, help="每类失败原因打印几条例子")
     p.set_defaults(func=cmd_audit)
 
-    p = sub.add_parser("brief", help="决策点推送：库档案（必查+惯例卡片）+ 知识库里带 push 标记的片段")
-    p.add_argument("db_id", nargs="?")
+    p = sub.add_parser("brief", help="决策点推送：知识库里带 push 标记的片段（本方法不含任何库专属档案）")
     p.add_argument("--step", help=f"只推某个步骤的片段（{'/'.join(available_steps())}；"
                                   "与实际 push 标记同源，未知 step 会失败关闭）")
     p.set_defaults(func=cmd_brief)

@@ -1,6 +1,6 @@
 # 题型骨架（拿到题先认类型）
 
-> **配套**：具体某个库的连接图与坑 → [`db/<db_id>.md`](db/)（**只读当前库那一个文件**）。
+> **配套**：库事实（表/列/取值/连接）**不预写**，每题现场查 —— 见 `traps.md` ⓪-1「库结构五查」。
 > 写 SQL 时的通用陷阱 → [`traps.md`](traps.md)。提交前 → [`checklist.md`](checklist.md)。
 
 ---
@@ -18,7 +18,7 @@
 ```
 
 **注意**：Dev 的题目**按数据库聚集**（一个库几十道连在一起）。所以进一个库时先把
-**当前库的档案 `db/<db_id>.md`** 读一遍，后面几十题都能复用。
+**当前库的表/列/取值现场查一遍**（`traps.md` ⓪-1），后面几十题都能复用同一份认知。
 
 ⚠️ **换库的第一件事：把关键列的取值 `SELECT DISTINCT` 看一眼。**
 每一库的“值风格”不同，凭印象写必错（实测两边都踩过）：
@@ -28,7 +28,7 @@
 | card_games | 首字母大写 | `status='restricted'` → **0 行**；`'Restricted'` → 636 |
 | california_schools | 小写 f | `'Directly funded'`（不是 `'Funded'`） |
 
-同理，**列名也要先核实**（evidence 里的概念名未必是列名，见 `db/card_games.md`）。
+同理，**列名也要先核实**（evidence 里的概念名未必是列名，见 `traps.md` ③（列名先核实））。
 
 ---
 <!-- /push -->
@@ -102,7 +102,7 @@ SELECT MAX(total) FROM (SELECT SUM(Consumption) AS total FROM yearmonth
    ```
    题干 "which cards / which posts" 常给 **id** 不是 name（实测 `minidev idx 346`：`name` 去重远少于行数 ⇒ 输出是 `id`）。
 2. **要不要带上实体的 id？** 题干 "give their Y" → **只给 Y**，别顺手带 id（实测 `idx 29`）。
-3. 输出集合要不要 `DISTINCT` **看当前库档案**，不要按判定层「重复行不影响 EX」来决定写不写。
+3. 输出集合要不要 `DISTINCT` **看题干问的是实体还是行**（现场定，不查库档案），不要按判定层「重复行不影响 EX」来决定写不写。
 
 ## A6. 占比 / 比率 —— "percentage / ratio / proportion"
 
@@ -112,7 +112,7 @@ SELECT CAST(分子 AS FLOAT) / 分母 FROM ...             -- 比率
 ```
 
 - **整数除法陷阱**：`1/2` = 0，必须 CAST。
-- **分母口径**：默认跟惯例卡片（卡片空 → `COUNT(主键列)` / `SUM(CASE WHEN cond THEN 1 ELSE 0 END)`）；
+- **分母口径**：默认 `COUNT(主键列)`（或 `SUM(CASE WHEN cond THEN 1 ELSE 0 END)`）；
   主语是实体且 JOIN 会扇出才用去重实体数。实测 `minidev idx 24`、`idx 26` 都是行数口径。
 - 有时是"两个子查询相除/相减"：`SELECT (SELECT ...) / (SELECT ...)`。
 - 要求保留小数位时用 `ROUND(x, 3)`（实测 `minidev idx 413`）。

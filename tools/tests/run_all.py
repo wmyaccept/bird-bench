@@ -15,9 +15,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PY = sys.executable
 SUITES = [
-    ("文档一致性（P1/P5/P6/P7/P9）", [PY, "tools/tests/check_docs.py"]),
-    ("库档案整份送达（P4）", [PY, "tools/tests/check_brief_p4.py"]),
-    ("惯例卡片可刷新且同源（P2）", [PY, "tools/tests/check_write_card.py"]),
+    ("文档一致性（P1/P5/P6/P7/P9/P21）", [PY, "tools/tests/check_docs.py"]),
+    ("brief 推送机制（只认 push 标记 / 不吃库档案）", [PY, "tools/tests/check_brief.py"]),
+    # 第 57 轮：类级不变式 —— references/ 只读，且不含任何库专属知识
+    ("references 只读且无库知识", [PY, "tools/tests/check_refs_readonly.py"]),
     # 类③「失败开放」：喂不存在的键必须 rc=2（跑真 CLI，不是单元桩）
     ("失败关闭（P19：不存在的键）", [PY, "tools/tests/check_failclosed.py"]),
     ("数据集健壮性（T2：字段缺失/金标为空）", [PY, "tools/tests/check_dataset_robustness.py"]),

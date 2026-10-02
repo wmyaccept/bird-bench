@@ -21,7 +21,7 @@ EX = 预测 SQL 的结果集与金标结果集**完全相同**才算对。
 3. **用 `idx` 当题号**，不要用 `question_id`。
 4. **`bird_answer` 和 `bird_score` 不要放在同一批并发调用里**（会读到写入前的旧答案）。
 5. **改答案只能通过 `bird_answer`**，不手写 `work/answers.json`。
-6. ⭐ **“不许思考”= 不许漫游，不是不许走流程**：流程必须一次走完（第 0 → 6 步），每一步的**产物**（惯例卡片、概念裁决、形状声明、勾选留痕）都得真写出来。
+6. ⭐ **“不许思考”= 不许漫游，不是不许走流程**：流程必须一次走完（第 0 → 6 步），每一步的**产物**（库结构五查结论、概念裁决、形状声明、勾选留痕）都得真写出来。
    被禁的是：同一题试第 2 种写法、穷举候选、“再试一种看看”、改完又改 —— **按流程执行是执行，漫游式试错才是思考**。
    同一题卡住 ~1 分钟 → 交手上最好的一条、记入挂起清单、做下一题；唯一允许的“试两次”是 skill **已写明**“先试 A 不行改 B”的情形（如 CDS naive→CAST、探针 2 轮内）。
    **重交只允许 `checklist.md` 末尾「⛔ 重交白名单（唯一出处）」里列的情形**（此处不重复）。
@@ -30,31 +30,28 @@ EX = 预测 SQL 的结果集与金标结果集**完全相同**才算对。
 
 ## 工作流（7 步）
 
-### 第 0 步｜**换新库时先做结构体检**（换新库时一次性；已有档案就直接读）
+### 第 0 步｜**库结构体检（每次都要做，没有一个字是预写的）**
 
-📖 **读**：`db/<db_id>.md`（**只读当前库那一个文件**，不要翻别的库）
-⚠️ **没有档案**（新库/Test 巨型库）⇒ 档案是缓存，跑 `traps.md` ⓪-1 冷启动五查；`conventions` 此时为空，别当「没惯例」。
-📤 **产出**：表数/列数/主键重复度/**两两 JOIN 命中率**，补进该档案的 **`## 连接图与坑`**
-（"体检单"不是另一个文件，就是这一节）
+⛔ **不预写任何库知识**（曾有 11 份 `db/<库>.md`，已全删）：档案在 dev 库上像知识，在隐藏
+   test 库上命中率**恒为 0** —— 那是背题库。库事实**每次现场查**。
 
-### 第 0.5 步｜⭐⭐ **惯例体检：把“猜惯例”换成“查惯例”**（换库时一次性，30 秒）
+📖 **读**：`traps.md` ⓪-1（库结构五查）· `brief --step 1` 推到眼前。
+⚠️ `conventions` 只统计**已提交题**的金标（读的是 dev 金标 = 已知题库的先验）⇒ 做题时**不许用**，只在第 7 步复盘用。
+📤 **产出（不落盘）**：表数/行数、概念→列、**两两 JOIN 命中率**、值域格式。
+
+### 第 0.5 步｜⭐ **值域侦察：写 SQL 前先查出封闭取值**（30 秒）
+
+| 层 | 查什么 | 怎么查 |
+|---|---|---|
+| ① **低基数列全量** | 去重值 ≤ 12 的列**把取值列全** | `bird_cols <db> "."` 看去重数 → `SELECT DISTINCT 列 LIMIT 13` |
+| ② **字面量反查** | 题干/evidence 的字面量落在哪张表哪列 | `bird_find <db> <词>`；**查不到就明说 NOT FOUND**（题面“Slovakian”，库里存的是 `SVK`） |
 
 ```bash
-# bash 批量做（pi 会话里用同名工具：bird_brief / bird_conventions / bird_cols / bird_attrs）
-python tools/bird.py --dataset dev2025 brief <db_id>            # ★ 本题库的知识 + 档案推到眼前
-python tools/bird.py --dataset dev2025 conventions --db <db_id> --write-card   # ★ 写回惯例卡片
-python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反查
+python tools/bird.py --dataset dev2025 brief --step 3.5   # 概念定位段
+python tools/bird.py --dataset dev2025 cols <db_id> "type|option|status"
 ```
-
-⭐ **知识库不靠“我主动去读”**：`references/*.md` 里 `<!-- push step=N -->` 包住的片段会被 `brief` 按步骤推送
-（文档是唯一数据源：改文件 = 改推送内容）；`db/<库>.md` 的「必查」与「惯例卡片」还会在 **`answer` 成功时自动回放**。
-
-`conventions` **只统计已提交题**的金标（绝不碰未做的题），给的是**这个库自己**的写法分布：
-计数形态、主表（`FROM` 第一张表是谁）、`SELECT DISTINCT` 比例、`*100`、JOIN 数。
-**这里不抄数字**（必然过期）：跑 `bird_conventions` 或读卡片（两者同源）。
-⭐ **卡片由工具写、不手改**（`write_card=true`）：同一份统计渲染 ⇒ 不会出现两套数。
-
-📤 **产出**：本库“惯例卡片”，直接追加进 `db/<db_id>.md`（例：`db/thrombosis_prediction.md` 末尾）。
+⭐ 知识库不靠主动去读：`references/*.md` 里 `<!-- push step=N -->` 包住的片段由 `brief` 按步骤推送。
+📤 **产出**：**每个要写进 `WHERE` 的字面量的真实写法**（拼写/大小写/前缀），当场写进下面的概念裁决两行。
 
 ### 第 1 步｜**选题 + 读题**
 
@@ -68,10 +65,13 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反�
 📖 **读**：`shapes.md` 的 A 部分（**A1–A11**；`comprehensive profile / statistics` 那类看 **A11**）
 📤 **产出**：这道题属于哪个骨架（A1 单属性 / A2 极值 / A4 计数 / A5 列表 / A6 比率 …）
 
-### 第 3 步｜**查当前库的“交题前必查 3 条”**
+### 第 3 步｜**把要用的字面量再核一遍（拼写错 = 整题 0 分）**
 
-📖 **读**：`db/<db_id>.md` 顶部的 **⚠️ 交题前必查**
-📤 **产出**：这次写 SQL 要特别防的 3 条（例：`card_games` = ① DISTINCT ② 值首字母大写 ③ `=` vs `LIKE`）
+📖 **读**：`traps.md` ③（WHERE 值那一节）+ ⓪-1 的第 4 查（值域/脏值）
+📤 **产出**：SQL 里每个字符串字面量都来自**刚才查到的真值**（不是英文语感、也不是题面拼写）。
+
+⚠️ 典型的翻车方式：题面 `Slovakian` → 库里存的是 `SVK`；题面 `Stephen Daniel` → 库里写 `Stephen Daniele`。
+这两类都只能靠第 0.5 步的 `find` / `DISTINCT` 发现。
 
 
 ### 第 3.5 步｜⭐ **两个概念先定位（列名靠猜是最贵的错）**
@@ -83,7 +83,7 @@ python tools/bird.py --dataset dev2025 cols <db_id> "type|option"   # 列名反�
 |---|---|---|
 | 以**值**存在库里（“continuation / locally funded”） | `find <db> <词>`（`bird_find` / `bird.py find`） | `find california_schools "option"` → `frpm."Educational Option Type"` |
 | 是**列名**概念（“district code / funding type”） | **`bird.py cols <db> "code|type"`** ← ★ 新增的反查器 | `cols california_schools "type|option"` 一次列出所有命中列 + **非空/去重行数** |
-| 是**库级写法**（该不该 DISTINCT、主表是谁） | `bird.py conventions --db <db>`（第 0.5 步） | 例：`thrombosis_prediction` 的主表是谁、计数该不该 DISTINCT，卡片里都写着 |
+| 是**库级写法**（该不该 DISTINCT、主表是谁） | 通用口径在 `shapes.md` / `gold-style.md`（**不靠库档案**） | 例：计数要不要 `DISTINCT` 看题目问的是“数实体”还是“数行”（`traps.md` ④ 值层六问） |
 
 📤 **产出（写 SQL 前必须显式写出这两行，不许只在脑子里想）**：
 
@@ -115,9 +115,9 @@ SELECT City, `Low Grade`, `School Name` FROM ...
 
 ⭐⭐ **表与计数形态的固定动作**（`audit` 里 `main`/`count` 差得多，就是这四个动作没做；实测案例见 `traps.md` ②/④）：
 
-1. **主表**：按第 0.5 步的惯例卡片选 `FROM` 第一张表 —— 多表库里主表决定**行宇宙**，选错表等于换了候选集，**值必然不同**。
+1. **主表**：按“这张表在不在题干的行宇宙里”选 `FROM` 第一张表 —— 多表库里主表决定**行宇宙**，选错表等于换了候选集，**值必然不同**。
 2. **表集合最小化**：只 JOIN 题干真正用到的表（多 JOIN 一张 = 行数变了）。
-3. **计数形态三选一**（默认照惯例卡片）：`COUNT(主表.主键列)` 是默认 → `COUNT(DISTINCT 列)` 仅当本库以 DISTINCT 为主或 evidence 明写 → `COUNT(*)` 只在规范统计里明显时用。
+3. **计数形态三选一**：默认 `COUNT(主表.主键列)`（不是 `COUNT(*)`） → `COUNT(DISTINCT 列)` 仅当 evidence 明写、或主语是实体且 JOIN 会扇出 → `COUNT(*)` 只在规范统计里明显时用。
 4. **不要随手加 `DISTINCT`**（每个库的比例看卡片，不背数字）。
 
 ### 第 5 步｜**提交前自检**
@@ -158,6 +158,7 @@ python tools/bird.py --dataset dev2025 answer <idx> "/* shape: 3x1 */ SELECT ...
 
 ```bash
 python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
+python tools/bird.py --dataset dev2025 conventions --db <db>   # 复盘零件：本库金标写法分布
 ```
 
 → 直接给出：EX、各库正确率、**失败类型分布**（列数/列序/行集/值）、
@@ -168,10 +169,12 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 
 | 结论类型 | 写到哪 |
 |---|---|
-| 某个库特有的坑 | `db/<库>.md` 顶部的"交题前必查"（**替换掉三条里最不重要的**，保持只有 3 条） |
 | 通用陷阱（跨库） | `traps.md` 的对应动作小节 |
 | 提交前能拦住的 | `checklist.md`（加一条或改写一条） |
 | 只是"发生过什么" | `casebook.md`（**只记账，不放规则**） |
+
+⛔ **没有“某个库特有的坑”这个落点了**（曾经写在 `db/<库>.md`，已废）：库特有的事实**随库消失**，
+  写下来只会让下一次在别的库上误用；它应当由第 0.5 步**每次现场查**。
 
 ⭐ **一个库做完后必做「挂起清单集中复盘」**（最高产的一步；逐条做法见 `diagnosis.md`）：
 形状完全对、只有值不同那类挂起题**一次性**拉出来和金标 SQL 并排看（**只有复盘能看金标**，硬规则 1），
@@ -207,4 +210,4 @@ python tools/bird.py --dataset dev2025 audit --difficulty moderate --list 3
 
 📖 见 `references/maintaining.md`（维护原则 + 「下次又漏了规则」的自查 3 条；**做题时不用读**）。
 
-📤 **产出**：规则写回 `traps.md` / `checklist.md` / `db/<库>.md`（`casebook.md` 只记账）+ 当场 `rg` 验证命中。
+📤 **产出**：规则写回 `traps.md` / `checklist.md`（`casebook.md` 只记账）+ 当场 `rg` 验证命中。

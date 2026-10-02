@@ -33,7 +33,8 @@ SUBMISSION_PLAN.md                 打榜提交方案（§0–§7 决策分析�
 ```
 
 > **skill 的组织原则**（改的时候别破坏它）：
-> 按**做题的时间轴**组织，而不是按主题分类 —— 每题只读**当前库的 1 个短文件**（`db/<库>.md`），
+> 按**做题的时间轴**组织，而不是按主题分类 —— 每题只读通用的 `traps.md` / `checklist.md`，
+> ⛔ **不预写任何库知识**（第 57 轮：11 份 `references/db/<库>.md` 手写档案已全部删除），
 > 写 SQL 时对着 `traps.md` 的动作小节查，提交前逐条勾 `checklist.md`。
 > 复盘得到的新规则必须**毕业**到这三个地方之一，不能只留在 `casebook.md`。
 
@@ -105,12 +106,11 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 ### 元工具与四道闸门（写 SQL 前 / 提交时 / 复盘时必须用）
 
 ```bash
-# ① 知识推送：把 references 知识库与当前库档案推到决策点（换库跑一次）
-"D:/python/python" tools/bird.py --dataset dev2025 brief <db_id>
+# ① 知识推送：把 references 知识库推到决策点（**不接受库名** —— 没有库档案这回事）
+"D:/python/python" tools/bird.py --dataset dev2025 brief              # 全量推送
 "D:/python/python" tools/bird.py --dataset dev2025 brief --step 4      # 只推“写 SQL/口径”那一段
-# ② 库惯例：查这个库自己的写法（只统计已提交题，不污染未做的题）
+# ② 库惯例：复盘专用（读的是已提交题的 dev 金标 ⇒ 做题时不许用，卡片机制已废除）
 "D:/python/python" tools/bird.py --dataset dev2025 conventions --db <db_id>
-"D:/python/python" tools/bird.py --dataset dev2025 conventions --db <db_id> --write-card  # ★ 写回惯例卡片（同一份统计，卡片=工具输出）
 # ③ 概念反查：按列名（cols）与按取值（find）两个方向都要查
 "D:/python/python" tools/bird.py --dataset dev2025 cols <db_id> "type|code|option"
 # ④ 探针留痕：给这些 idx 记下“我真的查过”（answer 的闸门 1 凭据）
@@ -135,9 +135,9 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 | pi 工具 | 等价的 CLI | 关键参数 |
 |---|---|---|
-| `bird_brief` | `brief [db] [--step N]` | `db_id` / `step` |
+| `bird_brief` | `brief [--step N]` | `step`（⛔ 没有库参数） |
 | `bird_cols` | `cols <db> <正则>` | `for_idx` |
-| `bird_conventions` | `conventions --db <db> [--write-card] [--all]` | `db` / `examples` / `write_card` / `all` |
+| `bird_conventions` | `conventions --db <db> [--examples N]` | `db` / `examples`（复盘用；无 `write_card`） |
 | `bird_audit` | `audit [--difficulty D] [--db X]` | `difficulty` / `db` / `list` |
 | `bird_query` | `run <db> <sql>` | **`for_idx`**（留痕）+ `max_rows` |
 | `bird_find` | `find <db> <词>` | **`for_idx`** |
@@ -157,8 +157,9 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 
 绕过闸门**只有一个出口**：`--force`（会留在 probe_log 里、`audit` 统计强制率）。
 （历史上还有个 `--no-check`，它跳过执行与形状校验且**不留痕** —— P11 已删除，别再往回加。）
-`references/*.md` 里 `<!-- push step=N -->` 包住的片段、以及 `db/<库>.md` 的**整份档案**，
-都会被 `brief` 推到决策点、并在 `answer` 成功时回放（必查全部 + 惯例卡片）。
+`references/*.md` 里 `<!-- push step=N -->` 包住的片段会被 `brief` 推到决策点（**只认 push 标记**，
+不是扫目录 ⇒ 往 `references/` 里塞库档案也不会被推）。⛔ `references/` 是**只读**知识库，
+工具链不许往里写（`check_refs_readonly.py` 用「源码静态扫描 + 跑完命令整棵树逐字节比对」证这件事）。
 
 ### 回归测试（改完必跑）
 
@@ -167,7 +168,8 @@ for q in "SELECT ..." "SELECT ..."; do "D:/python/python" tools/bird.py --datase
 ```
 
 套件各管一类（**数量以 `run_all.py` 的 `SUITES` 为准，不在文档里手抄**）：`check_docs.py` 文档一致性（含 P19 三类元缺陷的类级守卫：产物↔落点注册表 / 闸门数对账 / 源码不留字面量）、（条数/手抄数字/与代码相反/死链/白名单唯一出处）、
-`check_brief_p4.py` 库档案整份送达（含投毒）、`check_write_card.py` 惯例卡片可刷新且与工具同源、
+`check_brief.py` brief 只认 push 标记（含「塞库档案也推不出来」的投毒）、
+`check_refs_readonly.py` **references 只读且无库知识**（第 57 轮的类级不变式）、
 `check_failclosed.py` **失败关闭**（给每个入口喂不存在的库/表/步骤/idx ⇒ 必须 `rc=2`，
 合法负结果走显式白名单）、`check_dataset_robustness.py` **数据集健壮性**（题目字段缺失 / 金标自身为空
 —— 实测官方 train 集没有 `difficulty` 字段，闸门 4 会直接崩），

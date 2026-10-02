@@ -101,11 +101,11 @@ def main() -> int:
     check("题目没有 difficulty 字段时 `attrs` 不崩（rc=0）", rc == 0, out.splitlines()[-1][:90] if out else "")
     check("`attrs` 明说这个数据集没有难度字段（不是静默降级）", "没有 difficulty" in out, out[-160:])
 
-    #   ⭐ T1：库存在但**零答案**时 —— 必须给冷启动口径，不能回一句「没有可统计的题」
+    #   ⭐ T1：库存在但**零答案**时 —— 必须说清「我们没在这库上答过题」，不能糊成「这库没惯例」
     rc, out = run("conventions", "--db", "demo")
     check("零答案库的 conventions 失败关闭（rc=2）", rc == 2, f"rc={rc}")
-    check("…并指向冷启动五查（不是「这库没有惯例」）",
-          "冷启动五查" in out and "没有任何已提交答案" in out, out[-160:])
+    check("…并点名「没有任何已提交答案」+ 否掉「这库没有惯例」",
+          "没有任何已提交答案" in out and "不是**「这个库没有惯例」" in out, out[-160:])
 
     rc, _ = run("run", "demo", "SELECT COUNT(*) FROM customers", "--for", "0,1")
     check("探针可记录（为下面的 answer 做准备）", rc == 0)
@@ -117,10 +117,10 @@ def main() -> int:
                   "--checks", core_items(), "--attrs", "Which customer pays in USD")
     check("第二题可提交（预测非空、金标为空）", rc == 0, out.splitlines()[-1][:90] if out else "")
 
-    #   ⭐ T1：n 太少时不许写卡片（1~2 道题的"惯例"是噪声，写进档案会被当成事实读）
+    #   ⭐ T1（第 57 轮）：卡片机制整体废除 ⇒ `--write-card` 这个入口必须**不存在**（fail-closed）
     rc, out = run("conventions", "--db", "demo", "--write-card")
-    check("答案只有 1 道时拒绝写惯例卡片（n<3 下限）", "跳过写卡片" in out, out[-160:])
-    check("那条跳过不是靠崩掉实现（rc=0）", rc == 0, f"rc={rc}")
+    check("`conventions --write-card` 已废除（rc=2，不接受该参数）",
+          rc == 2 and "unrecognized arguments" in out, f"rc={rc} {out.splitlines()[0][:80] if out else chr(39)+chr(39)}")
 
     rc, out = run("score", "--list-wrong", "5")
     check("score 能跑完（rc=0）", rc == 0, out.splitlines()[-1][:90] if out else "")

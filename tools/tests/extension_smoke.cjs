@@ -102,9 +102,14 @@ function check(name, cond, detail = "") {
   const ATTRS_Q2 = "how many customers";    // 1473 题干原文
 
   console.log("\n── 1. 新工具真的能跑（不是只有名字）");
-  let r = await call("bird_brief", { db_id: "demo", dataset: "minidev" });
+  let r = await call("bird_brief", { dataset: "minidev" });
   check("bird_brief 输出含知识库推送标题", r.ok && /知识库推送/.test(r.text), r.text.slice(0, 120));
-  check("bird_brief 带出了库档案", r.ok && /库档案|必查/.test(r.text));
+  //  ⭐ 第 57 轮：brief 不再接受库参数（库知识不预写）—— schema 里没有它，
+  //     就算硬塞一个 db_id 也不会被转发（后端 CLI 那层的 rc=2 由 check_brief.py ③ 证）。
+  check("bird_brief schema 里没有 db_id", !/db_id/.test(JSON.stringify(tools.get("bird_brief").parameters)));
+  const rNoDb = await call("bird_brief", { dataset: "minidev" });
+  r = await call("bird_brief", { db_id: "demo", dataset: "minidev" });
+  check("硬塞 db_id 不改变输出（库档案已废除，参数不被转发）", r.text === rNoDb.text);
 
   r = await call("bird_cols", { db_id: "demo", pattern: "Curr|Seg", samples: 2 });
   check("bird_cols 跑通且列出命中列", r.ok && /Currency|Segment/.test(r.text), r.text.slice(0, 160));
@@ -426,14 +431,19 @@ function check(name, cond, detail = "") {
   );
   check("SQL 里保留了形状声明（导出时可剥）", /shape:/.test(answersAfter["1"]));
 
-  console.log(String.fromCharCode(10) + "── 7. P4 回归：库档案整份送达（不再按小节名丢内容）");
-  r = await call("bird_brief", { db_id: "card_games" });
-  check("brief 声明推的是整份档案", r.ok && /整份档案/.test(r.text), r.text.slice(0, 200));
-  check("之前永远送不到的『值域陷阱』现在送达", r.ok && /值域陷阱/.test(r.text));
-  check("『交题前必查』小节照旧在", r.ok && /交题前必查/.test(r.text));
-  check("『惯例卡片』小节照旧在", r.ok && /惯例卡片/.test(r.text));
-  r = await call("bird_brief", { db_id: "thrombosis_prediction" });
-  check("thrombosis 的『补充（第 24 轮…）』也送达", r.ok && /补充（第 24 轮/.test(r.text), r.text.slice(0, 200));
+  console.log(String.fromCharCode(10) + "── 7. 第 57 轮回归：库知识不预写（brief 每次只推通用规则）");
+  r = await call("bird_brief", { step: "1" });
+  check("brief --step 1 推出「库结构五查」", r.ok && /库结构五查/.test(r.text), r.text.slice(0, 200));
+  check("并明说不预写库知识", r.ok && /不预写/.test(r.text));
+  r = await call("bird_brief", { step: "4" });
+  check("brief --step 4 推得到『值层六问』", r.ok && /值层六问/.test(r.text));
+  check("输出里没有『库档案』这种已废除的落点", !/整份档案/.test(r.text));
+  const rUnknownDb = await call("bird_brief", { db_id: "card_games" });
+  //  ⭐ 注意：通用规则里**可以**拿 dev 库当举例（那是"规则"的插图，不是可查的档案）；
+  //     要证的是**不会因为传了库名就多推一份库专属档案**。
+  check("brief 传库名不会多推库专属档案（没有『整份档案/惯例卡片』这类落点）",
+        !/整份档案|惯例卡片|交题前必查/.test(rUnknownDb.text),
+        rUnknownDb.text.slice(0, 200));
 
   console.log(String.fromCharCode(10) + "── 9. P8 回归：从 SKILL.md 搬进 references 的知识仍被推到决策点");
   r = await call("bird_brief", { step: "7" });
@@ -446,16 +456,13 @@ function check(name, cond, detail = "") {
         !r.ok && /没有 step=9/.test(r.text), r.text.slice(0, 200));
   check("报错里列出了真实可用的步骤", /实际有内容的步骤/.test(r.text));
 
-  console.log(String.fromCharCode(10) + "── 8. P2 回归：卡片能被工具刷新（参数真的接通）");
+  console.log(String.fromCharCode(10) + "── 8. 第 57 轮回归：卡片机制已废除（参数不许再存在）");
   const cSchema = JSON.stringify(tools.get("bird_conventions").parameters);
-  check("bird_conventions schema 含 write_card", /write_card/.test(cSchema));
-  check("bird_conventions schema 含 all", /"all"/.test(cSchema));
-  r = await call("bird_conventions", { dataset: "minidev", db: "demo", write_card: true });
-  check(
-    "fixture 没有 db/demo.md 时报错清楚（证明 --write-card 传到了后端）",
-    !r.ok && /档案/.test(r.text),
-    r.text.slice(0, 300),
-  );
+  check("bird_conventions schema 里不再有 write_card", !/write_card/.test(cSchema));
+  check("也不再需要 all（那是给写卡片配的）", !/"all"/.test(cSchema));
+  r = await call("bird_conventions", { dataset: "minidev", db: "demo" });
+  check("conventions 仍能查（只剩复盘用途）", r.ok, r.text.slice(0, 200));
+  check("输出里不再有『卡片/档案』字样", !/惯例卡片|库档案/.test(r.text), r.text.slice(0, 200));
 
   console.log(`\n════ 通过 ${pass} / 失败 ${fail} ════`);
   if (fail) process.exit(1);

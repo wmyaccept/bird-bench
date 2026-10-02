@@ -47,9 +47,11 @@ MANIFEST = [
 # prompt 目录只放"推理时真的会读"的文本 —— 直接取 runner 的常量（唯一出处，结构上不可能漂移）。
 # ⛔ 不要把 SKILL.md / checklist.md 放进包：它们讲的是**内部 agent 流程**（bird_* 工具、四道闸门），
 #    runner 不读它们，而 README 又明列声明"内部流程已排除" —— 装进去就是自相矛盾。
+# ⛔ 更不要再加任何**库专属档案**目录（曾经的 db/，存 11 个库的取值陷阱与金标统计）：
+#    dev 库的数量是固定的，档案在隐藏 test 库上命中率恒为 0，等于把方法背成了题库；
+#    库知识现在由 runner 运行时现场查（低基数列全量取值 + 实体反查），对任何库都成立。
 sys.path.insert(0, str(ROOT))
 from runner.prompt import RULES_FILES as PROMPT_FILES   # noqa: E402
-PROMPT_DIRS = ["db"]
 
 # 硬失败：出现即不许提交
 HARD_BAN = [
@@ -74,7 +76,12 @@ SIZE_LIMIT_MB = 20
 
 
 def rel(p: Path) -> str:
-    return p.relative_to(ROOT).as_posix()
+    #   只影响屏幕上的显示。`--out` 指到仓库外（临时目录）时 relative_to 会抛，
+    #   会把「已经写成功」的打包结果误报成失败（rc=1）—— 显示函数不该能弄挂成功路径。
+    try:
+        return p.relative_to(ROOT).as_posix()
+    except ValueError:
+        return p.as_posix()
 
 
 def collect(src: str) -> list[Path]:
@@ -98,9 +105,10 @@ def build_prompt_dir() -> tuple[list[tuple[Path, str]], list[str]]:
         p = refs / f
         if p.exists():
             out.append((p, f"prompt/{f}"))
-    for d in PROMPT_DIRS:
-        for p in sorted((refs / d).glob("*.md")):
-            out.append((p, f"prompt/{d}/{p.name}"))
+    stray = sorted(p.name for p in (refs / "db").glob("*.md")) if (refs / "db").exists() else []
+    if stray:                        # 失败关闭：档案一旦被恢复，立刻报错，不能静默装进包
+        raise SystemExit(f"✗ references/db/ 下还有 {len(stray)} 份库专属档案：{stray[:3]}…\n"
+                         "  本方法不含任何预写库知识（对隐藏 test 库无效），请删除后再打包。")
     # 明确不进包的：references 下除 PROMPT_FILES 以外的 .md（内部账本 / 细节展开）
     for extra in sorted(p.name for p in refs.glob("*.md") if p.name not in set(PROMPT_FILES)):
         notes.append(f"不打包 prompt/{extra}（runner 不读它）")

@@ -13,7 +13,7 @@ runner/                      the agentic runner (entry point: runner/run_bird.py
 tools/bird.py                schema / sampling / read-only execution / EX comparison (stdlib only)
 tools/setup_data.py          official-URL downloader (no upload logic)
 tools/official_eval/         the official evaluation scripts
-prompt/                      exactly the files the runner reads: traps.md + shapes.md + db/<db_id>.md
+prompt/                      exactly the files the runner reads: traps.md + shapes.md (no per-database file)
 dev_pred/dev2025_pred.json   our predicted SQL on the dev split (official pred format)
 ```
 
@@ -27,7 +27,7 @@ dev_pred/dev2025_pred.json   our predicted SQL on the dev split (official pred f
 | *"requirement.txt"* | `requirements.txt` |
 | *"for special env, like java, jdk, please illustrate them in readme"* | none needed — pure Python, no GPU/Node/Java (README §2) |
 | *"no private API package which can upload our database"* | only outbound calls go to the LLM endpoint; read-only DB access (README §7) |
-| *"remove irrelevant files"* | no datasets, no `.sqlite`, no other splits' answers, no internal notes |
+| *"remove irrelevant files"* | no datasets, no `.sqlite`, no other splits' answers, no internal notes, no per-database notes |
 | *"logging or error-handling mechanism … restart from the example where errors occurred"* | `--log run_*.jsonl`, resumable by design (README §6) |
 | *">5% abnormal (NULL/empty) outputs and/or runtime errors → we will contact the team"* | every SQL is executed read-only before being written; empty/error results are retried; dev empty-rate reported in README §9 |
 | *"provide your own keys … you could reset the keys after the evaluation terminates"* | key is read from `BIRD_API_KEY` (README §3), never stored in the archive |

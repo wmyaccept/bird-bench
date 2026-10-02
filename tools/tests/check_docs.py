@@ -6,7 +6,7 @@
 P1 条数不符     → checklist 标题里若写了条数，必须等于实际 `- [ ]` 个数
 P6 手抄数字过期 → 常驻上下文的 SKILL.md 不许出现"实测统计型"数字（N/M、N 道）
 P9 文档与代码相反 → AGENTS.md 不许再写"工具层固定用 minidev / extension 里写死了"
-P7 死链（半自动）→ SKILL.md / db/*.md 里的 references 链接必须存在；
+P7 死链（半自动）→ 现役文档里的 references 链接必须存在；
                     casebook 是历史账本，只列清单不判失败（见待办 P7）
 
 用法：python tools/tests/check_docs.py
@@ -189,13 +189,6 @@ def main() -> int:
         "traps.md 有『值层六问』且带 205 道错题的实测道数（不是只写个标题）",
         "值层六问" in txt(REF / "traps.md") and "70 道（34%）" in txt(REF / "traps.md"),
     )
-    _profiles = list((REF / "db").glob("*.md"))
-    _with = [p.name for p in _profiles if "值层实测" in p.read_text(encoding="utf-8")]
-    check(
-        "11 份库档案都补了『值层实测』（D 类错题按库落地）",
-        len(_with) == len(_profiles) == 11,
-        f"{len(_with)}/{len(_profiles)}",
-    )
     check(
         "AGENTS/SKILL 不再手抄核心条目号",
         not re.search(r"核心条目（`1`/`1b`", txt(AGENTS) + txt(SKILL / "SKILL.md")),
@@ -275,28 +268,13 @@ def main() -> int:
     check("每个真实步骤都能推出内容；未知 step（9）失败关闭（不是静默空手而归）",
           ok_all and closed, f"ok_all={ok_all} closed={closed}")
 
-    # ⑤ 库档案「交题前必查」必须恰好 3 条、编号 1/2/3（financial 曾出现 1. 1. 2. 3.）
-    bad_db = []
-    for d in sorted((REF / "db").glob("*.md")):
-        head = txt(d).split("## 连接图")[0]
-        nums = re.findall(r"^(\d+)\. ", head, re.M)
-        if nums != ["1", "2", "3"]:
-            bad_db.append(f"{d.name}: {nums}")
-    check("每份库档案的「交题前必查」都是 3 条、编号 1/2/3", not bad_db, " ｜ ".join(bad_db))
-
-    # ⑥ SKILL 承诺的档案小节名必须真的存在（"体检单"就是这么漏的：承诺了一节没人建）
-    promised = set(re.findall(r"`## ([^`]+)`", txt(SKILL / "SKILL.md")))
-    profiles = "\n".join(txt(d) for d in sorted((REF / "db").glob("*.md")))
-    missing_sections = [s for s in promised if f"## {s}" not in profiles]
-    check("SKILL 承诺的 db 档案小节名真实存在", not missing_sections, str(missing_sections))
-
     # ⑦ 挂起清单：唯一出处 + 别处只指路（它曾经是个"没有落点"的产物）
     SENT_HANG = "<!-- canon:hangs"
     holders = [f.name for f in live if SENT_HANG in txt(f)]
     check(f"挂起清单落盘说明的哨兵只在 diagnosis.md（实际：{holders}）",
           holders == ["diagnosis.md"], str(holders))
     diag_txt = txt(REF / "diagnosis.md")
-    check("diagnosis.md 写明了挂起清单的落盘形式（不另设文件 ⇒ 就是 audit 错题明细 + 档案实测小节）",
+    check("diagnosis.md 写明了挂起清单的落盘形式（不另设文件 ⇒ 就是 audit 错题明细）",
           "不另设文件" in diag_txt and "audit" in diag_txt)
     loose = [f.name for f in [SKILL / "SKILL.md", REF / "checklist.md", REF / "traps.md"]
              if "挂起" in txt(f) and "diagnosis.md" not in txt(f)]
@@ -335,32 +313,32 @@ def main() -> int:
           not missing, f"没登记：{missing}")
     check("注册表里没有指向已不存在步骤的行", not extra, f"多出：{extra}")
     check("注册表登记了「任意步」的产物（挂起清单）", has_any)
-    profiles = "\n".join(txt(d) for d in sorted((REF / "db").glob("*.md")))
+    live_refs = "\n".join(txt(d) for d in sorted(REF.glob("*.md")))
     bad_sink = []
     for row in re.findall(r"^\|\s*第\s*[0-9.]+\s*步\s*\|([^|]*)\|([^|]*)\|", maint, re.M):
         sink = row[1]
         for sec in re.findall(r"##\s*([^`|]+)", sink):
             sec = sec.strip()
-            if sec and f"## {sec}" not in profiles:
+            if sec and f"## {sec}" not in live_refs:
                 bad_sink.append(f"承诺小节「{sec}」不存在")
         for path in re.findall(r"`([\w/]+\.(?:md|json|jsonl))`", sink):
             if not any((d / path).exists() for d in (ROOT, REF, SKILL, ROOT / "work")):
                 bad_sink.append(f"落点文件不存在：{path}")
-    check("注册表里的落点容器都真实存在（档案小节 / 文件）", not bad_sink, " ｜ ".join(bad_sink))
+    check("注册表里的落点容器都真实存在（文件 / references 里的小节）", not bad_sink, " ｜ ".join(bad_sink))
 
-    # ⭐ T1：SKILL 第 0 步说「没有档案就跑 traps ⓪-1 冷启动五查」—— 这个指针必须真的通
+    # ⭐ T1：库事实**一律现场查**（不再有预写档案）—— SKILL 第 0 步必须指到 ⓪-1
     traps = txt(REF / "traps.md")
-    check("traps.md 有 ⓪-1 冷启动五查小节（SKILL 第 0 步指路的目标）", "## ⓪-1" in traps)
-    check("SKILL 第 0 步指路到 ⓪-1（没有档案时不是「无路可走」）", "⓪-1" in sk_txt)
+    check("traps.md 有 ⓪-1「库结构五查」小节（SKILL 第 0 步指路的目标）", "## ⓪-1" in traps)
+    check("SKILL 第 0 步指路到 ⓪-1", "⓪-1" in sk_txt)
     check("五查的五项都在（表数/列名/JOIN 命中率/值域/NULL）",
           all(k in traps for k in ("表数", "列名", "JOIN 命中率", "值域", "NULL")))
-    check("冷启动小节点明「档案是缓存不是依赖」+「conventions 在这是空的」",
-          "缓存" in traps and "没有任何已提交答案" in traps)
+    check("⓪-1 写明「不预写库知识 / 一律现场查」+「conventions 帮不上忙」",
+          "不预写" in traps and "帮不上忙" in traps)
+    check("⓪-1 声明五查的产物不落盘", "不落盘" in traps)
     #    ⭐ T1：库存在但零答案时，conventions 必须给**冷启动口径**，不能说成「这库没惯例」
     t1_src = (ROOT / "tools" / "bird.py").read_text(encoding="utf-8")
-    check("conventions 空库文案指路冷启动五查（不是「没有可统计的题」一句话）",
-          "冷启动五查" in t1_src and "没有任何已提交答案" in t1_src)
-    check("write_card 有噪声下限（不许拿 1~2 道题写卡片）", "跳过写卡片" in t1_src)
+    check("conventions 空库文案不当成「这库没有惯例」",
+          "不是**「这个库没有惯例」" in t1_src and "没有任何已提交答案" in t1_src)
 
     # ⭐ T1+T2（本轮）：push 标记必须成对、不许嵌套；同义表必须真有落点；
     #    做题路径不许写「看金标行数再改」；COUNT/JULIANDAY 只留一套默认。
@@ -399,15 +377,10 @@ def main() -> int:
           f"traps steps={sorted(traps_steps)}")
     check("traps.md 的 ⓪ 概念定位被推进 step=3.5",
           any(s == "3.5" and "概念先定位" in b for s, b in traps_blocks))
-    check("traps.md 的 ⓪-1 冷启动被推进 step=1",
-          any(s == "1" and "冷启动" in b for s, b in traps_blocks))
-    miss_syn = [p.name for p in sorted((REF / "db").glob("*.md"))
-                if not re.search(r"^## 同义表\s*$", txt(p), re.M)]
-    check("11 份库档案都有 ## 同义表（checklist 8b / 值层六问第 1 条的落点）",
-          not miss_syn, ",".join(miss_syn))
+    check("traps.md 的 ⓪-1 库结构五查被推进 step=1",
+          any(s == "1" and "库结构五查" in b for s, b in traps_blocks))
     live_doing = [SKILL / "SKILL.md", REF / "traps.md", REF / "shapes.md",
-                  REF / "checklist.md", REF / "gold-style.md", REF / "calibration.md",
-                  *sorted((REF / "db").glob("*.md"))]
+                  REF / "checklist.md", REF / "gold-style.md", REF / "calibration.md"]
     gold_look = []
     GOLD_LOOK_RE = re.compile(
         r"用金标行数反推|detail 说行数|失败了就换另一种写法|"
@@ -429,7 +402,7 @@ def main() -> int:
     check("COUNT 默认不再写成先试 COUNT(*) / 先试行数",
           not count_star_default, " ｜ ".join(count_star_default[:4]))
     juli = txt(REF / "traps.md") + txt(REF / "calibration.md")
-    check("JULIANDAY 口径统一为「跨度用 JULIANDAY、年份差看档案」",
+    check("JULIANDAY 口径统一为「跨度用 JULIANDAY、年份差看取值格式」",
           "跨度用" in juli and "年份差" in juli and "别自作主张用" not in juli)
 
     # ⭐ 本轮（runner 真跑）：提交材料声明的默认模型/思考模式 == runner 代码真值。
@@ -609,128 +582,49 @@ def main() -> int:
                 naked.append(f"{f.name}:{i + 1}")
     check("现役文件提到旧版本时同一处有『⛔ 已作废』标记", not naked, "，".join(naked))
 
-    print("\n── P20 库档案硬约束：串味 / 陈年数字 / 不存在的表列")
-    arch = sorted((REF / "db").glob("*.md"))
-    check(f"库档案有 {len(arch)} 份（≥11）", len(arch) >= 11, str(len(arch)))
-    # 3.1 表头必须标数据集（表头数字来自旧 dev，卡片来自 dev2025）
-    head_bad = []
-    for f in arch:
-        line = txt(f).splitlines()[0]
-        if not re.search(r"simple EX [\d.]+%", line):
-            head_bad.append(f"{f.name}（没有 simple EX 表头）")
-        elif not re.search(r"旧 dev|dev2025|minidev", line):
-            head_bad.append(f"{f.name}：{line[:60]}")
-    check("每份档案表头都标了数据集（旧 dev / dev2025）", not head_bad, " ｜ ".join(head_bad))
-    # 3.2 手写「N 道 M 对」也必须标数据集
-    stat_bad = []
-    for f in arch:
-        for i, ln in enumerate(txt(f).splitlines(), 1):
-            # 只有声称「全量/全库成绩」的行会被读成"当前水平"，必须标数据集；
-            # 「首批 13 道」这类自带范围的批次不算。
-            if "全量" in ln and re.search(r"\d+\s*道[^。\n]{0,12}\d+\s*对", ln) and not re.search(
-                    r"旧 dev|dev2025|minidev|Mini-Dev", ln):
-                stat_bad.append(f"{f.name}:{i}")
-    check("档案里声称「全量」的手写成绩都标了数据集", not stat_bad, "，".join(stat_bad))
-    # 3.3 提到本库没有的表/列，必须落在否定语境
-    NEG_CTX = ("没有", "不成立", "不存在", "已作废", "no such column", "别去", "别拿",
-               "不要照抄", "别照抄", "直接报错")
-    FILEY = re.compile(r"\.(md|py|json|jsonl|ts|cjs|sqlite)$")
-    data_dir = ROOT / "data" / "DEV" / "dev_databases"
-    if not data_dir.exists():
-        print("  ⏭ SKIP 3.3/3.4（没有 data/DEV/dev_databases：这两个守卫需要真库 schema）")
-    else:
-        import sqlite3
-        own_tables, all_tables = {}, {}
-        for f in arch:
-            dbp = data_dir / f.stem / f"{f.stem}.sqlite"
-            if not dbp.exists():
-                own_tables[f.stem] = None
-                continue
-            con = sqlite3.connect(f"file:{dbp}?mode=ro", uri=True)
-            tabs = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-            own_tables[f.stem] = tabs
-            all_tables[f.stem] = ({c.lower() for tb in tabs
-                                   for c in (r[1] for r in con.execute(f'PRAGMA table_info("{tb}")'))},
-                                  {tb.lower() for tb in tabs})
-            con.close()
-        missing_db = [f.name for f in arch if own_tables.get(f.stem) is None]
-        check("11 份档案对应的真库都在本地", not missing_db, "，".join(missing_db))
-        # 3.5 表头写的「N 表」== 真库用户表数（排除 sqlite_% 内部表 —— sqlite_sequence 也是 type='table'）
-        cnt_bad = []
-        for f in arch:
-            m = re.search(r"（(\d+) 表）", txt(f).splitlines()[0])
-            if own_tables.get(f.stem) is None:
-                continue
-            n_real = len([x for x in own_tables[f.stem] if not x.lower().startswith("sqlite_")])
-            if not m or int(m.group(1)) != n_real:
-                cnt_bad.append(f"{f.name}: 表头 {m.group(1) if m else '?'} vs 真库 {n_real}")
-        check("档案表头的「N 表」== 真库用户表数", not cnt_bad, " ｜ ".join(cnt_bad))
-        alien, alias = [], re.compile(r"^[A-Za-z]?\d+$")
-        for f in arch:
-            tabs = own_tables.get(f.stem)
-            if tabs is None:
-                continue
-            own_low = {x.lower() for x in tabs}
-            cols_all, tabs_all = all_tables[f.stem]
-            lines = txt(f).splitlines()
-            for i, ln in enumerate(lines, 1):
-                win = lines[max(0, i - 2):i]          # 否定常写在上一行（跨行句子）
-                if any(k in x for x in win for k in NEG_CTX):
-                    continue
-                for m in re.finditer(r"`([A-Za-z_][A-Za-z0-9_]*)`", ln):
-                    tok = m.group(1)
-                    if FILEY.search(tok) or alias.match(tok) or tok.lower() in own_low:
-                        continue
-                    others = [d for d, (c, tb) in all_tables.items() if d != f.stem and tok.lower() in tb]
-                    if others and tok.lower() not in cols_all:
-                        alien.append(f"{f.name}:{i} `{tok}`（属 {others[0]}）")
-                for m in re.finditer(r"`([A-Za-z_][A-Za-z0-9_]*)\.([A-Za-z_][A-Za-z0-9_]*)`", ln):
-                    tb, cl = m.group(1).lower(), m.group(2).lower()
-                    if tb in own_low:
-                        continue
-                    others = [d for d, (c, tb2) in all_tables.items() if d != f.stem and tb in tb2]
-                    if others and (tb, cl) != ("", ""):
-                        alien.append(f"{f.name}:{i} `{m.group(0)}`（表属 {others[0]}）")
-        check(f"档案点名的「别库表」都落在否定语境（{len(alien)} 处违规）", not alien, " ｜ ".join(alien[:6]))
-        # 3.4 档案里的题号必须是本库的题（数据依赖；dev2025 编号）
-        qfile = ROOT / "data" / "DEV" / "dev_20251106.json"
-        if not qfile.exists():
-            print("  ⏭ SKIP 3.4（没有 dev_20251106.json）")
-        else:
-            import json
-            qs = json.loads(qfile.read_text(encoding="utf-8"))
-            # 白名单：只准「讲渲染误读」这类非题号数字，且必须在文件里仍然存在（过期即失败）
-            WL = {("student_club.md", "1000"): "讲 bird_query 渲染把 100.0 看成 1000",
-                  ("student_club.md", "100"): "同上"}
-            for (fn, num), why in WL.items():
-                f = REF / "db" / fn
-                check(f"白名单仍然需要（{fn} `{num}`：{why}）",
-                      f.exists() and f"`{num}`" in txt(f),
-                      "白名单过期了，删掉它（否则它会掩盖新问题）")
-            alien_idx, used_wl = [], set()
-            for f in arch:
-                lines = txt(f).splitlines()
-                for i, ln in enumerate(lines, 1):
-                    for m in re.finditer(r"`(\d{2,4})`", ln):
-                        num = m.group(1)
-                        if (f.name, num) in WL:
-                            used_wl.add((f.name, num))
-                            continue
-                        if int(num) >= len(qs):
-                            continue
-                        owner = qs[int(num)]["db_id"]
-                        if owner == f.stem:
-                            continue
-                        # 跨库/跨数据集题号必须**自证**：带 minidev 前缀，或当行点名它属于哪个库
-                        labeled = re.search(r"(mini\s*dev|minidev|mini)\s*idx\s*$",
-                                            ln[:m.start()], re.I)
-                        named = owner in ln or owner in lines[max(0, i - 2):i][0]
-                        if not (labeled or named):
-                            alien_idx.append(
-                                f"{f.name}:{i} `{num}` 实属 {owner}（既没标 minidev、也没点名库）")
-            check(f"档案里的题号都属于本库（或自证式的跨库引用）（{len(alien_idx)} 处越界）",
-                  not alien_idx, " ｜ ".join(alien_idx[:6]))
-            check("白名单全部被用到（没有僵尸条目）", used_wl == set(WL), f"未用到：{set(WL) - used_wl}")
+    print("\n── P21 不预写库知识：类级守卫（11 份 db 档案已删，见 maintaining.md canon:dbknowledge）")
+    check("references/db/ 目录不存在（库知识一律运行时现查）", not (REF / "db").exists(),
+          f"仍存在：{[f.name for f in (REF / 'db').glob('*')][:3]}" if (REF / "db").exists() else "")
+    check("references/ 下没有任何库专属文件（*​.md 全在 references 顶层）",
+          [f.name for f in REF.rglob("*.md") if f.parent != REF] == [])
+    # 工具链不许写 references/（知识库只读；曾有的 conventions --write-card 已删除）
+    for who, rel, pat in [("tools/bird.py", "tools/bird.py", r"write_card|write-card|references[\\/]db"),
+                          ("runner/prompt.py", "runner/prompt.py", r"write_card|write-card|references[\\/]db|prompt_dir\s*/\s*[\"']db[\"']"),
+                          ("tools/make_submission.py", "tools/make_submission.py",
+                           r"write_card|write-card|(REFS|references)[^\n]{0,60}(write_text|open\([^)]*[\"']w)")]:
+        blob = txt(ROOT / rel)
+        check(f"{who} 不写 references/（无 write_card / 不装载库档案）",
+              not re.search(pat, blob))
+    check("runner 的 build_system() 不接受 db_id（system 与库无关）",
+          not re.search(r"def build_system\(([^)]*)", txt(ROOT / "runner" / "prompt.py"))
+          or "db_id" not in re.search(r"def build_system\(([^)]*)",
+                                      txt(ROOT / "runner" / "prompt.py")).group(1))
+    check("打包器不含库专属档案（MANIFEST 里没有 prompt/db）",
+          "prompt/db" not in txt(ROOT / "tools" / "make_submission.py"))
+    # 产物注册表：库事实那一类必须标「不落盘」
+    reg = txt(REF / "maintaining.md").split("canon:artifacts")[-1]
+    stray = [ln.split("|")[0].strip() for ln in reg.splitlines()
+             if ln.startswith("|") and "db/" in ln]
+    check("产物注册表里不再有 db/<库>.md 落点", not stray, "，".join(stray))
+    check("注册表写明库事实「不落盘」", "不落盘" in reg)
+
+    #   ⭐ 第 57 轮新增：**已废除的机制不许在现役文档里复活**。
+    #   “惯例卡片 / write_card / db/<库>.md” 这些名字一旦留在规则文件里，读到它们的模型就会去找那个落点。
+    #   只留两个有资格的例外：casebook（只增不改的历史账本）、maintaining（它本身就是记载“已废除”的维护文档）。
+    DEAD = ("惯例卡片", "write_card", "--write-card")
+    EXEMPT_DEAD = {"casebook.md", "maintaining.md"}
+    revived = []
+    for f in [SKILL / "SKILL.md", *sorted(REF.glob("*.md"))]:
+        if f.name in EXEMPT_DEAD:
+            continue
+        body = re.sub(r"```.*?```", "", txt(f), flags=re.S)
+        for w in DEAD:
+            if w in body:
+                revived.append(f"{f.name}:{w}")
+    check("现役文档里没有已废除的卡片机制（惯例卡片/write_card）", not revived, "，".join(revived))
+    for name in sorted(EXEMPT_DEAD):
+        check(f"{name} 的例外是有凭据的（正文声明了废除）",
+              any(w in txt(REF / name) for w in ("废除", "已全部删除")))
 
     print("\n── P5 重交白名单：正文只准有一处，别处只能指路")
     SENTINEL = "<!-- canon:resubmit"        # 只许出现在正文那一处；别处引用标题不算
@@ -758,10 +652,22 @@ def main() -> int:
     #    顺序是 (zip 内路径, 仓库来源) —— 与 `for dst, src in MANIFEST` 一致。
     zip_names = {Path(dst).name for dst, _src in _mk_docs.MANIFEST}
 
-    for f in [SKILL / "SKILL.md", *sorted(REF.glob("*.md")), *sorted((REF / "db").glob("*.md"))]:
-        for target in re.findall(r"`([a-zA-Z0-9_./-]+\.md)`", txt(f)):
+    # ⭐ 账本例外（第 57 轮）：`casebook.md` 是**只增不改**的历史账本，它里面的 `db/*.md` 引用
+    #    是**历史证据**（指向已删文件才是对的）；这个例外不靠路径白名单，靠**正文哨兵**：
+    #    删掉那句声明，下面的引用立刻变红（避免“例外”静默长胖）。
+    LEDGER_MARK = "库档案已全部删除"
+    cb_txt0 = txt(REF / "casebook.md")
+    check("账本声明了「库档案已全部删除」（db/*.md 引用唯一的例外凭据）",
+          LEDGER_MARK in cb_txt0)
+    ledger_exempt = 0
+    for f in [SKILL / "SKILL.md", *sorted(REF.glob("*.md"))]:
+        src = txt(f)
+        for target in re.findall(r"`([a-zA-Z0-9_./-]+\.md)`", src):
+            if f.name == "casebook.md" and LEDGER_MARK in src and target.startswith("db/"):
+                ledger_exempt += 1
+                continue
             name = target.split("/")[-1]
-            cands = [REF / name, REF / target, REF / "db" / name,
+            cands = [REF / name, REF / target,
                      SKILL / name, ROOT / name, ROOT / "tools" / name, ROOT / "data" / name,
                      #   提交材料也在仓库里（原先漏了 → `submission/EMAIL.md` 这类是误报）
                      ROOT / "submission" / name, ROOT / target]
@@ -769,6 +675,25 @@ def main() -> int:
                 continue
             broken.append(f"{f.name} -> {target}")
     check("所有 .md 引用都真实存在（不许指向已删文件）", not broken, "; ".join(broken))
+    if ledger_exempt:
+        print(f"  ℹ️ 账本里 {ledger_exempt} 处 `db/*.md` 引用按历史证据放行（第 57 轮已删）")
+
+    #   ⭐ 第 57 轮补：**文档里提到的测试脚本必须存在**。
+    #   两个套件被换掉（check_brief_p4 / check_write_card → check_brief / check_refs_readonly）时，
+    #   AGENTS.md 里的名字差点留成僵尸 —— “照着文档跑一个不存在的测试”比没写更坑。
+    stale_tests = []
+    for f in [ROOT / "AGENTS.md", ROOT / "README.md", ROOT / "SUBMISSION_PLAN.md",
+              SKILL / "SKILL.md", *sorted(REF.glob("*.md")),
+              *sorted((ROOT / "submission").glob("*.md")),
+              *sorted((ROOT / "tools" / "tests").glob("*.py"))]:
+        if not f.exists() or f.name == "casebook.md":
+            continue                      # 账本是只增不改的历史（同上，靠 marker 取得例外资格）
+        body = re.sub(r"```.*?```", "", txt(f), flags=re.S)
+        for name in set(re.findall(r"(check_[a-z0-9_]+\.py|extension_smoke\.cjs)", body)):
+            if not (ROOT / "tools" / "tests" / name).exists():
+                stale_tests.append(f"{f.name} -> {name}")
+    check("文档里提到的测试脚本都真实存在（换套件时不留僵尸名字）",
+          not stale_tests, "; ".join(sorted(set(stale_tests))))
 
     if warn:
         print("\n⚠️ 提醒（不影响通过）")

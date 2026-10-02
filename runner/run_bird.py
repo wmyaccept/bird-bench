@@ -14,6 +14,10 @@
         --log       run_test.jsonl \
         [--limit 50] [--max-retries 2] [--resume] [--mock mock.jsonl]
 
+方法与库无关：system 里只有规则文本，user 里的"这个库到底存了什么值"由**运行时查库**得到
+（低基数列列全量取值 + 题干字面量的反向定位）—— 所以没见过的隐藏 test 库也不会退化。
+用 `--no-recon` 可关掉侦察做消融（A/B 对比）。
+
 只读保证：`tools/bird.py` 的 guard_sql（单语句 + SELECT/WITH 白名单）+ 只读 URI 连接，
 与 agent 用的是同一份闸门代码 —— 这里不另写一份，免得两处漂移。
 """
@@ -116,13 +120,23 @@ class MockResponses:
 
 def answer_one(q: dict, db_path: Path, client: LLMClient, system: str, column_meaning,
                max_retries: int, samples: int, timeout: float, max_tokens: int,
-               verbose: bool) -> dict:
-    schema = promptmod.schema_block(db_path, samples=samples)
+               verbose: bool, recon_opts: dict | None = None) -> dict:
+    """跑一道题：拼 prompt（含实时侦察）→ 调模型 → 只读执行 → 失败回喂重写。"""
+    recon_opts = recon_opts or {}
+    schema = promptmod.schema_block(db_path, samples=samples,
+                                    low_card_max=recon_opts.get("low_card_max", 12))
     descs = promptmod.descriptions_block(q["db_id"], db_path, column_meaning)
+    recon: dict = {"text": ""}
+    if recon_opts.get("enabled", True):
+        recon = promptmod.reconnaissance(
+            db_path, q["question"], q["evidence"], schema_text=schema,
+            max_terms=recon_opts.get("max_terms", 8), samples=samples,
+            max_columns=recon_opts.get("max_columns", 10),
+            budget_s=recon_opts.get("budget_s", 25.0))
     messages = [
         {"role": "system", "content": system},
         {"role": "user", "content": promptmod.build_user(
-            q["question"], q["evidence"], q["db_id"], schema, descs)},
+            q["question"], q["evidence"], q["db_id"], schema, descs, recon["text"])},
     ]
 
     t0 = time.time()
@@ -179,6 +193,7 @@ def answer_one(q: dict, db_path: Path, client: LLMClient, system: str, column_me
         "sql": sql, "exec_ok": exec_ok, "n_rows": n_rows, "error": error,
         "errors": errors, "attempts": attempts, "latency_s": round(time.time() - t0, 1),
         "prompt_tokens": tok_in, "completion_tokens": tok_out,
+        "recon": {k: v for k, v in recon.items() if k != "text"},
     }
 
 
@@ -198,7 +213,13 @@ def main() -> int:
     ap.add_argument("--thinking", choices=["disabled", "enabled", "default"], default="disabled",
                     help="DeepSeek 思考模式：disabled=直出 SQL（默认，与 dev 成绩口径一致）/ enabled / default（服务端默认）")
     ap.add_argument("--max-retries", type=int, default=2, help="执行失败/空结果时回喂重写的次数")
-    ap.add_argument("--samples", type=int, default=3, help="schema 里每列给几个样例值")
+    ap.add_argument("--samples", type=int, default=3, help="高基数列给几个样例值")
+    ap.add_argument("--low-card-max", type=int, default=12,
+                    help="去重取值 ≤ 该值的列：把它**全部取值**列进 schema（0 = 关闭，退化为只给样例）")
+    ap.add_argument("--no-recon", action="store_true",
+                    help="关掉运行时取值侦察（做 A/B 消融用；默认开）")
+    ap.add_argument("--recon-terms", type=int, default=8, help="从题干/evidence 最多取几个字面量去反查")
+    ap.add_argument("--recon-budget", type=float, default=25.0, help="单题侦察的时间预算（秒）")
     ap.add_argument("--timeout", type=float, default=60.0, help="单条 SQL 的执行超时")
     ap.add_argument("--limit", type=int, default=0, help="只做前 N 题")
     ap.add_argument("--only-idx", default=None, help="只做这些 idx，逗号分隔")
@@ -231,16 +252,25 @@ def main() -> int:
         return 2
 
     column_meaning = promptmod.load_column_meaning(args.column_meaning)
+    recon_opts = {"enabled": not args.no_recon, "max_terms": args.recon_terms,
+                  "budget_s": args.recon_budget, "low_card_max": args.low_card_max}
 
     # --dump-prompt 不需要 key（不联网、不花钱）：官方可以直接看我们到底发了什么 prompt
     if args.dump_prompt is not None:
         q = next((x for x in questions if x["idx"] == args.dump_prompt), questions[0])
         db = find_db(test_dir, q["db_id"])
-        system = promptmod.build_system(prompt_dir, q["db_id"])
-        user = promptmod.build_user(q["question"], q["evidence"], q["db_id"],
-                                    promptmod.schema_block(db, samples=args.samples),
-                                    promptmod.descriptions_block(q["db_id"], db, column_meaning))
+        system = promptmod.build_system(prompt_dir)
+        schema = promptmod.schema_block(db, samples=args.samples,
+                                        low_card_max=args.low_card_max)
+        recon = promptmod.reconnaissance(
+            db, q["question"], q["evidence"], schema_text=schema,
+            max_terms=args.recon_terms, samples=args.samples,
+            budget_s=args.recon_budget) if recon_opts["enabled"] else {"text": ""}
+        user = promptmod.build_user(q["question"], q["evidence"], q["db_id"], schema,
+                                    promptmod.descriptions_block(q["db_id"], db, column_meaning),
+                                    recon["text"])
         print(f"prompt_dir = {prompt_dir}")
+        print(f"recon = {({k: v for k, v in recon.items() if k != 'text'})}")
         print(f"\n===== system ({len(system)} chars) =====\n{system[:1500]}\n...\n")
         print(f"===== user ({len(user)} chars) =====\n{user}")
         return 0
@@ -269,11 +299,11 @@ def main() -> int:
     print(f"  thinking={client.thinking}（DeepSeek 的 flash 默认开思考，长题会拖到十几分钟）")
     if mock:
         print("  ⚠️ mock 模式：不联网、不花额度，只验证流程（结果不可用于报分）")
+    print(f"  recon={'off' if args.no_recon else 'on'}"
+          f"（terms≤{args.recon_terms} / budget={args.recon_budget:.0f}s / "
+          f"low-card≤{args.low_card_max}）")
 
-    if args.dump_prompt is not None:
-        pass
-
-    system_cache: dict[str, str] = {}
+    system = promptmod.build_system(prompt_dir)          # 与库无关 ⇒ 只拼一次
     tok_in = tok_out = 0
     empty = errors = 0
     t0 = time.time()
@@ -285,11 +315,10 @@ def main() -> int:
         except FileNotFoundError as e:
             print(f"  [{n}/{len(todo)}] idx {q['idx']} 跳过：{e}")
             continue
-        system = system_cache.setdefault(q["db_id"], promptmod.build_system(prompt_dir, q["db_id"]))
         if mock:                                   # mock 的 responder 绑定当前 idx
             client.mock = (lambda msgs, i=q["idx"]: mock.take(i))
         res = answer_one(q, db_path, client, system, column_meaning, args.max_retries,
-                         args.samples, args.timeout, args.max_tokens, args.verbose)
+                         args.samples, args.timeout, args.max_tokens, args.verbose, recon_opts)
         tok_in += res["prompt_tokens"]
         tok_out += res["completion_tokens"]
 
@@ -307,8 +336,10 @@ def main() -> int:
         log_fh.flush()
 
         flag = "ok" if res["exec_ok"] else "FAIL"
+        rc = res.get("recon") or {}
         print(f"  [{n}/{len(todo)}] idx {q['idx']:<5} {q['db_id']:<22} {flag:<4} "
               f"rows={res['n_rows']} tries={res['attempts']} {res['latency_s']}s "
+              f"recon={rc.get('hit_columns', 0)}c/{rc.get('seconds', 0)}s "
               f"{('' if res['exec_ok'] else res['error'][:60])}")
 
     log_fh.close()
