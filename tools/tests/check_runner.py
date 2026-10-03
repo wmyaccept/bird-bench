@@ -236,6 +236,114 @@ def main() -> int:
     check("schema 里已经看得见的值不再重复查（省时间，不影响信息量）",
           r7["text"] == "", r7["text"][:200])
 
+    print()
+    print("── ⑩ LLM 层：响应体被截断（http.client.IncompleteRead）必须退避重试，不许冒出顶层")
+    import http.client
+    from runner import llm as lm
+
+    calls = {"n": 0}
+    sql_block = "```sql" + chr(10) + "SELECT 42" + chr(10) + "```"
+
+    class _Resp:
+        def __init__(self, payload):
+            self._p = payload
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return self._p
+
+    good = json.dumps({"choices": [{"message": {"content": sql_block}}],
+                       "usage": {"prompt_tokens": 7, "completion_tokens": 3}}).encode()
+    real_urlopen = lm.urllib.request.urlopen
+
+    def fake_urlopen(req, timeout=None):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise http.client.IncompleteRead(b"")      # 实测在 886 题处弄死整轮的那种
+        return _Resp(good)
+
+    lm.urllib.request.urlopen = fake_urlopen
+    try:
+        c = lm.LLMClient(api_key="x", http_retries=2)
+        text, usage = c.chat([{"role": "user", "content": "hi"}])
+        check("IncompleteRead 被重试（而不是把整轮跑挂掉）",
+              calls["n"] == 2 and "SELECT 42" in text, f"calls={calls['n']} text={text[:60]!r}")
+        check("重试成功后 token 统计照常", usage["prompt_tokens"] == 7, str(usage))
+
+        def always_truncated(req, timeout=None):
+            calls["n"] += 1
+            raise http.client.IncompleteRead(b"")
+
+        lm.urllib.request.urlopen = always_truncated
+        c2 = lm.LLMClient(api_key="x", http_retries=1)
+        try:
+            c2.chat([{"role": "user", "content": "hi"}])
+            check("重试耗尽 → LLMError（调用方记进日志继续下一题）", False, "没抛异常")
+        except lm.LLMError as e:
+            check("重试耗尽 → LLMError（调用方记进日志继续下一题）",
+                  "IncompleteRead" in str(e), str(e)[:120])
+    finally:
+        lm.urllib.request.urlopen = real_urlopen
+
+    print()
+    print("── ⑪ runner 层：单题意外异常不许弄死整轮，但连错 5 次要显式退出")
+    sys.path.insert(0, str(ROOT))
+    from runner import run_bird as rb                              # noqa: E402
+
+    real_answer_one = rb.answer_one
+    base_argv = ["run_bird.py",
+                 "--test-dir", str(FIX / "MINIDEV/dev_databases"),
+                 "--questions", str(FIX / "MINIDEV/mini_dev_sqlite.json"),
+                 "--prompt-dir", str(FIX / "prompt"),
+                 "--mock", str(FIX / "mock.jsonl")]
+
+    def _run_patched(raise_for: int, out_name: str, crash_limit: int = 99) -> tuple[int, int]:
+        """前 raise_for 题让 answer_one 抛意外异常；>=99 表示“永远抛”。"""
+        state = {"n": 0}
+
+        def boom(q, *a, **k):
+            state["n"] += 1
+            if raise_for >= 99 or state["n"] <= raise_for:
+                raise RuntimeError("boom-756")
+            return real_answer_one(q, *a, **k)
+
+        rb.answer_one = boom
+        old_limit = rb.MAX_CONSECUTIVE_CRASHES
+        rb.MAX_CONSECUTIVE_CRASHES = crash_limit
+        argv = base_argv + ["--out", str(FIX / out_name),
+                            "--log", str(FIX / (out_name + ".jsonl")), "--no-resume"]
+        old_argv = sys.argv
+        sys.argv = argv
+        try:
+            rc = rb.main()
+        finally:
+            sys.argv = old_argv
+            rb.MAX_CONSECUTIVE_CRASHES = old_limit
+            rb.answer_one = real_answer_one
+        return rc, state["n"]
+
+    rc1, n1 = _run_patched(2, "pred_crash_tolerant.json")
+    pred1 = json.loads((FIX / "pred_crash_tolerant.json").read_text(encoding="utf-8"))
+    log1 = [json.loads(l) for l in (FIX / "pred_crash_tolerant.json.jsonl").read_text(
+        encoding="utf-8").splitlines() if l.strip()]
+    check("前 2 题抛异常，整轮仍然 rc=0 跑完（前面答出来的答案不白花）", rc1 == 0, f"rc={rc1}")
+    check("意外异常被记进日志，不是无声吞掉",
+          sum(1 for r in log1 if "unexpected RuntimeError" in (r.get("error") or "")) == 2,
+          str([r.get("error") for r in log1])[:200])
+    check("后面的题照常答出来并落盘", len(pred1) >= 1 and n1 > 2, f"n={n1} pred={len(pred1)}")
+
+    rc2, n2 = _run_patched(99, "pred_crash_fatal.json", crash_limit=2)
+    check("连续 N 题意外异常 → rc=2 显式退出（系统性 bug 不许被当成“跑完了”）",
+          rc2 == 2 and n2 == 2, f"rc={rc2} n={n2}")
+    check("默认崩限 = 5（不是 1：单题异常本来就该能跳过）",
+          rb.MAX_CONSECUTIVE_CRASHES == 5, str(rb.MAX_CONSECUTIVE_CRASHES))
+
+
     print(f"\n════ 通过 {pass_n} / 失败 {fail_n} ════")
     return 1 if fail_n else 0
 

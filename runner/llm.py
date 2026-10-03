@@ -12,6 +12,7 @@
 """
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import time
@@ -89,7 +90,11 @@ class LLMClient:
                 last_err = f"HTTP {e.code}: {detail}"
                 if e.code not in RETRY_STATUS:
                     raise LLMError(last_err) from None
-            except (urllib.error.URLError, TimeoutError, OSError) as e:
+            except (urllib.error.URLError, TimeoutError, OSError,
+                    http.client.HTTPException) as e:
+                #   ⚠️ `http.client.IncompleteRead` **不**是 OSError（它继承 HTTPException）——
+                #   实测它在读响应体时被截断会直接冒到顶层，把一轮 2.5 小时的跑批在 886 题处弄死。
+                #   响应读完了才算成功，所以“传输层截断”必须和断连同等待遇：退避重试。
                 last_err = f"{type(e).__name__}: {e}"
             except (KeyError, IndexError, ValueError) as e:
                 raise LLMError(f"响应解析失败（{type(e).__name__}: {e}）") from None

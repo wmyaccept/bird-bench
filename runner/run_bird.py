@@ -39,6 +39,11 @@ from runner.llm import LLMClient, LLMError             # noqa: E402
 
 SEP = "\t----- bird -----\t"
 
+#   单题抛出意料之外的异常（不是 API 层那些已被重试的错误）时：跳过该题继续跑，
+#   但连续这么多次就说明是系统性 bug —— 立即显式退出非零，不许被当成“跑完了”。
+#   实测：一个逃出重试的 `http.client.IncompleteRead` 让 2.5 小时的跑批在第 886 题处整个挂掉。
+MAX_CONSECUTIVE_CRASHES = 5
+
 
 def default_prompt_dir() -> Path:
     """包里的 `prompt/`（打包时生成）优先；仓库里跑就回退到 skill 的 references（唯一真源）。
@@ -306,6 +311,7 @@ def main() -> int:
     system = promptmod.build_system(prompt_dir)          # 与库无关 ⇒ 只拼一次
     tok_in = tok_out = 0
     empty = errors = 0
+    crashes = 0          # 意料之外的异常（非 API 层）连续计数
     t0 = time.time()
     log_fh = log_path.open("a", encoding="utf-8")
 
@@ -317,8 +323,28 @@ def main() -> int:
             continue
         if mock:                                   # mock 的 responder 绑定当前 idx
             client.mock = (lambda msgs, i=q["idx"]: mock.take(i))
-        res = answer_one(q, db_path, client, system, column_meaning, args.max_retries,
-                         args.samples, args.timeout, args.max_tokens, args.verbose, recon_opts)
+        try:
+            res = answer_one(q, db_path, client, system, column_meaning, args.max_retries,
+                             args.samples, args.timeout, args.max_tokens, args.verbose, recon_opts)
+            crashes = 0
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:                     # noqa: BLE001
+            #   ⚠️ 单题的任何意外异常都不该弄死整轮：实测一个逃出重试的
+            #   `http.client.IncompleteRead` 让 2.5 小时的跑批在第 886 题处整个挂掉，
+            #   而前面 885 题的答案已经是有效资产（重跑=再花一次钱）。
+            #   但**不许无声吞**：连错 N 次说明是系统性 bug，立即显式退出非零。
+            crashes += 1
+            res = {"sql": "", "attempts": 0, "exec_ok": False, "n_rows": 0,
+                   "latency_s": 0.0, "prompt_tokens": 0, "completion_tokens": 0,
+                   "errors": [], "error": f"unexpected {type(e).__name__}: {e}"}
+            print(f"  [{n}/{len(todo)}] idx {q['idx']} 意外异常（{crashes}/{MAX_CONSECUTIVE_CRASHES}）："
+                  f"{type(e).__name__}: {e}")
+            if crashes >= MAX_CONSECUTIVE_CRASHES:
+                log_fh.close()
+                print(f"ERROR: 连续 {crashes} 题意外异常，看起来是系统性 bug，提前退出"
+                      f"（已写 {len(done)} 条，可用同样命令续跑）", file=sys.stderr)
+                return 2
         tok_in += res["prompt_tokens"]
         tok_out += res["completion_tokens"]
 
