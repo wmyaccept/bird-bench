@@ -20,11 +20,20 @@ deterministic tooling:
 | Version | Prompt | Evaluated? |
 |---|---|---|
 | sent 2026-09-21 | `traps.md` + `shapes.md` + one hand-written card per dev database (`prompt/db/<db_id>.md`) | **yes — official test EX 69.59** |
-| current `HEAD` | `traps.md` + `shapes.md` + **runtime reconnaissance** (no per-database file at all) | **not yet evaluated** |
+| current `HEAD` | `traps.md` + `shapes.md` + **runtime reconnaissance** (no per-database file at all) | on dev only: EX 68.97 (full) / 70.83 (384-question subset) |
 
-The hand-written cards only ever described the 11 databases of the public dev split, so they cannot
-transfer to the hidden test databases. The current version removes them entirely: everything
-database-specific is read from the database itself, per question, at inference time (see §7).
+The hand-written cards only ever described the 11 databases of the public dev split. On the 15 hidden
+test databases the card file simply did not exist, so `build_system()` skipped it and the sent version
+evaluated there as "generic rules only". Measured on the same 384 dev questions:
+
+| prompt | EX |
+|---|---|
+| generic rules only (what the sent version ran on test) | 69.01% |
+| generic rules + **runtime reconnaissance** (current `HEAD`) | **70.83%** |
+| generic rules + the hand-written dev cards | 74.48% |
+
+So the cards were worth +5.5 points on the public dev split and **nothing** on the test split, while
+reconnaissance is worth +1.8 points on any database. That is why the current version removes them.
 
 ## 2. Environment
 
@@ -147,8 +156,9 @@ when the descriptions are available.
 ## 9. Dev results (reproducible)
 
 These numbers were produced by the **evaluated 2026-09-21 version** (rule files + dev-database
-cards). The current HEAD replaces the cards with runtime reconnaissance and has **not** been
-re-evaluated yet; treat the table below as the submission-time measurement.
+cards). The current HEAD replaces the cards with runtime reconnaissance; its measured dev EX is
+68.97% (full split) / 70.83% (the 384-question subset in §1) — lower on dev **only because the dev
+cards were dev-specific** (see §1).
 
 | Item | Value |
 |---|---|
