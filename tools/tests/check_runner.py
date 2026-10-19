@@ -344,6 +344,13 @@ def main() -> int:
           rb.MAX_CONSECUTIVE_CRASHES == 5, str(rb.MAX_CONSECUTIVE_CRASHES))
 
 
+    print("\n── ⑫ schema 离线评估：真实依赖提取 + 所有列元数据保留")
+    audit = subprocess.run([PY, "tools/schema_audit.py", "--self-test"], cwd=ROOT,
+                           capture_output=True, text=True, encoding="utf-8")
+    check("SQLite 编译依赖与选择性样例渲染自检通过",
+          audit.returncode == 0 and "Self-test passed" in audit.stdout,
+          (audit.stdout + audit.stderr)[-500:])
+
     print(f"\n════ 通过 {pass_n} / 失败 {fail_n} ════")
     return 1 if fail_n else 0
 

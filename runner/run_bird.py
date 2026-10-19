@@ -217,6 +217,8 @@ def main() -> int:
     ap.add_argument("--max-tokens", type=int, default=2048)
     ap.add_argument("--thinking", choices=["disabled", "enabled", "default"], default="disabled",
                     help="DeepSeek 思考模式：disabled=直出 SQL（默认，与 dev 成绩口径一致）/ enabled / default（服务端默认）")
+    ap.add_argument("--variant", choices=sorted(promptmod.VARIANTS), default="direct",
+                    help="生成方法论：direct=直接写（默认）/ dnc=先分解再组合（β 消融臂）")
     ap.add_argument("--max-retries", type=int, default=2, help="执行失败/空结果时回喂重写的次数")
     ap.add_argument("--samples", type=int, default=3, help="高基数列给几个样例值")
     ap.add_argument("--low-card-max", type=int, default=12,
@@ -264,7 +266,7 @@ def main() -> int:
     if args.dump_prompt is not None:
         q = next((x for x in questions if x["idx"] == args.dump_prompt), questions[0])
         db = find_db(test_dir, q["db_id"])
-        system = promptmod.build_system(prompt_dir)
+        system = promptmod.build_system(prompt_dir, variant=args.variant)
         schema = promptmod.schema_block(db, samples=args.samples,
                                         low_card_max=args.low_card_max)
         recon = promptmod.reconnaissance(
@@ -301,6 +303,7 @@ def main() -> int:
 
     print(f"runner: {len(questions)} 题 / 已答 {len(questions) - len(todo)} / 待跑 {len(todo)}")
     print(f"  model={client.model} base_url={client.base_url} prompt_dir={prompt_dir}")
+    print(f"  variant={args.variant}（β 消融：方法论的唯一差异，规则/侦察/温度逐字相同）")
     print(f"  thinking={client.thinking}（DeepSeek 的 flash 默认开思考，长题会拖到十几分钟）")
     if mock:
         print("  ⚠️ mock 模式：不联网、不花额度，只验证流程（结果不可用于报分）")
@@ -308,7 +311,7 @@ def main() -> int:
           f"（terms≤{args.recon_terms} / budget={args.recon_budget:.0f}s / "
           f"low-card≤{args.low_card_max}）")
 
-    system = promptmod.build_system(prompt_dir)          # 与库无关 ⇒ 只拼一次
+    system = promptmod.build_system(prompt_dir, variant=args.variant)   # 与库无关 ⇒ 只拼一次
     tok_in = tok_out = 0
     empty = errors = 0
     crashes = 0          # 意料之外的异常（非 API 层）连续计数

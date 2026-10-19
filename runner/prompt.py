@@ -42,9 +42,50 @@ Hard requirements:
 """
 
 
-def build_system(prompt_dir: Path, rules: list[str] | None = None) -> str:
-    """system prompt = 任务说明 + 规则。**刻意与库无关**：任何库拿到的是同一份 system。"""
-    parts = [PREAMBLE]
+# β 实验臂：**换生成方法论**，其余（规则文件 / schema / 侦察 / 温度）与 direct 臂逐字节相同。
+# 目的：测"方法论多样性"是否带来候选池增益 —— 对照是同骨架的 A 臂在并集里只贡献 1 题。
+# ⚠️ 只准改推理流程与输出纪律，**不许**改硬约束（改了就会变成第二个混杂变量）。
+PREAMBLE_DNC = """You are an expert SQLite analyst. Answer the question through three explicit stages,
+then write ONE SQLite query.
+
+Stage 1 — Decompose. List the minimal sub-facts the question needs. For each sub-fact name the
+table and column that carries it, and say whether it needs a filter, a join, or an aggregate.
+
+Stage 2 — Solve each sub-fact on its own. Write the small SQL fragment (plain text) that gets it,
+including the exact WHERE literals, join keys and aggregate form. Check each fragment against the
+schema before moving on.
+
+Stage 3 — Compose. Merge the fragments into a single query, then re-check that every filter in the
+question appears exactly once and that the SELECT list is exactly what was asked for.
+
+Do NOT put the Stage 1/2 fragments inside a ```sql fence — that fence is reserved for the final
+answer, and a fragment sitting in it would be mistaken for the answer.
+
+Output format — a single fenced block at the end, nothing else:
+```sql
+SELECT ...
+```
+
+Hard requirements:
+- exactly one statement, read-only (SELECT / WITH). Never INSERT/UPDATE/DELETE/DROP/PRAGMA.
+- SQLite dialect only (no T-SQL / MySQL / Postgres syntax).
+- column order and the number of columns matter: give exactly the columns the question asks for,
+  in the order asked. Do not add extra columns "for context".
+- if the question asks "how many", return a single count; if it asks for a list, do not aggregate it.
+- never rely on any ground-truth query: you only have the question, the evidence, and the schema.
+"""
+
+VARIANTS = {"direct": PREAMBLE, "dnc": PREAMBLE_DNC}
+
+
+def build_system(prompt_dir: Path, rules: list[str] | None = None,
+                 variant: str = "direct") -> str:
+    """system prompt = 任务说明 + 规则。**刻意与库无关**：任何库拿到的是同一份 system。
+
+    `variant` 只换"怎么写"的方法论（direct / dnc），规则文件与硬约束逐字相同 ——
+    于是两个臂的差异只剩生成方法论，不会混进"知识注入方式"这个变量。
+    """
+    parts = [VARIANTS[variant]]
     for name in (rules if rules is not None else RULES_FILES):
         p = prompt_dir / name
         if p.exists():
